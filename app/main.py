@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.converter import convert_pdf_to_docx, remove_file
+from app.converter import convert_docx_to_pdf, convert_pdf_to_docx, remove_file
 
 app = FastAPI(title="FileFLOW MVP")
 
@@ -43,6 +43,39 @@ async def pdf_to_docx(
          path = output_path,
          filename=f"FileFlow_Converted.docx",
          media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+
+@app.post("/convert/docx-to-pdf")
+async def docx_to_pdf(
+    background_tasks: BackgroundTasks, 
+    file: UploadFile = File(...)
+):
+    if not file.filename.endswith(".docx"):
+        raise HTTPException(status_code=400, detail="Apenas arquivos .docx são permitidos.")
+
+    filename_id = str(uuid.uuid4())
+    input_filename = f"{filename_id}.docx"
+
+    
+    input_path = os.path.join(TEMP_FOLDER, input_filename)
+    
+
+    with open(input_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    output_path = convert_docx_to_pdf(input_path, TEMP_FOLDER)
+
+    if not output_path or not os.path.exists(output_path):
+        remove_file(input_path)
+        raise HTTPException(status_code=500, detail="Falha ao converter o documento.")
+
+    background_tasks.add_task(remove_file, input_path)
+    background_tasks.add_task(remove_file, output_path)
+
+    return FileResponse(
+        path=output_path, 
+        filename="FileFlow_Convertido.pdf",
+        media_type="application/pdf"
     )
 
 app.mount("/static",StaticFiles(directory="static"), name="static")

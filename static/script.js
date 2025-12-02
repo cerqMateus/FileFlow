@@ -1,59 +1,123 @@
+// Elementos da UI
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const submitBtn = document.getElementById("submitBtn");
 const statusMsg = document.getElementById("statusMsg");
 const loadingSpinner = document.getElementById("loadingSpinner");
 const btnText = document.getElementById("btnText");
+const inputLabel = document.getElementById("inputLabel");
+const helperText = document.getElementById("helperText");
 
+const tabPdf = document.getElementById("tabPdfToDocx");
+const tabDocx = document.getElementById("tabDocxToPdf");
+
+// Estado da Aplicação
+let currentMode = "pdf-to-docx"; // 'pdf-to-docx' ou 'docx-to-pdf'
+
+// Função para trocar de abas
+function switchMode(mode) {
+  currentMode = mode;
+  fileInput.value = ""; // Limpa o arquivo anterior
+  statusMsg.classList.add("hidden"); // Esconde mensagens antigas
+
+  if (mode === "pdf-to-docx") {
+    // Estilo das Abas
+    tabPdf.className =
+      "w-1/2 py-4 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 transition-colors";
+    tabDocx.className =
+      "w-1/2 py-4 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors";
+
+    // Textos e Inputs
+    inputLabel.textContent = "Selecione seu arquivo PDF";
+    helperText.textContent = "Suporta apenas arquivos .pdf";
+    fileInput.accept = ".pdf";
+    btnText.textContent = "Converter para Word";
+  } else {
+    // Estilo das Abas
+    tabDocx.className =
+      "w-1/2 py-4 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 transition-colors";
+    tabPdf.className =
+      "w-1/2 py-4 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors";
+
+    // Textos e Inputs
+    inputLabel.textContent = "Selecione seu arquivo Word";
+    helperText.textContent = "Suporta apenas arquivos .docx";
+    fileInput.accept = ".docx";
+    btnText.textContent = "Converter para PDF";
+  }
+}
+
+// Lógica de Envio
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = fileInput.files[0];
   if (!file) {
-    alert("Por favor, selecione um arquivo PDF");
+    alert("Por favor, selecione um arquivo.");
     return;
   }
 
+  // UX: Loading
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-50", "cursor-not-allowed");
   loadingSpinner.classList.remove("hidden");
-  btnText.textContent = "Convertendo...";
-  statusMsg.textContent = "O arquivo está sendo processado. Aguarde...";
-  statusMsg.classList.remove("hidden");
+  btnText.textContent = "Processando...";
+  statusMsg.textContent = "Aguarde, estamos convertendo seu arquivo...";
+  statusMsg.classList.remove("hidden", "text-green-600", "text-red-600");
 
   const formData = new FormData();
   formData.append("file", file);
 
+  // Define qual rota chamar baseado no modo atual
+  const endpoint =
+    currentMode === "pdf-to-docx"
+      ? "/convert/pdf-to-docx"
+      : "/convert/docx-to-pdf";
+
   try {
-    const response = await fetch("/convert/pdf-to-docx", {
+    const response = await fetch(endpoint, {
       method: "POST",
       body: formData,
     });
+
     if (!response.ok) {
-      throw new Error("Erro na conversão");
+      const errJson = await response.json();
+      throw new Error(errJson.detail || "Erro na conversão.");
     }
 
     const blob = await response.blob();
 
+    // Download Trigger
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = file.name.replace("pdf", "docx");
+
+    // Define nome do download
+    const originalName = file.name.split(".").slice(0, -1).join(".");
+    const newExt = currentMode === "pdf-to-docx" ? ".docx" : ".pdf";
+    a.download = `${originalName}_convertido${newExt}`;
+
     document.body.appendChild(a);
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
 
-    statusMsg.textContent = "Sucesso! Download iniciado";
+    statusMsg.textContent = "Sucesso! Seu download deve começar em breve.";
     statusMsg.classList.add("text-green-600");
   } catch (error) {
     console.error(error);
-    statusMsg.textContent = "Ocorreu um erro ao converter o arquivo.";
+    statusMsg.textContent = `Erro: ${error.message}`;
     statusMsg.classList.add("text-red-600");
   } finally {
+    // Reset UX
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
     loadingSpinner.classList.add("hidden");
-    btnText.textContent = "Converter Novo Arquivo";
+
+    // Restaura o texto original do botão
+    btnText.textContent =
+      currentMode === "pdf-to-docx"
+        ? "Converter para Word"
+        : "Converter para PDF";
   }
 });

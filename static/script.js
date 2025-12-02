@@ -87,23 +87,50 @@ form.addEventListener("submit", async (e) => {
 
     const blob = await response.blob();
 
-    // Download Trigger
+    // Download Trigger - Compatível com mobile
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-
-    // Define nome do download
     const originalName = file.name.split(".").slice(0, -1).join(".");
     const newExt = currentMode === "pdf-to-docx" ? ".docx" : ".pdf";
-    a.download = `${originalName}_convertido${newExt}`;
+    const fileName = `${originalName}_convertido${newExt}`;
 
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
+    // Detecta se é mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    statusMsg.textContent = "Sucesso! Seu download deve começar em breve.";
-    statusMsg.classList.add("text-green-600");
+    if (isMobile) {
+      // Solução para mobile: cria um link visível e clicável
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.textContent = "Clique aqui para baixar seu arquivo";
+      a.className =
+        "inline-block mt-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors";
+
+      statusMsg.innerHTML = ""; // Limpa a mensagem anterior
+      statusMsg.appendChild(document.createTextNode("Conversão concluída! "));
+      statusMsg.appendChild(a);
+      statusMsg.classList.add("text-green-600");
+
+      // Tenta iniciar o download automaticamente mesmo assim
+      setTimeout(() => {
+        a.click();
+      }, 100);
+    } else {
+      // Desktop: download automático funciona normalmente
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      statusMsg.textContent = "Sucesso! Seu download deve começar em breve.";
+      statusMsg.classList.add("text-green-600");
+    }
+
+    // Limpa o URL após um tempo
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 10000);
   } catch (error) {
     console.error(error);
     statusMsg.textContent = `Erro: ${error.message}`;

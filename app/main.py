@@ -1,8 +1,10 @@
 import os
 import shutil
 import uuid
-from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from app.converter import convert_pdf_to_docx, remove_file
 
@@ -43,8 +45,11 @@ async def pdf_to_docx(
          media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
 
+app.mount("/static",StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 @app.get("/")
-def read_root():
-    return {"status": "Online", "project": "FileFlow"}
+def read_root(req: Request):
+    return templates.TemplateResponse("index.html",{"request": req})
     
     

@@ -5,18 +5,24 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-**FileFlow** é uma aplicação web moderna para conversão bidirecional de documentos entre PDF e DOCX. Desenvolvida com foco em simplicidade, performance e experiência do usuário, oferece uma solução completa para conversão de documentos sem limites ou necessidade de cadastro.
+**FileFlow** é uma aplicação web moderna para conversão de documentos e imagens. Desenvolvida com foco em simplicidade, performance e experiência do usuário, oferece uma solução completa para conversão de múltiplos formatos sem limites ou necessidade de cadastro.
 
 ## 🚀 Features
 
 ### Conversões Suportadas
 
+#### Documentos
 - **PDF → DOCX**: Conversão de documentos PDF para formato Word (.docx)
 - **DOCX → PDF**: Conversão de documentos Word para formato PDF
+- **PDF → SVG**: Conversão da primeira página de PDF em imagem vetorial SVG
+
+#### Imagens
+- **JPG → PNG**: Conversão de imagens JPG/JPEG para formato PNG com suporte a transparência
+- **PNG → JPG**: Conversão de imagens PNG para formato JPG com qualidade otimizada
 
 ### Características Principais
 
-- ✅ **Conversão bidirecional** entre formatos PDF e DOCX
+- ✅ **Conversão multiformato** entre PDF, DOCX, SVG, PNG e JPG
 - ✅ **Interface intuitiva** com design moderno e responsivo
 - ✅ **Processamento assíncrono** com feedback visual em tempo real
 - ✅ **Limpeza automática** de arquivos temporários após conversão
@@ -36,7 +42,8 @@
 - **[pdf2docx](https://github.com/ArtifexSoftware/pdf2docx)** - Biblioteca para conversão PDF → DOCX
 - **[LibreOffice](https://www.libreoffice.org/)** - Engine para conversão DOCX → PDF
 - **[python-docx](https://python-docx.readthedocs.io/)** - Manipulação de arquivos Word
-- **[PyMuPDF](https://pymupdf.readthedocs.io/)** - Processamento de PDFs
+- **[PyMuPDF](https://pymupdf.readthedocs.io/)** - Processamento de PDFs e conversão para SVG
+- **[Pillow (PIL)](https://pillow.readthedocs.io/)** - Processamento e conversão de imagens
 
 #### Frontend
 
@@ -207,6 +214,51 @@ Converte arquivo DOCX para PDF.
 - **Error (400):** Formato de arquivo inválido
 - **Error (500):** Falha na conversão
 
+#### `POST /convert/pdf-to-svg`
+
+Converte a primeira página de um arquivo PDF para imagem vetorial SVG.
+
+**Request:**
+
+- **Content-Type:** `multipart/form-data`
+- **Body:** `file` (arquivo .pdf)
+
+**Response:**
+
+- **Success (200):** Retorna arquivo .svg
+- **Error (400):** Formato de arquivo inválido
+- **Error (500):** Falha na conversão
+
+#### `POST /convert/jpg-to-png`
+
+Converte imagem JPG/JPEG para formato PNG.
+
+**Request:**
+
+- **Content-Type:** `multipart/form-data`
+- **Body:** `file` (arquivo .jpg ou .jpeg)
+
+**Response:**
+
+- **Success (200):** Retorna arquivo .png
+- **Error (400):** Formato de arquivo inválido
+- **Error (500):** Falha na conversão
+
+#### `POST /convert/png-to-jpg`
+
+Converte imagem PNG para formato JPG com qualidade 95%.
+
+**Request:**
+
+- **Content-Type:** `multipart/form-data`
+- **Body:** `file` (arquivo .png)
+
+**Response:**
+
+- **Success (200):** Retorna arquivo .jpg
+- **Error (400):** Formato de arquivo inválido
+- **Error (500):** Falha na conversão
+
 #### `GET /`
 
 Página principal da aplicação.
@@ -214,6 +266,15 @@ Página principal da aplicação.
 **Response:**
 
 - **Success (200):** Retorna interface HTML
+
+#### `GET /converter/{from_format}/{to_format}`
+
+Página de conversão específica para um par de formatos.
+
+**Response:**
+
+- **Success (200):** Retorna interface HTML personalizada
+- **Error (404):** Conversor não encontrado
 
 ### Fluxo de Conversão
 
@@ -233,6 +294,26 @@ Página principal da aplicação.
 3. **Armazenamento:** Arquivo salvo temporariamente com UUID único
 4. **Conversão:** LibreOffice processa via subprocess
 5. **Resposta:** FileResponse com arquivo .pdf
+6. **Limpeza:** BackgroundTasks remove arquivos temporários
+
+#### PDF → SVG
+
+1. **Upload:** Cliente envia arquivo PDF via multipart/form-data
+2. **Validação:** Servidor valida extensão `.pdf`
+3. **Armazenamento:** Arquivo salvo temporariamente com UUID único
+4. **Conversão:** PyMuPDF extrai a primeira página como SVG
+5. **Resposta:** FileResponse com arquivo .svg
+6. **Limpeza:** BackgroundTasks remove arquivos temporários
+
+#### Conversões de Imagem (JPG ↔ PNG)
+
+1. **Upload:** Cliente envia arquivo de imagem via multipart/form-data
+2. **Validação:** Servidor valida extensão do arquivo
+3. **Armazenamento:** Arquivo salvo temporariamente com UUID único
+4. **Conversão:** Pillow (PIL) processa a imagem
+   - **PNG → JPG:** Converte transparência para fundo branco, qualidade 95%
+   - **JPG → PNG:** Preserva ou converte para RGB conforme necessário
+5. **Resposta:** FileResponse com arquivo convertido
 6. **Limpeza:** BackgroundTasks remove arquivos temporários
 
 ### Gerenciamento de Arquivos Temporários
@@ -269,7 +350,8 @@ fastapi==0.123.4           # Framework web
 uvicorn==0.38.0            # Servidor ASGI
 pdf2docx==0.5.8            # Conversão PDF → DOCX
 python-docx==1.2.0         # Manipulação de DOCX
-PyMuPDF==1.26.6            # Processamento de PDF
+PyMuPDF==1.26.6            # Processamento de PDF e conversão para SVG
+Pillow==11.1.0             # Processamento e conversão de imagens
 python-multipart==0.0.20   # Upload de arquivos
 Jinja2==3.1.6              # Template engine
 ```
@@ -341,10 +423,13 @@ A imagem Docker é construída com:
 
 - [ ] Suporte a múltiplos arquivos (batch processing)
 - [ ] Preview de documentos antes do download
+- [ ] Conversão de múltiplas páginas PDF para SVG
+- [ ] Redimensionamento e edição de imagens
+- [ ] Conversão entre mais formatos de imagem (WebP, GIF, BMP)
 - [ ] Histórico de conversões
 - [ ] API key para integração externa
 - [ ] Suporte a mais formatos (PPTX, XLSX, etc.)
-- [ ] Compressão de PDFs
+- [ ] Compressão de PDFs e imagens
 - [ ] OCR para PDFs escaneados
 - [ ] Testes unitários e de integração
 - [ ] CI/CD pipeline

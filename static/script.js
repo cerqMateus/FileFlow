@@ -35,8 +35,14 @@ form.addEventListener("submit", async (e) => {
     });
 
     if (!response.ok) {
-      const errJson = await response.json();
-      throw new Error(errJson.detail || "Erro na conversão.");
+      let errorMessage = "Erro na conversão.";
+      try {
+        const errJson = await response.json();
+        errorMessage = errJson.detail || errorMessage;
+      } catch {
+        errorMessage = `Erro ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const blob = await response.blob();

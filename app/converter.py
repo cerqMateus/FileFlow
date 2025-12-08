@@ -1,5 +1,6 @@
 import os
 import subprocess
+import pymupdf
 from pdf2docx import Converter
 
 def convert_pdf_to_docx(pdf_path:str,docx_path:str):
@@ -47,4 +48,19 @@ def remove_file(path: str):
     try:
         os.remove(path)
     except OSError:
-        pass        
+        pass
+
+def convert_pdf_to_svg(pdf_path: str, svg_path: str):
+    try:
+        doc = pymupdf.open(pdf_path)
+        page = doc[0]
+        svg_content = page.get_svg_image()
+        
+        with open(svg_path, "w", encoding="utf-8") as f:
+            f.write(svg_content)
+        
+        doc.close()
+        return True
+    except Exception as ex:
+        print(f"Erro na conversão: {ex}")
+        return False

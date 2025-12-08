@@ -12,6 +12,11 @@ app = FastAPI(title="FileFLOW MVP")
 
 TEMP_FOLDER = "temp"
 
+@app.on_event("startup")
+async def startup_event():
+    """Create temp folder if it doesn't exist"""
+    os.makedirs(TEMP_FOLDER, exist_ok=True)
+
 @app.post("/convert/pdf-to-docx")
 async def pdf_to_docx(
     background_tasks: BackgroundTasks,

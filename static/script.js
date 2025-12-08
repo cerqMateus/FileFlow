@@ -1,53 +1,12 @@
-// Elementos da UI
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const submitBtn = document.getElementById("submitBtn");
 const statusMsg = document.getElementById("statusMsg");
 const loadingSpinner = document.getElementById("loadingSpinner");
 const btnText = document.getElementById("btnText");
-const inputLabel = document.getElementById("inputLabel");
-const helperText = document.getElementById("helperText");
 
-const tabPdf = document.getElementById("tabPdfToDocx");
-const tabDocx = document.getElementById("tabDocxToPdf");
+const config = window.converterConfig;
 
-// Estado da Aplicação
-let currentMode = "pdf-to-docx"; // 'pdf-to-docx' ou 'docx-to-pdf'
-
-// Função para trocar de abas
-function switchMode(mode) {
-  currentMode = mode;
-  fileInput.value = ""; // Limpa o arquivo anterior
-  statusMsg.classList.add("hidden"); // Esconde mensagens antigas
-
-  if (mode === "pdf-to-docx") {
-    // Estilo das Abas
-    tabPdf.className =
-      "w-1/2 py-4 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 transition-colors";
-    tabDocx.className =
-      "w-1/2 py-4 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors";
-
-    // Textos e Inputs
-    inputLabel.textContent = "Selecione seu arquivo PDF";
-    helperText.textContent = "Suporta apenas arquivos .pdf";
-    fileInput.accept = ".pdf";
-    btnText.textContent = "Converter para Word";
-  } else {
-    // Estilo das Abas
-    tabDocx.className =
-      "w-1/2 py-4 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50 transition-colors";
-    tabPdf.className =
-      "w-1/2 py-4 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors";
-
-    // Textos e Inputs
-    inputLabel.textContent = "Selecione seu arquivo Word";
-    helperText.textContent = "Suporta apenas arquivos .docx";
-    fileInput.accept = ".docx";
-    btnText.textContent = "Converter para PDF";
-  }
-}
-
-// Lógica de Envio
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -57,7 +16,6 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // UX: Loading
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-50", "cursor-not-allowed");
   loadingSpinner.classList.remove("hidden");
@@ -68,11 +26,7 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  // Define qual rota chamar baseado no modo atual
-  const endpoint =
-    currentMode === "pdf-to-docx"
-      ? "/convert/pdf-to-docx"
-      : "/convert/docx-to-pdf";
+  const endpoint = `/convert/${config.fromFormat}-to-${config.toFormat}`;
 
   try {
     const response = await fetch(endpoint, {
@@ -87,17 +41,14 @@ form.addEventListener("submit", async (e) => {
 
     const blob = await response.blob();
 
-    // Download Trigger - Compatível com mobile
     const url = window.URL.createObjectURL(blob);
     const originalName = file.name.split(".").slice(0, -1).join(".");
-    const newExt = currentMode === "pdf-to-docx" ? ".docx" : ".pdf";
+    const newExt = `.${config.toFormat}`;
     const fileName = `${originalName}_convertido${newExt}`;
 
-    // Detecta se é mobile
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (isMobile) {
-      // Solução para mobile: cria um link visível e clicável
       const a = document.createElement("a");
       a.href = url;
       a.download = fileName;
@@ -105,17 +56,15 @@ form.addEventListener("submit", async (e) => {
       a.className =
         "inline-block mt-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors";
 
-      statusMsg.innerHTML = ""; // Limpa a mensagem anterior
+      statusMsg.innerHTML = "";
       statusMsg.appendChild(document.createTextNode("Conversão concluída! "));
       statusMsg.appendChild(a);
       statusMsg.classList.add("text-green-600");
 
-      // Tenta iniciar o download automaticamente mesmo assim
       setTimeout(() => {
         a.click();
       }, 100);
     } else {
-      // Desktop: download automático funciona normalmente
       const a = document.createElement("a");
       a.href = url;
       a.download = fileName;
@@ -127,7 +76,6 @@ form.addEventListener("submit", async (e) => {
       statusMsg.classList.add("text-green-600");
     }
 
-    // Limpa o URL após um tempo
     setTimeout(() => {
       window.URL.revokeObjectURL(url);
     }, 10000);
@@ -136,15 +84,9 @@ form.addEventListener("submit", async (e) => {
     statusMsg.textContent = `Erro: ${error.message}`;
     statusMsg.classList.add("text-red-600");
   } finally {
-    // Reset UX
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
     loadingSpinner.classList.add("hidden");
-
-    // Restaura o texto original do botão
-    btnText.textContent =
-      currentMode === "pdf-to-docx"
-        ? "Converter para Word"
-        : "Converter para PDF";
+    btnText.textContent = `Converter para ${config.toFormatLabel}`;
   }
 });

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }} - FileFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center text-slate-800">
+    <a
+      href="/"
+      class="absolute top-4 left-4 text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-2 font-semibold"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      Voltar
+    </a>
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+      <div class="text-center pt-8 pb-4 px-8">
+        <div class="text-5xl mb-3">{{ icon }}</div>
+        <h1 class="text-3xl font-bold text-indigo-600 mb-2">{{ title }}</h1>
+        <p class="text-slate-500 text-sm">{{ description }}</p>
+      </div>
+
+      <div class="p-8">
+        <form id="uploadForm" class="space-y-6">
+          <div class="relative">
+            <label
+              for="fileInput"
+              class="block text-sm font-medium text-slate-700 mb-2"
+            >
+              Selecione seu arquivo {{ from_format_label }}
+            </label>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".{{ from_format }}"
+              class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer border border-slate-200 rounded-lg p-1 bg-slate-50"
+              required
+            />
+            <p class="mt-2 text-xs text-slate-400">
+              Suporta apenas arquivos .{{ from_format }}
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            id="submitBtn"
+            class="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all font-semibold"
+          >
+            <svg
+              id="loadingSpinner"
+              class="hidden animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span id="btnText">Converter para {{ to_format_label }}</span>
+          </button>
+        </form>
+
+        <div
+          id="statusMsg"
+          class="mt-4 text-center text-sm font-medium text-slate-600 hidden"
+        ></div>
+      </div>
+    </div>
+
+    <footer class="mt-8 text-slate-400 text-sm">
+      &copy; 2025 FileFlow. Powered by Docker.
+    </footer>
+
+    <script>
+      window.converterConfig = {
+        fromFormat: "{{ from_format }}",
+        toFormat: "{{ to_format }}",
+        toFormatLabel: "{{ to_format_label }}"
+      };
+    </script>
+    <script src="/static/script.js"></script>
+  </body>
+</html>

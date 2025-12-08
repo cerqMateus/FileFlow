@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileFlow - Conversor Universal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen flex flex-col items-center py-12 text-slate-800">
+    <header class="text-center mb-12">
+      <h1 class="text-5xl font-bold text-indigo-600 mb-3">FileFlow</h1>
+      <p class="text-slate-500 text-lg">
+        Converta documentos com segurança e sem limites
+      </p>
+    </header>
+
+    <main class="w-full max-w-5xl px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a
+          href="/converter/pdf/docx"
+          class="group bg-white rounded-2xl shadow-lg border border-slate-100 p-8 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 flex flex-col items-center justify-center aspect-square"
+        >
+          <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">
+            📄
+          </div>
+          <h2 class="text-xl font-bold text-slate-800 mb-2 text-center">
+            PDF para Word
+          </h2>
+          <p class="text-sm text-slate-500 text-center">
+            Converta arquivos PDF em documentos Word editáveis
+          </p>
+          <div class="mt-4 text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
+            Converter →
+          </div>
+        </a>
+
+        <a
+          href="/converter/docx/pdf"
+          class="group bg-white rounded-2xl shadow-lg border border-slate-100 p-8 hover:shadow-xl hover:border-indigo-200 transition-all duration-300 flex flex-col items-center justify-center aspect-square"
+        >
+          <div class="text-6xl mb-4 group-hover:scale-110 transition-transform">
+            📝
+          </div>
+          <h2 class="text-xl font-bold text-slate-800 mb-2 text-center">
+            Word para PDF
+          </h2>
+          <p class="text-sm text-slate-500 text-center">
+            Converta documentos Word em arquivos PDF universais
+          </p>
+          <div class="mt-4 text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
+            Converter →
+          </div>
+        </a>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-100 border-dashed p-8 flex flex-col items-center justify-center aspect-square opacity-50">
+          <div class="text-6xl mb-4">➕</div>
+          <h2 class="text-xl font-bold text-slate-800 mb-2 text-center">
+            Em breve
+          </h2>
+          <p class="text-sm text-slate-500 text-center">
+            Novos conversores chegando em breve
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="mt-16 text-slate-400 text-sm">
+      &copy; 2025 FileFlow. Powered by Docker.
+    </footer>
+  </body>
+</html>

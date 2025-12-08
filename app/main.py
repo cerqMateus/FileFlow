@@ -81,8 +81,40 @@ async def docx_to_pdf(
 app.mount("/static",StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+CONVERTER_CONFIG = {
+    ("pdf", "docx"): {
+        "title": "PDF para Word",
+        "icon": "📄",
+        "description": "Converta arquivos PDF em documentos Word editáveis",
+        "from_format": "pdf",
+        "from_format_label": "PDF",
+        "to_format": "docx",
+        "to_format_label": "Word"
+    },
+    ("docx", "pdf"): {
+        "title": "Word para PDF",
+        "icon": "📝",
+        "description": "Converta documentos Word em arquivos PDF universais",
+        "from_format": "docx",
+        "from_format_label": "Word",
+        "to_format": "pdf",
+        "to_format_label": "PDF"
+    }
+}
+
 @app.get("/")
-def read_root(req: Request):
-    return templates.TemplateResponse("index.html",{"request": req})
+def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
+
+@app.get("/converter/{from_format}/{to_format}")
+def converter_page(request: Request, from_format: str, to_format: str):
+    config = CONVERTER_CONFIG.get((from_format, to_format))
+    if not config:
+        raise HTTPException(status_code=404, detail="Conversor não encontrado")
+    
+    return templates.TemplateResponse("converter.html", {
+        "request": request,
+        **config
+    })
     
     

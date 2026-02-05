@@ -33,6 +33,15 @@
 
 ## 🏗️ Arquitetura
 
+### Padrões de Projeto
+
+O FileFlow utiliza o **Adapter Pattern** para isolar as dependências de bibliotecas externas, garantindo que alterações nas APIs das bibliotecas não causem mudanças catastróficas no código da aplicação. Esta arquitetura permite:
+
+- **Baixo acoplamento**: A aplicação depende de interfaces (protocols), não de implementações concretas
+- **Fácil manutenção**: Troca de bibliotecas sem modificar a lógica de negócio
+- **Testabilidade**: Facilita a criação de mocks e testes unitários
+- **Proteção contra breaking changes**: Mudanças em bibliotecas externas são isoladas nos adaptadores
+
 ### Stack Tecnológico
 
 #### Backend
@@ -64,12 +73,24 @@ file_flow/
 ├── app/
 │   ├── __init__.py           # Módulo Python
 │   ├── main.py               # API FastAPI e rotas
-│   └── converter.py          # Lógica de conversão
+│   ├── converter.py          # Funções legadas de conversão
+│   └── converters/           # Módulo de conversores (Adapter Pattern)
+│       ├── __init__.py       # Exports públicos
+│       ├── base.py           # Protocolos/interfaces dos conversores
+│       ├── factory.py        # Factory para instanciar adaptadores
+│       └── adapters/         # Implementações concretas
+│           ├── pdf_adapter.py    # Adaptadores para PDF (pdf2docx, PyMuPDF)
+│           ├── docx_adapter.py   # Adaptador para DOCX (LibreOffice)
+│           └── image_adapter.py  # Adaptador para imagens (Pillow)
 ├── static/
 │   └── script.js             # JavaScript do frontend
 ├── templates/
+│   ├── home.html             # Página inicial
+│   ├── converter.html        # Página de conversão
 │   └── index.html            # Interface do usuário
 ├── temp/                     # Diretório para arquivos temporários
+├── scripts/
+│   └── 01.md                 # Documentação de refatoração
 ├── Dockerfile                # Configuração do container
 ├── requirements.txt          # Dependências Python
 └── README.md                 # Documentação

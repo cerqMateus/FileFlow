@@ -6,7 +6,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.converter import convert_docx_to_pdf, convert_pdf_to_docx, convert_pdf_to_svg, convert_jpg_to_png, convert_png_to_jpg, remove_file
+from app.converters import get_pdf_to_docx_converter, get_docx_to_pdf_converter, get_pdf_to_svg_converter, get_image_converter
+from app.converter import remove_file
 
 app = FastAPI(title="FileFLOW MVP")
 
@@ -35,7 +36,8 @@ async def pdf_to_docx(
     with open(input_path,"wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    success = convert_pdf_to_docx(input_path, output_path)
+    converter = get_pdf_to_docx_converter()
+    success = converter.convert(input_path, output_path)
 
     if not success:
             remove_file(input_path)
@@ -68,7 +70,8 @@ async def docx_to_pdf(
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    output_path = convert_docx_to_pdf(input_path, TEMP_FOLDER)
+    converter = get_docx_to_pdf_converter()
+    output_path = converter.convert(input_path, TEMP_FOLDER)
 
     if not output_path or not os.path.exists(output_path):
         remove_file(input_path)
@@ -101,7 +104,8 @@ async def pdf_to_svg(
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    success = convert_pdf_to_svg(input_path, output_path)
+    converter = get_pdf_to_svg_converter()
+    success = converter.convert(input_path, output_path)
 
     if not success:
         remove_file(input_path)
@@ -134,7 +138,8 @@ async def jpg_to_png(
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    success = convert_jpg_to_png(input_path, output_path)
+    converter = get_image_converter()
+    success = converter.jpg_to_png(input_path, output_path)
 
     if not success:
         remove_file(input_path)
@@ -167,7 +172,8 @@ async def png_to_jpg(
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    success = convert_png_to_jpg(input_path, output_path)
+    converter = get_image_converter()
+    success = converter.png_to_jpg(input_path, output_path)
 
     if not success:
         remove_file(input_path)

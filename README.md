@@ -56,10 +56,12 @@ O FileFlow utiliza o **Adapter Pattern** para isolar as dependências de bibliot
 
 #### Frontend
 
-- **HTML5** + **CSS3** (via Tailwind CSS)
-- **JavaScript Vanilla** - Sem dependências externas
-- **[Tailwind CSS](https://tailwindcss.com/)** - Framework CSS utilitário via CDN
-- **Google Fonts (Inter)** - Tipografia moderna
+- **[Next.js](https://nextjs.org/)** com App Router
+- **TypeScript estrito** - Tipagem e verificações estáticas obrigatórias
+- **[Tailwind CSS](https://tailwindcss.com/)** - Dependência local de build, sem CDN
+- **Inter via `next/font`** - Fonte incorporada ao build
+
+O workspace Next.js ainda é um scaffold técnico. Até a conclusão da migração, a interface funcional continua sendo servida temporariamente pelo frontend legado do backend.
 
 #### DevOps
 
@@ -85,6 +87,13 @@ file_flow/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── requirements-dev.txt
+├── frontend/
+│   ├── src/app/                   # App Router e estilos globais
+│   ├── .env.example              # Configuração pública de exemplo
+│   ├── eslint.config.mjs         # Qualidade e fronteiras arquiteturais
+│   ├── next.config.ts            # Configuração do Next.js
+│   ├── package.json              # Scripts e dependências fixadas
+│   └── tsconfig.json             # TypeScript estrito
 ├── docs/                          # PRDs, backlogs e baselines
 ├── scripts/
 │   └── 01.md                     # Documentação de refatoração
@@ -98,6 +107,7 @@ Os diretórios `backend/templates/` e `backend/static/` permanecem apenas durant
 ### Pré-requisitos
 
 - **Python 3.10+**
+- **Node.js 24.18.0** e **npm 11.16.0** para o frontend
 - **LibreOffice** (para conversão DOCX → PDF)
 - **Docker** (opcional, para containerização)
 
@@ -156,6 +166,21 @@ Alternativamente, a partir da raiz do repositório:
 ```
 
 Acesse: [http://localhost:8000](http://localhost:8000)
+
+### Scaffold do frontend Next.js
+
+O frontend pode ser instalado e validado independentemente:
+
+```powershell
+cd frontend
+npm ci
+npm run lint
+npm run typecheck
+npm run build
+npm run dev
+```
+
+O servidor de desenvolvimento do scaffold responde em [http://localhost:3000](http://localhost:3000). As telas e conversões ainda não foram migradas para ele.
 
 ### Instalação com Docker
 
@@ -424,12 +449,12 @@ A imagem Docker é construída com:
 
 ## 🎨 Frontend
 
-### Tecnologias
+### Estado da migração
 
-- **Tailwind CSS:** Design system moderno e responsivo
-- **Vanilla JavaScript:** Sem frameworks, máxima performance
-- **Fetch API:** Requisições HTTP modernas
-- **Blob API:** Download de arquivos no cliente
+- O scaffold Next.js usa App Router, TypeScript estrito, Tailwind local e rotas tipadas.
+- O lint impede `any` explícito, JavaScript de aplicação, dependências não declaradas e violações das fronteiras arquiteturais.
+- A migração visual e o fluxo de conversão serão realizados nos próximos grupos do backlog.
+- O frontend Jinja2 permanece temporariamente ativo, sem duplicação funcional no Next.js neste estágio.
 
 ### Componentes UI
 

@@ -12,6 +12,14 @@ venv/
 .coverage.*
 htmlcov/
 
+# Frontend dependencies, builds and reports
+frontend/node_modules/
+frontend/.next/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
+frontend/*.tsbuildinfo
+
 # Runtime files
 /backend/temp/*
 !/backend/temp/.gitkeep
@@ -20,3 +28,4 @@ htmlcov/
 .env
 .env.*
 !.env.example
+!frontend/.env.example

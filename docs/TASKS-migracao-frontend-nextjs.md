@@ -267,7 +267,7 @@ Cada descrição de PR deverá informar:
 - [x] Criar o commit `refactor(backend): extract conversion routes`.
 - [x] Publicar `refactor/backend-api-routes` e abrir o PR.
 - [x] Incluir no PR a evidência de que nenhum contrato mudou.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 4.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 4.
 
 **Validação:** PR incorporado com composição FastAPI menor e contratos intactos.
 
@@ -281,82 +281,84 @@ Cada descrição de PR deverá informar:
 
 ### Task 17 — Selecionar e registrar versões suportadas
 
-- [ ] Verificar a versão LTS ativa do Node.js no momento da implementação.
-- [ ] Selecionar versões estáveis e compatíveis de Next.js, React, React DOM e TypeScript.
-- [ ] Registrar a versão de Node no campo `engines` e em arquivo de versionamento aceito pelo projeto.
-- [ ] Usar `npm` e gerar `package-lock.json` determinístico.
-- [ ] Registrar as versões escolhidas no PR, sem intervalos desnecessariamente amplos.
+- [x] Verificar a versão LTS ativa do Node.js no momento da implementação.
+- [x] Selecionar versões estáveis e compatíveis de Next.js, React, React DOM e TypeScript.
+- [x] Registrar a versão de Node no campo `engines` e em arquivo de versionamento aceito pelo projeto.
+- [x] Usar `npm` e gerar `package-lock.json` determinístico.
+- [x] Registrar as versões escolhidas no PR, sem intervalos desnecessariamente amplos.
 
 **Validação:** uma instalação limpa usa as versões registradas e não produz alterações no lockfile.
 
 ### Task 18 — Criar o workspace Next.js mínimo
 
-- [ ] Criar `frontend/package.json` com scripts de desenvolvimento, build, start, lint e typecheck.
-- [ ] Criar o App Router sob `frontend/src/app/`.
-- [ ] Criar `layout.tsx`, uma página mínima temporária e `globals.css`.
-- [ ] Criar `frontend/public/` somente com assets realmente utilizados.
-- [ ] Configurar o alias `@/*` para `src/*`.
-- [ ] Não criar Pages Router, Route Handlers ou Server Actions.
-- [ ] Não copiar ainda templates ou JavaScript legado para arquivos React.
+- [x] Criar `frontend/package.json` com scripts de desenvolvimento, build, start, lint e typecheck.
+- [x] Criar o App Router sob `frontend/src/app/`.
+- [x] Criar `layout.tsx`, uma página mínima temporária e `globals.css`.
+- [x] Manter `frontend/public/` ausente enquanto não houver assets realmente utilizados.
+- [x] Configurar o alias `@/*` para `src/*`.
+- [x] Não criar Pages Router, Route Handlers ou Server Actions.
+- [x] Não copiar ainda templates ou JavaScript legado para arquivos React.
 
 **Validação:** `npm run build` gera uma aplicação mínima usando somente App Router.
 
 ### Task 19 — Habilitar TypeScript estrito
 
-- [ ] Habilitar `strict`.
-- [ ] Habilitar `noUncheckedIndexedAccess`.
-- [ ] Habilitar `exactOptionalPropertyTypes`.
-- [ ] Habilitar `noImplicitOverride`.
-- [ ] Habilitar `noFallthroughCasesInSwitch`.
-- [ ] Habilitar `noUncheckedSideEffectImports` se suportado pelas versões selecionadas.
-- [ ] Impedir arquivos JavaScript de aplicação.
-- [ ] Garantir que `npm run typecheck` execute `tsc --noEmit`.
+- [x] Habilitar `strict`.
+- [x] Habilitar `noUncheckedIndexedAccess`.
+- [x] Habilitar `exactOptionalPropertyTypes`.
+- [x] Habilitar `noImplicitOverride`.
+- [x] Habilitar `noFallthroughCasesInSwitch`.
+- [x] Habilitar `noUncheckedSideEffectImports` se suportado pelas versões selecionadas.
+- [x] Impedir arquivos JavaScript de aplicação.
+- [x] Garantir que `npm run typecheck` execute `tsc --noEmit`.
 
 **Validação:** a configuração rejeita exemplos controlados de acesso inseguro, opcionais imprecisos e `any` implícito.
 
 ### Task 20 — Configurar lint e fronteiras arquiteturais
 
-- [ ] Configurar ESLint compatível com a versão selecionada do Next.js.
-- [ ] Proibir `any` explícito.
-- [ ] Proibir imports profundos da implementação interna de features por consumidores externos.
-- [ ] Proibir imports de `app` ou `features` a partir de módulos compartilhados.
-- [ ] Proibir JavaScript de aplicação e dependências não declaradas.
-- [ ] Configurar regras sem desabilitações globais genéricas.
-- [ ] Documentar qualquer exceção pontual com justificativa no próprio código.
+- [x] Configurar ESLint compatível com a versão selecionada do Next.js.
+- [x] Proibir `any` explícito.
+- [x] Proibir imports profundos da implementação interna de features por consumidores externos.
+- [x] Proibir imports de `app` ou `features` a partir de módulos compartilhados.
+- [x] Proibir JavaScript de aplicação e dependências não declaradas.
+- [x] Configurar regras sem desabilitações globais genéricas.
+- [x] Documentar qualquer exceção pontual com justificativa no próprio código.
 
 **Validação:** fixtures ou violações temporárias confirmam que as regras de fronteira realmente falham no lint.
 
 ### Task 21 — Configurar Next.js e Tailwind
 
-- [ ] Habilitar `typedRoutes` na configuração estável do Next.js.
-- [ ] Instalar Tailwind CSS como dependência de build, sem CDN.
-- [ ] Configurar os caminhos de conteúdo restritos ao frontend.
-- [ ] Integrar a fonte Inter com pesos 400, 600 e 700 pelo mecanismo do Next.js.
-- [ ] Não introduzir biblioteca de componentes, ícones ou estado global.
+- [x] Habilitar `typedRoutes` na configuração estável do Next.js.
+- [x] Instalar Tailwind CSS como dependência de build, sem CDN.
+- [x] Configurar os caminhos de conteúdo restritos ao frontend.
+- [x] Integrar a fonte Inter com pesos 400, 600 e 700 pelo mecanismo do Next.js.
+- [x] Não introduzir biblioteca de componentes, ícones ou estado global.
 
 **Validação:** build de produção não referencia `cdn.tailwindcss.com` nem Google Fonts em runtime.
 
 ### Task 22 — Preparar configuração e higiene do workspace
 
-- [ ] Criar `.env.example` com apenas variáveis públicas necessárias e valores seguros de exemplo.
-- [ ] Ajustar `.gitignore` para `.next/`, `node_modules/`, coverage, resultados E2E e `.env.local`.
-- [ ] Garantir que `.env.example` continue versionável.
-- [ ] Confirmar que o build não escreve fora de `frontend/`.
-- [ ] Confirmar que nenhum segredo está exposto com prefixo `NEXT_PUBLIC_`.
+- [x] Criar `.env.example` com apenas variáveis públicas necessárias e valores seguros de exemplo.
+- [x] Ajustar `.gitignore` para `.next/`, `node_modules/`, coverage, resultados E2E e `.env.local`.
+- [x] Garantir que `.env.example` continue versionável.
+- [x] Confirmar que o build não escreve fora de `frontend/`.
+- [x] Confirmar que nenhum segredo está exposto com prefixo `NEXT_PUBLIC_`.
 
 **Validação:** instalação, lint, typecheck e build não sujam o working tree.
 
 ### Task 23 — Publicar o PR do scaffold
 
-- [ ] Executar instalação limpa com o lockfile.
-- [ ] Executar lint, typecheck e build.
-- [ ] Executar `git diff --check`.
-- [ ] Revisar que o PR contém somente scaffold e ferramentas, sem migração visual.
-- [ ] Criar o commit `chore(frontend): scaffold strict Next.js app`.
-- [ ] Publicar `chore/frontend-tooling` e abrir o PR.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 5.
+- [x] Executar instalação limpa com o lockfile.
+- [x] Executar lint, typecheck e build.
+- [x] Executar `git diff --check`.
+- [x] Revisar que o PR contém somente scaffold e ferramentas, sem migração visual.
+- [x] Criar o commit `chore(frontend): scaffold strict Next.js app`.
+- [x] Publicar `chore/frontend-tooling` e abrir o PR.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 5.
 
 **Validação:** PR incorporado e frontend mínimo reproduzível em instalação limpa.
+
+**Evidências de execução:** Node.js `24.18.0` LTS e npm `11.16.0`; Next.js `16.2.10`, React `19.2.7`, TypeScript `6.0.3`, Tailwind CSS `4.3.3` e ESLint `9.39.5`. Duas instalações limpas produziram o mesmo SHA-256 do lockfile (`459A8FC4B1C0FC9295E0B4C48F08948E2C9DC9EFC65C962FD7E8B1E5E2A2F6BE`). Fixtures temporárias confirmaram falha para `any` explícito, JavaScript de aplicação, dependência de desenvolvimento importada pela aplicação, import profundo de feature, dependência reversa de módulo compartilhado, acesso inseguro por índice, propriedade opcional imprecisa e `any` implícito; as fixtures não fazem parte do commit.
 
 ## 8. Grupo 5 — Catálogo e domínio tipado de conversão
 

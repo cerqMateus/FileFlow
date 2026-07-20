@@ -183,7 +183,7 @@ npm run build
 npm run dev
 ```
 
-O servidor de desenvolvimento do scaffold responde em [http://localhost:3000](http://localhost:3000). As telas e conversões ainda não foram migradas para ele.
+O servidor de desenvolvimento responde em [http://localhost:3000](http://localhost:3000). A home já é renderizada pelo Next.js; as páginas e os fluxos de conversão ainda não foram migrados.
 
 Copie `frontend/.env.example` para `frontend/.env.local` ao executar frontend e backend em portas diferentes. `NEXT_PUBLIC_API_BASE_URL` aceita uma URL HTTP(S) absoluta, uma base relativa iniciada por `/` ou valor vazio para same-origin. Variáveis `NEXT_PUBLIC_*` são incorporadas ao bundle durante o build; cada ambiente deve defini-las antes de executar `npm run build`.
 
@@ -459,7 +459,7 @@ A imagem Docker é construída com:
 - O scaffold Next.js usa App Router, TypeScript estrito, Tailwind local e rotas tipadas.
 - O domínio de conversão expõe um catálogo imutável com somente os cinco pares suportados.
 - O lint impede `any` explícito, JavaScript de aplicação, dependências não declaradas e violações das fronteiras arquiteturais.
-- A migração visual e o fluxo de conversão serão realizados nos próximos grupos do backlog.
+- A home foi reproduzida no Next.js a partir do catálogo; páginas e fluxos de conversão permanecem nos próximos grupos.
 - O frontend Jinja2 permanece temporariamente ativo, sem duplicação funcional no Next.js neste estágio.
 
 ### Componentes UI

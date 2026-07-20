@@ -72,8 +72,11 @@ O FileFlow utiliza o **Adapter Pattern** para isolar as dependências de bibliot
 file_flow/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py               # API FastAPI e rotas
+│   │   ├── api/routes/           # Rotas HTTP de conversão
+│   │   ├── config.py             # Caminhos compartilhados do backend
 │   │   ├── converters/           # Protocolos, factory e adapters
+│   │   ├── legacy_frontend.py    # Composição temporária do frontend Jinja2
+│   │   ├── main.py               # Composição da aplicação FastAPI
 │   │   └── services/             # Serviços da aplicação
 │   ├── tests/                     # Testes do backend
 │   ├── static/                    # JavaScript legado temporário

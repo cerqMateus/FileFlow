@@ -1,7 +1,28 @@
+import { ConverterCard, listConverters } from "@/features/conversion";
+
 export default function HomePage() {
+  const converters = listConverters();
+
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      <p>Frontend FileFlow em preparação.</p>
-    </main>
+    <div className="flex min-h-screen flex-col items-center bg-slate-50 py-12 text-slate-800">
+      <header className="mb-12 text-center">
+        <h1 className="mb-3 text-5xl font-bold text-indigo-600">FileFlow</h1>
+        <p className="text-lg text-slate-500">
+          Converta documentos com segurança e sem limites
+        </p>
+      </header>
+
+      <main className="w-full max-w-6xl px-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {converters.map((converter) => (
+            <ConverterCard key={converter.key} converter={converter} />
+          ))}
+        </div>
+      </main>
+
+      <footer className="mt-16 text-sm text-slate-400">
+        © 2025 FileFlow. Powered by Docker.
+      </footer>
+    </div>
   );
 }

@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FileFlow",
-  description: "Conversão de arquivos simples e rápida.",
+  title: "FileFlow - Conversor Universal",
+  description: "Converta documentos com segurança e sem limites",
 };
 
 type RootLayoutProps = Readonly<{

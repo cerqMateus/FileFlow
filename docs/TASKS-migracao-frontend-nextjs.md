@@ -436,7 +436,7 @@ Cada descrição de PR deverá informar:
 - [x] Criar o commit `refactor(frontend): add typed conversion catalog`.
 - [x] Publicar `refactor/conversion-catalog` e abrir o PR.
 - [x] Incluir no PR a matriz dos cinco pares e sua origem no legado.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 6.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 6.
 
 **Validação:** PR incorporado com domínio puro, tipado e sem mudança visível publicada.
 
@@ -450,55 +450,61 @@ Cada descrição de PR deverá informar:
 
 ### Task 31 — Criar o layout global equivalente
 
-- [ ] Configurar `lang="pt-BR"` e metadados equivalentes.
-- [ ] Aplicar Inter e as cores globais atuais.
-- [ ] Reproduzir estrutura de página, largura e espaçamentos sem redesign.
-- [ ] Criar header e footer somente se houver reutilização concreta.
-- [ ] Preservar o texto e o ano exibidos no baseline, mesmo que melhorias tenham sido identificadas.
+- [x] Configurar `lang="pt-BR"` e metadados equivalentes.
+- [x] Aplicar Inter e as cores globais atuais.
+- [x] Reproduzir estrutura de página, largura e espaçamentos sem redesign.
+- [x] Criar header e footer somente se houver reutilização concreta.
+- [x] Preservar o texto e o ano exibidos no baseline, mesmo que melhorias tenham sido identificadas.
 
 **Validação:** o layout em viewports de referência é visualmente equivalente ao legado.
 
 ### Task 32 — Criar o componente de card de conversor
 
-- [ ] Receber uma entrada tipada do catálogo.
-- [ ] Usar `next/link` com rota tipada.
-- [ ] Preservar ícone, título, descrição e call to action.
-- [ ] Preservar estados de hover, bordas, sombras, aspect ratio e transições.
-- [ ] Manter semântica de link navegável por teclado.
-- [ ] Não marcar o componente como cliente sem necessidade.
+- [x] Receber uma entrada tipada do catálogo.
+- [x] Usar `next/link` com rota tipada.
+- [x] Preservar ícone, título, descrição e call to action.
+- [x] Preservar estados de hover, bordas, sombras, aspect ratio e transições.
+- [x] Manter semântica de link navegável por teclado.
+- [x] Não marcar o componente como cliente sem necessidade.
 
 **Validação:** o card é um Server Component/presente estático e reproduz o comportamento visual atual.
 
+**Nota de execução:** enquanto a rota dinâmica pertence ao Grupo 7 e ainda não existe no App Router, `next/link` recebe um `UrlObject` cujo `pathname` continua restrito à union literal do catálogo. Isso mantém a rota tipada sem cast nem antecipação da página seguinte; o uso direto da string será reavaliado quando o Next.js gerar o tipo da rota dinâmica.
+
 ### Task 33 — Reproduzir a grade da home
 
-- [ ] Renderizar a partir do catálogo único.
-- [ ] Preservar a ordem atual dos cinco conversores.
-- [ ] Preservar uma coluna em mobile, duas em medium e quatro em large.
-- [ ] Preservar largura máxima, padding e gaps.
-- [ ] Confirmar que nenhum texto ou card foi adicionado.
+- [x] Renderizar a partir do catálogo único.
+- [x] Preservar a ordem atual dos cinco conversores.
+- [x] Preservar uma coluna em mobile, duas em medium e quatro em large.
+- [x] Preservar largura máxima, padding e gaps.
+- [x] Confirmar que nenhum texto ou card foi adicionado.
 
 **Validação:** as cinco URLs corretas são geradas e a composição corresponde às evidências do Grupo 1.
 
 ### Task 34 — Comparar a home com o baseline
 
-- [ ] Comparar desktop no mesmo navegador, viewport, escala e fonte.
-- [ ] Comparar mobile nas mesmas condições.
-- [ ] Corrigir apenas diferenças introduzidas pela migração.
-- [ ] Registrar evidências lado a lado no PR.
-- [ ] Documentar qualquer diferença inevitável causada pelo mecanismo de renderização.
+- [x] Registrar a impossibilidade de comparar desktop no navegador integrado nas condições de referência.
+- [x] Registrar a impossibilidade de comparar mobile no navegador integrado nas condições de referência.
+- [x] Corrigir somente diferenças estruturais detectadas em relação ao baseline textual e ao template legado.
+- [x] Registrar no PR a dispensa explícita das evidências lado a lado.
+- [x] Documentar a limitação de validação visual desta execução.
 
-**Validação:** revisão visual aprova paridade sem mudança intencional de interface.
+**Desvio aprovado:** em 20 de julho de 2026, o responsável autorizou concluir o Grupo 6 sem capturas e sem comparação visual automatizada depois que o procedimento oficial de recuperação confirmou que nenhum navegador estava conectado à sessão. A validação substituta compara o template legado, o baseline textual, as classes responsivas e o HTML de produção; não será apresentada como revisão visual executada.
+
+**Validação substituta:** revisão estrutural não encontrou mudança intencional de conteúdo ou composição, e a ausência de evidência visual está explícita para a pessoa revisora.
 
 ### Task 35 — Publicar o PR da home
 
-- [ ] Executar lint, typecheck e build.
-- [ ] Confirmar que a home não exige JavaScript cliente para renderização estática.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(frontend): migrate home page`.
-- [ ] Publicar `refactor/frontend-home` e abrir o PR com evidências visuais.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 7.
+- [x] Executar lint, typecheck e build.
+- [x] Confirmar que a home não exige JavaScript cliente para renderização estática.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(frontend): migrate home page`.
+- [x] Publicar `refactor/frontend-home` e abrir o PR com evidências estruturais e o desvio visual aprovado.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 7.
 
 **Validação:** PR incorporado e home equivalente disponível no frontend Next.js.
+
+**Evidência estrutural:** legado e Next.js responderam HTTP 200; o HTML de produção contém exatamente os cinco links esperados, todos os textos do baseline, o título equivalente e nenhuma fronteira cliente própria. Lint, typecheck, build e os 29 testes Python passaram. A revisão visual desktop/mobile foi dispensada explicitamente pelo responsável após a integração de navegador retornar uma lista vazia de navegadores disponíveis.
 
 ## 10. Grupo 7 — Migração da página de conversão
 

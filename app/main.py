@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.converters import get_pdf_to_docx_converter, get_docx_to_pdf_converter, get_pdf_to_svg_converter, get_image_converter
-from app.converter import remove_file
+from app.services import remove_file
 
 app = FastAPI(title="FileFLOW MVP")
 
@@ -253,5 +253,3 @@ def converter_page(request: Request, from_format: str, to_format: str):
         "request": request,
         **config
     })
-    
-    

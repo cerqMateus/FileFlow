@@ -85,9 +85,9 @@ Estados sugeridos:
 
 ### Task 6 — Criar o pacote de serviços
 
-- [ ] Criar `app/services/__init__.py`.
-- [ ] Criar `app/services/temporary_files.py`.
-- [ ] Manter o novo módulo independente das bibliotecas de conversão.
+- [x] Criar `app/services/__init__.py`.
+- [x] Criar `app/services/temporary_files.py`.
+- [x] Manter o novo módulo independente das bibliotecas de conversão.
 
 **Validação:** o pacote pode ser importado isoladamente.
 
@@ -95,9 +95,9 @@ Estados sugeridos:
 
 ### Task 7 — Migrar a remoção idempotente de arquivos
 
-- [ ] Implementar em `temporary_files.py` a operação atualmente fornecida por `remove_file`.
-- [ ] Preservar o comportamento idempotente para caminhos inexistentes.
-- [ ] Utilizar tipagem compatível com os consumidores atuais.
+- [x] Implementar em `temporary_files.py` a operação atualmente fornecida por `remove_file`.
+- [x] Preservar o comportamento idempotente para caminhos inexistentes.
+- [x] Utilizar tipagem compatível com os consumidores atuais.
 
 **Validação:** remover um arquivo existente funciona e repetir a remoção não lança exceção.
 
@@ -105,9 +105,9 @@ Estados sugeridos:
 
 ### Task 8 — Atualizar o consumidor em `app/main.py`
 
-- [ ] Trocar o import de `app.converter` pelo novo serviço.
-- [ ] Manter inalteradas as chamadas de limpeza nas cinco rotas.
-- [ ] Confirmar que as factories continuam sendo a única entrada para conversores.
+- [x] Trocar o import de `app.converter` pelo novo serviço.
+- [x] Manter inalteradas as chamadas de limpeza nas cinco rotas.
+- [x] Confirmar que as factories continuam sendo a única entrada para conversores.
 
 **Validação:** `app.main` pode ser importado e registra as cinco rotas de conversão.
 
@@ -115,9 +115,9 @@ Estados sugeridos:
 
 ### Task 9 — Remover o módulo legado
 
-- [ ] Excluir `app/converter.py`.
-- [ ] Buscar imports remanescentes de `app.converter`.
-- [ ] Buscar implementações duplicadas de conversão fora de `app/converters/adapters/`.
+- [x] Excluir `app/converter.py`.
+- [x] Buscar imports remanescentes de `app.converter`.
+- [x] Buscar implementações duplicadas de conversão fora de `app/converters/adapters/`.
 
 **Validação:** as buscas não encontram referências ao módulo excluído nem conversões duplicadas.
 
@@ -125,10 +125,10 @@ Estados sugeridos:
 
 ### Task 10 — Executar a regressão estrutural da migração
 
-- [ ] Compilar o pacote `app`.
-- [ ] Inspecionar as rotas registradas pela aplicação.
-- [ ] Confirmar que URLs, tipos MIME e nomes de download não mudaram.
-- [ ] Executar `git diff --check`.
+- [x] Compilar o pacote `app`.
+- [x] Inspecionar as rotas registradas pela aplicação.
+- [x] Confirmar que URLs, tipos MIME e nomes de download não mudaram.
+- [x] Executar `git diff --check`.
 
 **Validação:** somente o novo pacote de serviço, o import atualizado e a exclusão do legado fazem parte do diff.
 
@@ -136,9 +136,9 @@ Estados sugeridos:
 
 ### Task 11 — Criar o commit da migração
 
-- [ ] Revisar o diff completo do grupo.
-- [ ] Criar o commit `chore(converters): complete adapter migration`.
-- [ ] Confirmar o commit com `git show --stat --oneline HEAD`.
+- [x] Revisar o diff completo do grupo.
+- [x] Criar o commit `chore(converters): complete adapter migration`.
+- [x] Confirmar o commit com `git show --stat --oneline HEAD`.
 
 **Validação:** o segundo commit remove a duplicação sem introduzir a centralização completa planejada para o Grupo 4.
 

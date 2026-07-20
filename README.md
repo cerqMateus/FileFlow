@@ -61,7 +61,7 @@ O FileFlow utiliza o **Adapter Pattern** para isolar as dependências de bibliot
 - **[Tailwind CSS](https://tailwindcss.com/)** - Dependência local de build, sem CDN
 - **Inter via `next/font`** - Fonte incorporada ao build
 
-O workspace Next.js ainda é um scaffold técnico. Até a conclusão da migração, a interface funcional continua sendo servida temporariamente pelo frontend legado do backend.
+O workspace Next.js já renderiza a home e as cinco páginas de conversão. Até a conclusão da migração do fluxo interativo, a conversão funcional continua sendo servida temporariamente pelo frontend legado do backend.
 
 #### DevOps
 
@@ -170,7 +170,7 @@ Alternativamente, a partir da raiz do repositório:
 
 Acesse: [http://localhost:8000](http://localhost:8000)
 
-### Scaffold do frontend Next.js
+### Frontend Next.js
 
 O frontend pode ser instalado e validado independentemente:
 
@@ -183,7 +183,7 @@ npm run build
 npm run dev
 ```
 
-O servidor de desenvolvimento responde em [http://localhost:3000](http://localhost:3000). A home já é renderizada pelo Next.js; as páginas e os fluxos de conversão ainda não foram migrados.
+O servidor de desenvolvimento responde em [http://localhost:3000](http://localhost:3000). A home e as páginas dos cinco conversores já são renderizadas pelo Next.js; envio, conversão e download serão conectados no grupo seguinte da migração.
 
 Copie `frontend/.env.example` para `frontend/.env.local` ao executar frontend e backend em portas diferentes. `NEXT_PUBLIC_API_BASE_URL` aceita uma URL HTTP(S) absoluta, uma base relativa iniciada por `/` ou valor vazio para same-origin. Variáveis `NEXT_PUBLIC_*` são incorporadas ao bundle durante o build; cada ambiente deve defini-las antes de executar `npm run build`.
 
@@ -459,8 +459,8 @@ A imagem Docker é construída com:
 - O scaffold Next.js usa App Router, TypeScript estrito, Tailwind local e rotas tipadas.
 - O domínio de conversão expõe um catálogo imutável com somente os cinco pares suportados.
 - O lint impede `any` explícito, JavaScript de aplicação, dependências não declaradas e violações das fronteiras arquiteturais.
-- A home foi reproduzida no Next.js a partir do catálogo; páginas e fluxos de conversão permanecem nos próximos grupos.
-- O frontend Jinja2 permanece temporariamente ativo, sem duplicação funcional no Next.js neste estágio.
+- A home e uma única página dinâmica compartilhada reproduzem os cinco conversores a partir do catálogo.
+- O formulário Next.js já preserva a seleção de arquivo e a apresentação, mas o transporte e o download permanecem no frontend Jinja2 até o próximo grupo.
 
 ### Componentes UI
 

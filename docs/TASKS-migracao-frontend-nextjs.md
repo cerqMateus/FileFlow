@@ -500,7 +500,7 @@ Cada descrição de PR deverá informar:
 - [x] Executar `git diff --check`.
 - [x] Criar o commit `refactor(frontend): migrate home page`.
 - [x] Publicar `refactor/frontend-home` e abrir o PR com evidências estruturais e o desvio visual aprovado.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 7.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 7.
 
 **Validação:** PR incorporado e home equivalente disponível no frontend Next.js.
 
@@ -514,55 +514,59 @@ Cada descrição de PR deverá informar:
 
 ### Task 36 — Criar a rota dinâmica tipada
 
-- [ ] Criar `app/converter/[fromFormat]/[toFormat]/page.tsx`.
-- [ ] Resolver os parâmetros pelo resolver seguro da feature.
-- [ ] Chamar `notFound()` para pares não suportados.
-- [ ] Gerar metadados de título equivalentes para pares válidos.
-- [ ] Manter `page.tsx` livre de fetch, `FormData`, Blob e APIs do navegador.
-- [ ] Considerar geração estática dos cinco pares sem tornar valores inválidos aceitos.
+- [x] Criar `app/converter/[fromFormat]/[toFormat]/page.tsx`.
+- [x] Resolver os parâmetros pelo resolver seguro da feature.
+- [x] Chamar `notFound()` para pares não suportados.
+- [x] Gerar metadados de título equivalentes para pares válidos.
+- [x] Manter `page.tsx` livre de fetch, `FormData`, Blob e APIs do navegador.
+- [x] Considerar geração estática dos cinco pares sem tornar valores inválidos aceitos.
 
 **Validação:** as cinco URLs válidas renderizam e uma combinação inválida retorna 404.
 
 ### Task 37 — Criar a apresentação compartilhada do conversor
 
-- [ ] Criar um único componente para todos os pares.
-- [ ] Receber somente configuração tipada como propriedade.
-- [ ] Reproduzir link Voltar, ícone, título e descrição.
-- [ ] Reproduzir card, largura, espaçamentos, bordas e sombras.
-- [ ] Preservar footer e posicionamento responsivo.
-- [ ] Não criar cinco páginas ou componentes duplicados.
+- [x] Criar um único componente para todos os pares.
+- [x] Receber somente configuração tipada como propriedade.
+- [x] Reproduzir link Voltar, ícone, título e descrição.
+- [x] Reproduzir card, largura, espaçamentos, bordas e sombras.
+- [x] Preservar footer e posicionamento responsivo.
+- [x] Não criar cinco páginas ou componentes duplicados.
 
 **Validação:** os cinco pares usam a mesma implementação estrutural e variam somente por catálogo.
 
 ### Task 38 — Criar o formulário visual acessível
 
-- [ ] Reproduzir label, input, texto auxiliar, botão, spinner e região de status.
-- [ ] Gerar `accept` a partir das extensões tipadas.
-- [ ] Garantir que JPG aceite `.jpg,.jpeg` sem alterar a apresentação.
-- [ ] Preservar os textos atuais do botão e da ajuda.
-- [ ] Associar label, input e status por atributos semânticos.
-- [ ] Manter o limite cliente somente no componente que futuramente receberá interação.
+- [x] Reproduzir label, input, texto auxiliar, botão, spinner e região de status.
+- [x] Gerar `accept` a partir das extensões tipadas.
+- [x] Garantir que JPG aceite `.jpg,.jpeg` sem alterar a apresentação.
+- [x] Preservar os textos atuais do botão e da ajuda.
+- [x] Associar label, input e status por atributos semânticos.
+- [x] Manter o limite cliente somente no componente que futuramente receberá interação.
 
 **Validação:** o formulário possui a mesma apresentação e extensões corretas, ainda sem duplicar transporte HTTP.
 
+**Evidência estrutural:** o build gerou estaticamente os cinco pares a partir do catálogo. O HTML de produção contém títulos, labels, botões e extensões esperados; JPG aceita `.jpg,.jpeg`. Uma combinação não suportada responde 404. Página e formulário não usam `fetch`, `FormData`, `Blob` nem APIs do navegador, e a camada visual permanece como Server Component até a interação ser implementada no Grupo 8.
+
 ### Task 39 — Comparar as páginas com o baseline
 
-- [ ] Comparar um conversor em desktop e mobile.
-- [ ] Verificar os cinco títulos, descrições, ícones e labels.
-- [ ] Verificar foco, hover e layout com nome de arquivo selecionado.
-- [ ] Corrigir somente regressões de migração.
-- [ ] Anexar evidências ao PR.
+- [x] Registrar a impossibilidade de comparar um conversor em desktop e mobile no navegador integrado.
+- [x] Verificar estruturalmente os cinco títulos, descrições, ícones e labels.
+- [x] Registrar a dispensa da inspeção visual de foco, hover e layout com nome de arquivo selecionado.
+- [x] Corrigir somente regressões estruturais de migração detectadas.
+- [x] Incluir no PR as evidências estruturais e a dispensa visual explícita.
 
-**Validação:** revisão visual aprova a página compartilhada para todos os pares.
+**Desvio aprovado:** em 20 de julho de 2026, o responsável autorizou concluir o Grupo 7 sem capturas e sem comparação visual automatizada depois que o procedimento oficial de recuperação confirmou que nenhum navegador estava conectado à sessão. A validação substituta compara o template legado, as classes responsivas e o HTML de produção, sem apresentar esse resultado como revisão visual executada.
+
+**Validação substituta:** revisão estrutural aprova a página compartilhada para todos os pares, e a ausência de evidência visual está explícita para a pessoa revisora.
 
 ### Task 40 — Publicar o PR da página de conversão
 
-- [ ] Executar lint, typecheck e build.
-- [ ] Auditar que existe apenas uma implementação de página/formulário.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(frontend): migrate converter page`.
-- [ ] Publicar `refactor/frontend-converter-page` e abrir o PR com evidências.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 8.
+- [x] Executar lint, typecheck e build.
+- [x] Auditar que existe apenas uma implementação de página/formulário.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(frontend): migrate converter page`.
+- [x] Publicar `refactor/frontend-converter-page` e abrir o PR com evidências.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 8.
 
 **Validação:** PR incorporado, cinco rotas válidas e 404 funcional.
 

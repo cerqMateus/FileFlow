@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import main as main_module
+from app.services import TemporaryFileService
 
 
 @pytest.fixture
@@ -12,8 +13,8 @@ def app_client(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> Iterator[tuple[TestClient, Path]]:
-    temporary_folder = tmp_path / "temp"
-    monkeypatch.setattr(main_module, "TEMP_FOLDER", str(temporary_folder))
+    temporary_files = TemporaryFileService(tmp_path / "temp")
+    monkeypatch.setattr(main_module, "temporary_files", temporary_files)
 
     with TestClient(main_module.app) as client:
-        yield client, temporary_folder
+        yield client, temporary_files.base_directory

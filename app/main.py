@@ -1,22 +1,25 @@
-import os
-import shutil
-import uuid
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.converters import get_pdf_to_docx_converter, get_docx_to_pdf_converter, get_pdf_to_svg_converter, get_image_converter
-from app.services import remove_file
+from app.services import TemporaryFileService
 
-app = FastAPI(title="FileFLOW MVP")
+temporary_files = TemporaryFileService(Path("temp"))
 
-TEMP_FOLDER = "temp"
 
-@app.on_event("startup")
-async def startup_event():
-    """Create temp folder if it doesn't exist"""
-    os.makedirs(TEMP_FOLDER, exist_ok=True)
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    temporary_files.ensure_directory()
+    yield
+
+
+app = FastAPI(title="FileFLOW MVP", lifespan=lifespan)
 
 @app.post("/convert/pdf-to-docx")
 async def pdf_to_docx(
@@ -25,31 +28,26 @@ async def pdf_to_docx(
 ):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Apenas arquivos .pdf são permitidos.")
-    
-    filename_id = str(uuid.uuid4())
-    input_filename = f"{filename_id}.pdf"
-    output_filename = f"{filename_id}.docx"
 
-    input_path = os.path.join(TEMP_FOLDER,input_filename)
-    output_path = os.path.join(TEMP_FOLDER, output_filename)
+    paths = temporary_files.allocate("pdf", "docx")
 
-    with open(input_path,"wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        await temporary_files.save_upload(file, paths.input)
+        converter = get_pdf_to_docx_converter()
+        success = converter.convert(str(paths.input), str(paths.output))
 
-    converter = get_pdf_to_docx_converter()
-    success = converter.convert(input_path, output_path)
-
-    if not success:
-            remove_file(input_path)
+        if not success:
             raise HTTPException(status_code=500, detail="Falha ao converter o documento")
-    
-    background_tasks.add_task(remove_file, input_path)
-    background_tasks.add_task(remove_file, output_path)
+    except Exception:
+        temporary_files.remove(paths.input, paths.output)
+        raise
+
+    temporary_files.schedule_cleanup(background_tasks, paths.input, paths.output)
 
     return FileResponse(
-         path = output_path,
-         filename=f"FileFlow_Converted.docx",
-         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        path=paths.output,
+        filename="FileFlow_Converted.docx",
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     )
 
 @app.post("/convert/docx-to-pdf")
@@ -60,30 +58,35 @@ async def docx_to_pdf(
     if not file.filename.endswith(".docx"):
         raise HTTPException(status_code=400, detail="Apenas arquivos .docx são permitidos.")
 
-    filename_id = str(uuid.uuid4())
-    input_filename = f"{filename_id}.docx"
+    paths = temporary_files.allocate("docx", "pdf")
+    output_path = paths.output
 
-    
-    input_path = os.path.join(TEMP_FOLDER, input_filename)
-    
+    try:
+        await temporary_files.save_upload(file, paths.input)
+        converter = get_docx_to_pdf_converter()
+        converted_path = converter.convert(
+            str(paths.input),
+            str(temporary_files.base_directory),
+        )
+        if converted_path:
+            output_path = Path(converted_path).resolve()
 
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        if (
+            not converted_path
+            or output_path != paths.output
+            or not output_path.exists()
+        ):
+            raise HTTPException(status_code=500, detail="Falha ao converter o documento.")
+    except Exception:
+        temporary_files.remove(paths.input, paths.output, output_path)
+        raise
 
-    converter = get_docx_to_pdf_converter()
-    output_path = converter.convert(input_path, TEMP_FOLDER)
-
-    if not output_path or not os.path.exists(output_path):
-        remove_file(input_path)
-        raise HTTPException(status_code=500, detail="Falha ao converter o documento.")
-
-    background_tasks.add_task(remove_file, input_path)
-    background_tasks.add_task(remove_file, output_path)
+    temporary_files.schedule_cleanup(background_tasks, paths.input, output_path)
 
     return FileResponse(
-        path=output_path, 
+        path=output_path,
         filename="FileFlow_Convertido.pdf",
-        media_type="application/pdf"
+        media_type="application/pdf",
     )
 
 @app.post("/convert/pdf-to-svg")
@@ -93,31 +96,26 @@ async def pdf_to_svg(
 ):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Apenas arquivos .pdf são permitidos.")
-    
-    filename_id = str(uuid.uuid4())
-    input_filename = f"{filename_id}.pdf"
-    output_filename = f"{filename_id}.svg"
 
-    input_path = os.path.join(TEMP_FOLDER, input_filename)
-    output_path = os.path.join(TEMP_FOLDER, output_filename)
+    paths = temporary_files.allocate("pdf", "svg")
 
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        await temporary_files.save_upload(file, paths.input)
+        converter = get_pdf_to_svg_converter()
+        success = converter.convert(str(paths.input), str(paths.output))
 
-    converter = get_pdf_to_svg_converter()
-    success = converter.convert(input_path, output_path)
+        if not success:
+            raise HTTPException(status_code=500, detail="Falha ao converter o documento")
+    except Exception:
+        temporary_files.remove(paths.input, paths.output)
+        raise
 
-    if not success:
-        remove_file(input_path)
-        raise HTTPException(status_code=500, detail="Falha ao converter o documento")
-    
-    background_tasks.add_task(remove_file, input_path)
-    background_tasks.add_task(remove_file, output_path)
+    temporary_files.schedule_cleanup(background_tasks, paths.input, paths.output)
 
     return FileResponse(
-        path=output_path,
+        path=paths.output,
         filename="FileFlow_Converted.svg",
-        media_type="image/svg+xml"
+        media_type="image/svg+xml",
     )
 
 @app.post("/convert/jpg-to-png")
@@ -127,31 +125,26 @@ async def jpg_to_png(
 ):
     if not (file.filename.endswith(".jpg") or file.filename.endswith(".jpeg")):
         raise HTTPException(status_code=400, detail="Apenas arquivos .jpg ou .jpeg são permitidos.")
-    
-    filename_id = str(uuid.uuid4())
-    input_filename = f"{filename_id}.jpg"
-    output_filename = f"{filename_id}.png"
 
-    input_path = os.path.join(TEMP_FOLDER, input_filename)
-    output_path = os.path.join(TEMP_FOLDER, output_filename)
+    paths = temporary_files.allocate("jpg", "png")
 
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        await temporary_files.save_upload(file, paths.input)
+        converter = get_image_converter()
+        success = converter.jpg_to_png(str(paths.input), str(paths.output))
 
-    converter = get_image_converter()
-    success = converter.jpg_to_png(input_path, output_path)
+        if not success:
+            raise HTTPException(status_code=500, detail="Falha ao converter a imagem")
+    except Exception:
+        temporary_files.remove(paths.input, paths.output)
+        raise
 
-    if not success:
-        remove_file(input_path)
-        raise HTTPException(status_code=500, detail="Falha ao converter a imagem")
-    
-    background_tasks.add_task(remove_file, input_path)
-    background_tasks.add_task(remove_file, output_path)
+    temporary_files.schedule_cleanup(background_tasks, paths.input, paths.output)
 
     return FileResponse(
-        path=output_path,
+        path=paths.output,
         filename="FileFlow_Converted.png",
-        media_type="image/png"
+        media_type="image/png",
     )
 
 @app.post("/convert/png-to-jpg")
@@ -161,31 +154,26 @@ async def png_to_jpg(
 ):
     if not file.filename.endswith(".png"):
         raise HTTPException(status_code=400, detail="Apenas arquivos .png são permitidos.")
-    
-    filename_id = str(uuid.uuid4())
-    input_filename = f"{filename_id}.png"
-    output_filename = f"{filename_id}.jpg"
 
-    input_path = os.path.join(TEMP_FOLDER, input_filename)
-    output_path = os.path.join(TEMP_FOLDER, output_filename)
+    paths = temporary_files.allocate("png", "jpg")
 
-    with open(input_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        await temporary_files.save_upload(file, paths.input)
+        converter = get_image_converter()
+        success = converter.png_to_jpg(str(paths.input), str(paths.output))
 
-    converter = get_image_converter()
-    success = converter.png_to_jpg(input_path, output_path)
+        if not success:
+            raise HTTPException(status_code=500, detail="Falha ao converter a imagem")
+    except Exception:
+        temporary_files.remove(paths.input, paths.output)
+        raise
 
-    if not success:
-        remove_file(input_path)
-        raise HTTPException(status_code=500, detail="Falha ao converter a imagem")
-    
-    background_tasks.add_task(remove_file, input_path)
-    background_tasks.add_task(remove_file, output_path)
+    temporary_files.schedule_cleanup(background_tasks, paths.input, paths.output)
 
     return FileResponse(
-        path=output_path,
+        path=paths.output,
         filename="FileFlow_Converted.jpg",
-        media_type="image/jpeg"
+        media_type="image/jpeg",
     )
 
 app.mount("/static",StaticFiles(directory="static"), name="static")

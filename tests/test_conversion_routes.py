@@ -201,7 +201,7 @@ def test_boolean_adapter_failure_returns_500_and_cleans_input(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client, temporary_folder = app_client
-    fake = FakePDFToDocxConverter(success=False)
+    fake = FakePDFToDocxConverter(success=False, write_partial_on_failure=True)
     monkeypatch.setattr(main_module, "get_pdf_to_docx_converter", lambda: fake)
 
     response = client.post(
@@ -221,7 +221,7 @@ def test_path_adapter_failure_returns_500_and_cleans_input(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client, temporary_folder = app_client
-    fake = FakeDocxToPDFConverter(success=False)
+    fake = FakeDocxToPDFConverter(success=False, write_partial_on_failure=True)
     monkeypatch.setattr(main_module, "get_docx_to_pdf_converter", lambda: fake)
 
     response = client.post(

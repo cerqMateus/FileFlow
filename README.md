@@ -88,7 +88,10 @@ file_flow/
 │   ├── requirements.txt
 │   └── requirements-dev.txt
 ├── frontend/
-│   ├── src/app/                   # App Router e estilos globais
+│   ├── src/
+│   │   ├── app/                   # App Router e estilos globais
+│   │   ├── config/                # Ambiente público validado
+│   │   └── features/conversion/   # Domínio e catálogo de conversores
 │   ├── .env.example              # Configuração pública de exemplo
 │   ├── eslint.config.mjs         # Qualidade e fronteiras arquiteturais
 │   ├── next.config.ts            # Configuração do Next.js
@@ -181,6 +184,8 @@ npm run dev
 ```
 
 O servidor de desenvolvimento do scaffold responde em [http://localhost:3000](http://localhost:3000). As telas e conversões ainda não foram migradas para ele.
+
+Copie `frontend/.env.example` para `frontend/.env.local` ao executar frontend e backend em portas diferentes. `NEXT_PUBLIC_API_BASE_URL` aceita uma URL HTTP(S) absoluta, uma base relativa iniciada por `/` ou valor vazio para same-origin. Variáveis `NEXT_PUBLIC_*` são incorporadas ao bundle durante o build; cada ambiente deve defini-las antes de executar `npm run build`.
 
 ### Instalação com Docker
 
@@ -452,6 +457,7 @@ A imagem Docker é construída com:
 ### Estado da migração
 
 - O scaffold Next.js usa App Router, TypeScript estrito, Tailwind local e rotas tipadas.
+- O domínio de conversão expõe um catálogo imutável com somente os cinco pares suportados.
 - O lint impede `any` explícito, JavaScript de aplicação, dependências não declaradas e violações das fronteiras arquiteturais.
 - A migração visual e o fluxo de conversão serão realizados nos próximos grupos do backlog.
 - O frontend Jinja2 permanece temporariamente ativo, sem duplicação funcional no Next.js neste estágio.

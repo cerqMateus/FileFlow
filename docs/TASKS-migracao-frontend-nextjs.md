@@ -354,7 +354,7 @@ Cada descrição de PR deverá informar:
 - [x] Revisar que o PR contém somente scaffold e ferramentas, sem migração visual.
 - [x] Criar o commit `chore(frontend): scaffold strict Next.js app`.
 - [x] Publicar `chore/frontend-tooling` e abrir o PR.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 5.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 5.
 
 **Validação:** PR incorporado e frontend mínimo reproduzível em instalação limpa.
 
@@ -368,77 +368,79 @@ Cada descrição de PR deverá informar:
 
 ### Task 24 — Modelar formatos, pares e endpoints
 
-- [ ] Criar unions literais para formatos de origem e destino.
-- [ ] Representar somente os cinco pares suportados.
-- [ ] Restringir endpoints aos cinco caminhos existentes.
-- [ ] Tipar extensões aceitas e extensão de download.
-- [ ] Tornar configurações imutáveis em compile time e runtime quando adequado.
-- [ ] Evitar enums quando unions e objetos constantes forem suficientes.
+- [x] Criar unions literais para formatos de origem e destino.
+- [x] Representar somente os cinco pares suportados.
+- [x] Restringir endpoints aos cinco caminhos existentes.
+- [x] Tipar extensões aceitas e extensão de download.
+- [x] Tornar configurações imutáveis em compile time e runtime quando adequado.
+- [x] Evitar enums quando unions e objetos constantes forem suficientes.
 
 **Validação:** TypeScript rejeita formato, par ou endpoint não suportado sem type assertion.
 
 ### Task 25 — Criar o catálogo único de apresentação
 
-- [ ] Migrar títulos, descrições, labels, ícones e extensões do legado.
-- [ ] Preservar a diferença entre `.jpg` e `.jpeg` como entradas aceitas.
-- [ ] Preservar exatamente os endpoints atuais.
-- [ ] Definir uma chave canônica e estável para cada conversor.
-- [ ] Garantir que o catálogo seja a única fonte de metadados visuais no frontend.
-- [ ] Não copiar o catálogo para o backend.
+- [x] Migrar títulos, descrições, labels, ícones e extensões do legado.
+- [x] Preservar a diferença entre `.jpg` e `.jpeg` como entradas aceitas.
+- [x] Preservar exatamente os endpoints atuais.
+- [x] Definir uma chave canônica e estável para cada conversor.
+- [x] Garantir que o catálogo seja a única fonte de metadados visuais no frontend.
+- [x] Não copiar o catálogo para o backend.
 
 **Validação:** uma busca encontra uma única declaração de cada título, descrição e endpoint no frontend.
 
 ### Task 26 — Implementar resolução segura de rotas
 
-- [ ] Criar uma função que receba strings externas de rota.
-- [ ] Validar `fromFormat` e `toFormat` sem casts inseguros.
-- [ ] Retornar uma configuração conhecida ou ausência explícita.
-- [ ] Criar uma função para listar os cinco conversores na ordem atual da home.
-- [ ] Garantir verificação exaustiva ao adicionar um novo estado ou formato.
+- [x] Criar uma função que receba strings externas de rota.
+- [x] Validar `fromFormat` e `toFormat` sem casts inseguros.
+- [x] Retornar uma configuração conhecida ou ausência explícita.
+- [x] Criar uma função para listar os cinco conversores na ordem atual da home.
+- [x] Garantir verificação exaustiva ao adicionar um novo estado ou formato.
 
 **Validação:** pares válidos resolvem para a entrada correta e qualquer outro valor resulta em ausência.
 
 ### Task 27 — Modelar estados e erros do cliente
 
-- [ ] Criar a união discriminada do estado da conversão.
-- [ ] Representar `idle`, arquivo selecionado, conversão, sucesso e erro.
-- [ ] Impedir estados incompatíveis por construção.
-- [ ] Tipar o corpo de erro FastAPI `detail` como dado externo a validar.
-- [ ] Criar guardas pequenos para valores externos, sem biblioteca de schema se ela não for necessária.
+- [x] Criar a união discriminada do estado da conversão.
+- [x] Representar `idle`, arquivo selecionado, conversão, sucesso e erro.
+- [x] Impedir estados incompatíveis por construção.
+- [x] Tipar o corpo de erro FastAPI `detail` como dado externo a validar.
+- [x] Criar guardas pequenos para valores externos, sem biblioteca de schema se ela não for necessária.
 
 **Validação:** switches sobre estado são exaustivos e respostas arbitrárias não são tratadas como erros válidos sem verificação.
 
 ### Task 28 — Validar configuração pública da API
 
-- [ ] Criar `frontend/src/config/env.ts`.
-- [ ] Aceitar uma URL absoluta no desenvolvimento e base relativa/same-origin em produção.
-- [ ] Normalizar barra final sem alterar paths dos endpoints.
-- [ ] Falhar com mensagem clara em configuração inválida.
-- [ ] Centralizar o acesso a `process.env.NEXT_PUBLIC_API_BASE_URL` nesse módulo.
-- [ ] Documentar que valores `NEXT_PUBLIC_*` são definidos no build.
+- [x] Criar `frontend/src/config/env.ts`.
+- [x] Aceitar uma URL absoluta no desenvolvimento e base relativa/same-origin em produção.
+- [x] Normalizar barra final sem alterar paths dos endpoints.
+- [x] Falhar com mensagem clara em configuração inválida.
+- [x] Centralizar o acesso a `process.env.NEXT_PUBLIC_API_BASE_URL` nesse módulo.
+- [x] Documentar que valores `NEXT_PUBLIC_*` são definidos no build.
 
 **Validação:** não existem leituras dispersas de `process.env` e os cenários absoluto, relativo e inválido são verificáveis.
 
 ### Task 29 — Definir a API pública da feature
 
-- [ ] Criar `frontend/src/features/conversion/index.ts`.
-- [ ] Exportar somente tipos, resolvers e componentes destinados a consumidores externos.
-- [ ] Manter detalhes internos inacessíveis por imports profundos conforme o lint.
-- [ ] Confirmar que o domínio não importa React, APIs do navegador ou módulos de `app` sem necessidade.
+- [x] Criar `frontend/src/features/conversion/index.ts`.
+- [x] Exportar somente tipos, resolvers e componentes destinados a consumidores externos.
+- [x] Manter detalhes internos inacessíveis por imports profundos conforme o lint.
+- [x] Confirmar que o domínio não importa React, APIs do navegador ou módulos de `app` sem necessidade.
 
 **Validação:** a página poderá consumir a feature somente pela API pública planejada.
 
 ### Task 30 — Publicar o PR do domínio tipado
 
-- [ ] Executar lint, typecheck e build.
-- [ ] Auditar ausência de `any`, casts supressivos e endpoints livres.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(frontend): add typed conversion catalog`.
-- [ ] Publicar `refactor/conversion-catalog` e abrir o PR.
-- [ ] Incluir no PR a matriz dos cinco pares e sua origem no legado.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 6.
+- [x] Executar lint, typecheck e build.
+- [x] Auditar ausência de `any`, casts supressivos e endpoints livres.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(frontend): add typed conversion catalog`.
+- [x] Publicar `refactor/conversion-catalog` e abrir o PR.
+- [x] Incluir no PR a matriz dos cinco pares e sua origem no legado.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 6.
 
 **Validação:** PR incorporado com domínio puro, tipado e sem mudança visível publicada.
+
+**Evidências de execução:** os cinco pares foram comparados com `backend/app/legacy_frontend.py`, `backend/app/api/routes/conversions.py` e o baseline textual. Validações temporárias confirmaram resolução e ordem em runtime, congelamento do catálogo e das extensões, `.jpg`/`.jpeg`, diferença textual da home para JPG → PNG, guarda do erro FastAPI e bases absoluta, relativa e same-origin. O TypeScript rejeitou formato, destino, endpoint e par desconhecidos, além de switch não exaustivo; as fixtures não fazem parte do commit. Lint, typecheck, build e os 29 testes Python passaram, sem alteração em `frontend/src/app` ou nas dependências.
 
 ## 9. Grupo 6 — Migração da home
 

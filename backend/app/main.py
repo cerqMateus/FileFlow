@@ -10,7 +10,9 @@ from fastapi.templating import Jinja2Templates
 from app.converters import get_pdf_to_docx_converter, get_docx_to_pdf_converter, get_pdf_to_svg_converter, get_image_converter
 from app.services import TemporaryFileService
 
-temporary_files = TemporaryFileService(Path("temp"))
+BACKEND_ROOT = Path(__file__).resolve().parent.parent
+
+temporary_files = TemporaryFileService(BACKEND_ROOT / "temp")
 
 
 @asynccontextmanager
@@ -176,8 +178,8 @@ async def png_to_jpg(
         media_type="image/jpeg",
     )
 
-app.mount("/static",StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=BACKEND_ROOT / "static"), name="static")
+templates = Jinja2Templates(directory=BACKEND_ROOT / "templates")
 
 CONVERTER_CONFIG = {
     ("pdf", "docx"): {

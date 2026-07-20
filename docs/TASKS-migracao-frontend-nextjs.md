@@ -135,8 +135,8 @@ Cada descrição de PR deverá informar:
 - [x] Criar o commit `docs(frontend): plan Next.js migration`.
 - [x] Publicar `docs/frontend-migration-plan`.
 - [x] Abrir o PR com o resumo dos 15 grupos e a ordem obrigatória.
-- [ ] Obter aprovação explícita do PRD e do backlog.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 2.
+- [x] Obter aprovação explícita do PRD e do backlog.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 2.
 
 **Validação:** PR incorporado à `main`, documentos acessíveis no repositório e escopo aprovado.
 
@@ -148,65 +148,69 @@ Cada descrição de PR deverá informar:
 
 ### Task 6 — Inventariar caminhos afetados pela movimentação
 
-- [ ] Localizar referências a `app/`, `tests/`, `temp/`, `requirements*.txt`, `templates/`, `static/` e `Dockerfile`.
-- [ ] Classificar cada referência como runtime, teste, container ou documentação.
-- [ ] Registrar os comandos atuais de importação, teste e execução.
-- [ ] Confirmar que não há scripts externos versionados dependendo silenciosamente dos caminhos da raiz.
+- [x] Localizar referências a `app/`, `tests/`, `temp/`, `requirements*.txt`, `templates/`, `static/` e `Dockerfile`.
+- [x] Classificar cada referência como runtime, teste, container ou documentação.
+- [x] Registrar os comandos atuais de importação, teste e execução.
+- [x] Confirmar que não há scripts externos versionados dependendo silenciosamente dos caminhos da raiz.
 
 **Validação:** existe uma lista completa dos consumidores a ajustar no mesmo grupo.
 
 ### Task 7 — Mover a aplicação Python para `backend/`
 
-- [ ] Mover `app/` para `backend/app/` preservando o histórico Git.
-- [ ] Mover `tests/` para `backend/tests/` preservando o histórico Git.
-- [ ] Mover `requirements.txt` e `requirements-dev.txt` para `backend/`.
-- [ ] Mover `temp/` para `backend/temp/` e preservar somente o marcador versionado.
-- [ ] Mover o `Dockerfile` atual para `backend/Dockerfile`.
-- [ ] Mover temporariamente `templates/` e `static/` para dentro de `backend/`, sem duplicá-los, para manter o frontend legado funcional até o Grupo 12.
-- [ ] Confirmar que não restaram cópias dos mesmos arquivos na raiz.
+- [x] Mover `app/` para `backend/app/` preservando o histórico Git.
+- [x] Mover `tests/` para `backend/tests/` preservando o histórico Git.
+- [x] Mover `requirements.txt` e `requirements-dev.txt` para `backend/`.
+- [x] Mover `temp/` para `backend/temp/` e preservar somente o marcador versionado.
+- [x] Mover o `Dockerfile` atual para `backend/Dockerfile`.
+- [x] Mover temporariamente `templates/` e `static/` para dentro de `backend/`, sem duplicá-los, para manter o frontend legado funcional até o Grupo 12.
+- [x] Confirmar que não restaram cópias dos mesmos arquivos na raiz.
 
 **Validação:** cada arquivo possui uma única localização e `git status` reconhece movimentações sempre que possível.
 
+**Nota de execução:** o diretório `temp/` anterior não possuía marcador rastreado. Os artefatos locais criados durante o Grupo 1 foram removidos e `backend/temp/.gitkeep` foi criado como o novo marcador versionado.
+
 ### Task 8 — Tornar caminhos do backend independentes do diretório de execução
 
-- [ ] Definir uma raiz da aplicação baseada em `Path(__file__)`, não no diretório corrente do processo.
-- [ ] Resolver o diretório temporário a partir dessa raiz.
-- [ ] Resolver `templates/` e `static/` temporários a partir dessa raiz.
-- [ ] Manter o diretório temporário substituível nos testes.
-- [ ] Confirmar contenção e limpeza dos caminhos após a movimentação.
+- [x] Definir uma raiz da aplicação baseada em `Path(__file__)`, não no diretório corrente do processo.
+- [x] Resolver o diretório temporário a partir dessa raiz.
+- [x] Resolver `templates/` e `static/` temporários a partir dessa raiz.
+- [x] Manter o diretório temporário substituível nos testes.
+- [x] Confirmar contenção e limpeza dos caminhos após a movimentação.
 
 **Validação:** importar e executar o backend a partir da raiz e de `backend/` não muda a localização efetiva dos recursos.
 
 ### Task 9 — Ajustar testes e comandos Python
 
-- [ ] Atualizar imports, configuração de descoberta e caminhos de fixtures somente onde necessário.
-- [ ] Padronizar o comando local como execução dentro de `backend/`.
-- [ ] Confirmar que os testes continuam sem escrever no diretório temporário real.
-- [ ] Atualizar `.gitignore` para ignorar artefatos Python e runtime dentro dos novos caminhos.
-- [ ] Confirmar que ambientes virtuais não são movidos nem versionados.
+- [x] Atualizar imports, configuração de descoberta e caminhos de fixtures somente onde necessário.
+- [x] Padronizar o comando local como execução dentro de `backend/`.
+- [x] Confirmar que os testes continuam sem escrever no diretório temporário real.
+- [x] Atualizar `.gitignore` para ignorar artefatos Python e runtime dentro dos novos caminhos.
+- [x] Confirmar que ambientes virtuais não são movidos nem versionados.
 
 **Validação:** a suíte completa passa a partir de `backend/` em Python 3.10.
 
 ### Task 10 — Ajustar o container existente ao novo contexto
 
-- [ ] Fazer `backend/Dockerfile` funcionar com `backend/` como contexto de build.
-- [ ] Preservar as dependências de sistema exigidas pelas conversões.
-- [ ] Preservar o comando `uvicorn app.main:app` dentro do workspace.
-- [ ] Confirmar a criação e permissão do diretório temporário.
-- [ ] Não introduzir ainda frontend Next.js, proxy ou Compose.
+- [x] Fazer `backend/Dockerfile` funcionar com `backend/` como contexto de build.
+- [x] Preservar as dependências de sistema exigidas pelas conversões.
+- [x] Preservar o comando `uvicorn app.main:app` dentro do workspace.
+- [x] Confirmar a criação e permissão do diretório temporário.
+- [x] Não introduzir ainda frontend Next.js, proxy ou Compose.
 
 **Validação:** a imagem do backend é construída isoladamente e registra as cinco rotas de conversão e as rotas HTML legadas.
 
+**Validação adiada:** o ambiente de execução não possui Docker, Podman nem distribuição WSL. Em 20 de julho de 2026, o responsável autorizou concluir o PR com análise estática do contexto e adiar o build real para um ambiente com runtime de containers, no máximo até o Grupo 14.
+
 ### Task 11 — Publicar o PR de isolamento do backend
 
-- [ ] Executar a suíte Python duas vezes.
-- [ ] Importar `app.main` no novo workspace e listar as rotas.
-- [ ] Construir a imagem do backend.
-- [ ] Executar `git diff --check` e revisar que o grupo é predominantemente mecânico.
-- [ ] Criar o commit `chore(repo): isolate backend workspace`.
-- [ ] Publicar `chore/backend-workspace` e abrir o PR.
-- [ ] Destacar no PR que `backend/templates` e `backend/static` são temporários e serão removidos no Grupo 12.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 3.
+- [x] Executar a suíte Python duas vezes.
+- [x] Importar `app.main` no novo workspace e listar as rotas.
+- [!] Construir a imagem do backend. Bloqueado pela ausência de Docker, Podman ou WSL; adiamento aprovado pelo responsável.
+- [x] Executar `git diff --check` e revisar que o grupo é predominantemente mecânico.
+- [x] Criar o commit `chore(repo): isolate backend workspace`.
+- [x] Publicar `chore/backend-workspace` e abrir o PR.
+- [x] Destacar no PR que `backend/templates` e `backend/static` são temporários e serão removidos no Grupo 12.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 3.
 
 **Validação:** PR incorporado, backend isolado e comportamento existente preservado.
 

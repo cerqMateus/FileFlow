@@ -13,8 +13,8 @@ venv/
 htmlcov/
 
 # Runtime files
-temp/*
-!temp/.gitkeep
+/backend/temp/*
+!/backend/temp/.gitkeep
 
 # Local environment configuration
 .env

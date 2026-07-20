@@ -1,9 +1,11 @@
 from pathlib import Path
 
 import pytest
+from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
-from app import main as main_module
+from app.api.routes import conversions as conversion_routes
+from app.main import app
 from tests.fakes import (
     FakeDocxToPDFConverter,
     FakeImageConverter,
@@ -14,6 +16,13 @@ from tests.fakes import (
 
 SOURCE_CONTENT = b"source-file-content"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+EXPECTED_CONVERSION_ROUTES = {
+    ("/convert/pdf-to-docx", "POST"),
+    ("/convert/docx-to-pdf", "POST"),
+    ("/convert/pdf-to-svg", "POST"),
+    ("/convert/jpg-to-png", "POST"),
+    ("/convert/png-to-jpg", "POST"),
+}
 
 
 def assert_download(
@@ -32,13 +41,24 @@ def assert_paths_removed(*paths: Path) -> None:
     assert all(not path.exists() for path in paths)
 
 
+def test_registered_conversion_routes_match_public_contract() -> None:
+    registered_routes = {
+        (route.path, method)
+        for route in app.routes
+        if isinstance(route, APIRoute) and route.path.startswith("/convert/")
+        for method in route.methods
+    }
+
+    assert registered_routes == EXPECTED_CONVERSION_ROUTES
+
+
 def test_pdf_to_docx_uses_fake_adapter_and_cleans_files(
     app_client: tuple[TestClient, Path],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client, temporary_folder = app_client
     fake = FakePDFToDocxConverter()
-    monkeypatch.setattr(main_module, "get_pdf_to_docx_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_pdf_to_docx_converter", lambda: fake)
 
     response = client.post(
         "/convert/pdf-to-docx",
@@ -58,7 +78,7 @@ def test_docx_to_pdf_uses_fake_adapter_and_cleans_files(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakeDocxToPDFConverter()
-    monkeypatch.setattr(main_module, "get_docx_to_pdf_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_docx_to_pdf_converter", lambda: fake)
 
     response = client.post(
         "/convert/docx-to-pdf",
@@ -78,7 +98,7 @@ def test_pdf_to_svg_uses_fake_adapter_and_cleans_files(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakePDFToSVGConverter()
-    monkeypatch.setattr(main_module, "get_pdf_to_svg_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_pdf_to_svg_converter", lambda: fake)
 
     response = client.post(
         "/convert/pdf-to-svg",
@@ -100,7 +120,7 @@ def test_jpg_to_png_uses_fake_adapter_and_cleans_files(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakeImageConverter()
-    monkeypatch.setattr(main_module, "get_image_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_image_converter", lambda: fake)
 
     response = client.post(
         "/convert/jpg-to-png",
@@ -121,7 +141,7 @@ def test_png_to_jpg_uses_fake_adapter_and_cleans_files(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakeImageConverter()
-    monkeypatch.setattr(main_module, "get_image_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_image_converter", lambda: fake)
 
     response = client.post(
         "/convert/png-to-jpg",
@@ -184,7 +204,7 @@ def test_invalid_extensions_are_rejected_before_adapter_creation(
     def forbidden_factory():
         raise AssertionError("adapter factory must not be called")
 
-    monkeypatch.setattr(main_module, factory_name, forbidden_factory)
+    monkeypatch.setattr(conversion_routes, factory_name, forbidden_factory)
 
     response = client.post(
         endpoint,
@@ -202,7 +222,7 @@ def test_boolean_adapter_failure_returns_500_and_cleans_input(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakePDFToDocxConverter(success=False, write_partial_on_failure=True)
-    monkeypatch.setattr(main_module, "get_pdf_to_docx_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_pdf_to_docx_converter", lambda: fake)
 
     response = client.post(
         "/convert/pdf-to-docx",
@@ -222,7 +242,7 @@ def test_path_adapter_failure_returns_500_and_cleans_input(
 ) -> None:
     client, temporary_folder = app_client
     fake = FakeDocxToPDFConverter(success=False, write_partial_on_failure=True)
-    monkeypatch.setattr(main_module, "get_docx_to_pdf_converter", lambda: fake)
+    monkeypatch.setattr(conversion_routes, "get_docx_to_pdf_converter", lambda: fake)
 
     response = client.post(
         "/convert/docx-to-pdf",

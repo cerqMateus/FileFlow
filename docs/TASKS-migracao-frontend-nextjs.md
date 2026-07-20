@@ -210,7 +210,7 @@ Cada descrição de PR deverá informar:
 - [x] Criar o commit `chore(repo): isolate backend workspace`.
 - [x] Publicar `chore/backend-workspace` e abrir o PR.
 - [x] Destacar no PR que `backend/templates` e `backend/static` são temporários e serão removidos no Grupo 12.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 3.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 3.
 
 **Validação:** PR incorporado, backend isolado e comportamento existente preservado.
 
@@ -222,54 +222,56 @@ Cada descrição de PR deverá informar:
 
 ### Task 12 — Definir a composição do pacote HTTP
 
-- [ ] Criar `backend/app/api/__init__.py`.
-- [ ] Criar `backend/app/api/routes/__init__.py`.
-- [ ] Criar um módulo dedicado às rotas de conversão.
-- [ ] Definir `APIRouter` sem prefixar ou renomear os endpoints existentes.
-- [ ] Manter construção e configuração global da aplicação em `app/main.py`.
+- [x] Criar `backend/app/api/__init__.py`.
+- [x] Criar `backend/app/api/routes/__init__.py`.
+- [x] Criar um módulo dedicado às rotas de conversão.
+- [x] Definir `APIRouter` sem prefixar ou renomear os endpoints existentes.
+- [x] Manter construção e configuração global da aplicação em `app/main.py`.
 
 **Validação:** a fronteira entre criação da aplicação e handlers HTTP está explícita sem mudança de contrato.
 
 ### Task 13 — Extrair as cinco rotas de conversão
 
-- [ ] Mover cada handler para o router dedicado.
-- [ ] Preservar validação de extensão, mensagens, status e tipos MIME byte a byte quando aplicável.
-- [ ] Preservar factories de adapters e o serviço temporário como pontos de substituição dos testes.
-- [ ] Preservar cleanup imediato em erro e `BackgroundTasks` em sucesso.
-- [ ] Evitar criar uma classe de serviço ou camada adicional sem responsabilidade concreta.
+- [x] Mover cada handler para o router dedicado.
+- [x] Preservar validação de extensão, mensagens, status e tipos MIME byte a byte quando aplicável.
+- [x] Preservar factories de adapters e o serviço temporário como pontos de substituição dos testes.
+- [x] Preservar cleanup imediato em erro e `BackgroundTasks` em sucesso.
+- [x] Evitar criar uma classe de serviço ou camada adicional sem responsabilidade concreta.
 
 **Validação:** os testes de contrato existentes passam sem alteração das expectativas.
 
 ### Task 14 — Manter temporariamente as rotas do frontend legado isoladas
 
-- [ ] Colocar a configuração e os handlers HTML em módulo claramente marcado como legado.
-- [ ] Manter `CONVERTER_CONFIG` fora do router de conversões da API.
-- [ ] Montar templates e estáticos somente durante esta fase transitória.
-- [ ] Adicionar comentário de remoção apontando para o Grupo 12 deste backlog.
-- [ ] Não duplicar metadados no novo frontend, que ainda não existe neste grupo.
+- [x] Colocar a configuração e os handlers HTML em módulo claramente marcado como legado.
+- [x] Manter `CONVERTER_CONFIG` fora do router de conversões da API.
+- [x] Montar templates e estáticos somente durante esta fase transitória.
+- [x] Adicionar comentário de remoção apontando para o Grupo 12 deste backlog.
+- [x] Não duplicar metadados no novo frontend, que ainda não existe neste grupo.
 
 **Validação:** `app/main.py` compõe API e legado por imports separados, e as URLs atuais continuam respondendo.
 
 ### Task 15 — Readequar os testes aos novos pontos de patch
 
-- [ ] Atualizar monkeypatches para as referências efetivamente usadas pelos handlers extraídos.
-- [ ] Manter os fakes existentes sem importar engines reais.
-- [ ] Confirmar que nenhum teste depende da ordem de importação dos routers.
-- [ ] Adicionar teste de inventário das cinco rotas de conversão.
+- [x] Atualizar monkeypatches para as referências efetivamente usadas pelos handlers extraídos.
+- [x] Manter os fakes existentes sem importar engines reais.
+- [x] Confirmar que nenhum teste depende da ordem de importação dos routers.
+- [x] Adicionar teste de inventário das cinco rotas de conversão.
 
 **Validação:** a suíte passa repetidamente e falha se uma rota for removida ou renomeada.
 
 ### Task 16 — Publicar o PR de extração das rotas
 
-- [ ] Executar testes Python duas vezes.
-- [ ] Comparar o OpenAPI anterior e posterior para os cinco endpoints.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(backend): extract conversion routes`.
-- [ ] Publicar `refactor/backend-api-routes` e abrir o PR.
-- [ ] Incluir no PR a evidência de que nenhum contrato mudou.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 4.
+- [x] Executar testes Python duas vezes.
+- [x] Comparar o OpenAPI anterior e posterior para os cinco endpoints.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(backend): extract conversion routes`.
+- [x] Publicar `refactor/backend-api-routes` e abrir o PR.
+- [x] Incluir no PR a evidência de que nenhum contrato mudou.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 4.
 
 **Validação:** PR incorporado com composição FastAPI menor e contratos intactos.
+
+**Evidência de contrato:** antes e depois da extração, a representação canônica dos cinco paths `/convert/*` no OpenAPI produziu o mesmo SHA-256: `f5ef4ab9883d88bc8fc513623f591b98727d394c6d1caf08c9a9cf65720233c7`.
 
 ## 7. Grupo 4 — Scaffold e qualidade estática do frontend
 

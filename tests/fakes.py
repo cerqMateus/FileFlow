@@ -6,6 +6,7 @@ from typing import Optional
 @dataclass
 class FakePDFToDocxConverter:
     success: bool = True
+    write_partial_on_failure: bool = False
     payload: bytes = b"fake-docx"
     calls: list[tuple[Path, Path]] = field(default_factory=list)
     received_content: list[bytes] = field(default_factory=list)
@@ -17,6 +18,8 @@ class FakePDFToDocxConverter:
         self.received_content.append(input_path.read_bytes())
 
         if not self.success:
+            if self.write_partial_on_failure:
+                output_path.write_bytes(b"partial-docx")
             return False
 
         output_path.write_bytes(self.payload)
@@ -26,6 +29,7 @@ class FakePDFToDocxConverter:
 @dataclass
 class FakeDocxToPDFConverter:
     success: bool = True
+    write_partial_on_failure: bool = False
     payload: bytes = b"fake-pdf"
     calls: list[tuple[Path, Path]] = field(default_factory=list)
     output_paths: list[Path] = field(default_factory=list)
@@ -40,6 +44,8 @@ class FakeDocxToPDFConverter:
         self.received_content.append(input_path.read_bytes())
 
         if not self.success:
+            if self.write_partial_on_failure:
+                output_path.write_bytes(b"partial-pdf")
             return None
 
         output_path.write_bytes(self.payload)

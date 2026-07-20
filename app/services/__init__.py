@@ -1,3 +1,3 @@
-from app.services.temporary_files import remove_file
+from app.services.temporary_files import ConversionPaths, TemporaryFileService
 
-__all__ = ["remove_file"]
+__all__ = ["ConversionPaths", "TemporaryFileService"]

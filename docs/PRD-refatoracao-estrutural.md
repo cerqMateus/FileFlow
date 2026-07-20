@@ -2,7 +2,8 @@
 
 ## 1. Identificação
 
-- **Status:** Aprovado
+- **Status:** Concluído
+- **Data de conclusão:** 20 de julho de 2026
 - **Tipo:** Manutenção estrutural
 - **Objetivo:** preparar a base do FileFlow para evolução segura, testes automatizados e operação por múltiplos usuários
 - **Escopo desta entrega:** higiene do repositório, conclusão da migração para adapters, testes das rotas de conversão e centralização do ciclo de vida dos arquivos temporários
@@ -305,3 +306,15 @@ Após concluir este PRD, as próximas iniciativas de produção deverão conside
 - container executado como usuário não-root;
 - CI para testes, análise estática e build da imagem;
 - política de expiração para resíduos após reinício inesperado.
+
+## 12. Encerramento
+
+O PRD foi concluído com os quatro commits estruturais planejados. A validação final confirmou 28 testes passando em Python 3.10, cinco rotas de conversão registradas, ausência de artefatos gerados no versionamento e centralização do ciclo de arquivos temporários.
+
+Durante a implementação, foram adotados três aprimoramentos diretamente relacionados ao escopo:
+
+- migração do evento de startup depreciado para o lifespan atual do FastAPI;
+- validação de contenção para impedir caminhos temporários fora do diretório configurado;
+- ampliação da suíte com testes unitários do serviço temporário e simulação de saídas parciais.
+
+Esses ajustes não alteraram endpoints, nomes de download, tipos MIME ou formatos suportados.

@@ -288,10 +288,10 @@ Estados sugeridos:
 
 ### Task 24 — Definir o contrato do serviço temporário
 
-- [ ] Criar a `dataclass` tipada para caminhos de entrada e saída.
-- [ ] Definir a interface pública de alocação, persistência, remoção e agendamento.
-- [ ] Fazer o serviço receber o diretório-base no construtor.
-- [ ] Normalizar internamente caminhos com `pathlib.Path`.
+- [x] Criar a `dataclass` tipada para caminhos de entrada e saída.
+- [x] Definir a interface pública de alocação, persistência, remoção e agendamento.
+- [x] Fazer o serviço receber o diretório-base no construtor.
+- [x] Normalizar internamente caminhos com `pathlib.Path`.
 
 **Validação:** a interface cobre todo o ciclo descrito no PRD sem conhecer adapters ou respostas HTTP.
 
@@ -299,11 +299,11 @@ Estados sugeridos:
 
 ### Task 25 — Implementar criação e alocação de caminhos
 
-- [ ] Garantir a criação idempotente do diretório-base.
-- [ ] Normalizar extensões com ou sem ponto.
-- [ ] Gerar um UUID por conversão.
-- [ ] Produzir caminhos de entrada e saída com o mesmo identificador.
-- [ ] Impedir que extensões introduzam componentes adicionais de caminho.
+- [x] Garantir a criação idempotente do diretório-base.
+- [x] Normalizar extensões com ou sem ponto.
+- [x] Gerar um UUID por conversão.
+- [x] Produzir caminhos de entrada e saída com o mesmo identificador.
+- [x] Impedir que extensões introduzam componentes adicionais de caminho.
 
 **Validação:** múltiplas alocações produzem pares únicos e contidos no diretório-base.
 
@@ -311,10 +311,10 @@ Estados sugeridos:
 
 ### Task 26 — Implementar persistência assíncrona do upload
 
-- [ ] Gravar `UploadFile` em blocos usando `aiofiles`.
-- [ ] Evitar carregar todo o upload na memória.
-- [ ] Garantir fechamento adequado do arquivo de destino.
-- [ ] Propagar falhas de I/O para que a rota possa executar a limpeza.
+- [x] Gravar `UploadFile` em blocos usando `aiofiles`.
+- [x] Evitar carregar todo o upload na memória.
+- [x] Garantir fechamento adequado do arquivo de destino.
+- [x] Propagar falhas de I/O para que a rota possa executar a limpeza.
 
 **Validação:** uploads com mais de um bloco são gravados integralmente e falhas não deixam handles abertos.
 
@@ -322,10 +322,10 @@ Estados sugeridos:
 
 ### Task 27 — Implementar limpeza imediata e pós-resposta
 
-- [ ] Permitir a remoção idempotente de um ou mais caminhos.
-- [ ] Ignorar com segurança arquivos que não chegaram a ser criados.
-- [ ] Registrar tarefas de limpeza em `BackgroundTasks` no sucesso.
-- [ ] Disponibilizar limpeza imediata para exceções e retornos de erro.
+- [x] Permitir a remoção idempotente de um ou mais caminhos.
+- [x] Ignorar com segurança arquivos que não chegaram a ser criados.
+- [x] Registrar tarefas de limpeza em `BackgroundTasks` no sucesso.
+- [x] Disponibilizar limpeza imediata para exceções e retornos de erro.
 
 **Validação:** arquivos permanecem disponíveis durante a resposta e são removidos ao final; erros removem resíduos imediatamente.
 
@@ -333,10 +333,10 @@ Estados sugeridos:
 
 ### Task 28 — Centralizar a configuração do diretório temporário
 
-- [ ] Criar uma única instância ou provider do serviço usado pelas rotas.
-- [ ] Remover fontes duplicadas de configuração de `TEMP_FOLDER`.
-- [ ] Preservar a criação do diretório durante a inicialização da aplicação.
-- [ ] Manter o diretório injetável ou substituível nos testes.
+- [x] Criar uma única instância ou provider do serviço usado pelas rotas.
+- [x] Remover fontes duplicadas de configuração de `TEMP_FOLDER`.
+- [x] Preservar a criação do diretório durante a inicialização da aplicação.
+- [x] Manter o diretório injetável ou substituível nos testes.
 
 **Validação:** produção e testes escolhem o diretório sem alterar constantes em múltiplos módulos.
 
@@ -344,9 +344,9 @@ Estados sugeridos:
 
 ### Task 29 — Migrar a rota PDF para DOCX
 
-- [ ] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
-- [ ] Preservar validação, adapter, resposta e mensagens de erro.
-- [ ] Executar o teste específico da rota.
+- [x] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
+- [x] Preservar validação, adapter, resposta e mensagens de erro.
+- [x] Executar o teste específico da rota.
 
 **Validação:** o teste passa e a rota não contém lógica manual do ciclo temporário.
 
@@ -354,10 +354,10 @@ Estados sugeridos:
 
 ### Task 30 — Migrar a rota DOCX para PDF
 
-- [ ] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
-- [ ] Adaptar a chamada que fornece uma pasta de saída ao LibreOffice.
-- [ ] Preservar resposta e mensagens de erro.
-- [ ] Executar o teste específico da rota.
+- [x] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
+- [x] Adaptar a chamada que fornece uma pasta de saída ao LibreOffice.
+- [x] Preservar resposta e mensagens de erro.
+- [x] Executar o teste específico da rota.
 
 **Validação:** o teste passa e o caminho retornado pelo adapter permanece sob gestão do serviço.
 
@@ -365,9 +365,9 @@ Estados sugeridos:
 
 ### Task 31 — Migrar a rota PDF para SVG
 
-- [ ] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
-- [ ] Preservar validação, adapter, resposta e mensagens de erro.
-- [ ] Executar o teste específico da rota.
+- [x] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
+- [x] Preservar validação, adapter, resposta e mensagens de erro.
+- [x] Executar o teste específico da rota.
 
 **Validação:** o teste passa e a rota não contém lógica manual do ciclo temporário.
 
@@ -375,10 +375,10 @@ Estados sugeridos:
 
 ### Task 32 — Migrar a rota JPG/JPEG para PNG
 
-- [ ] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
-- [ ] Preservar suporte a `.jpg` e `.jpeg`.
-- [ ] Preservar resposta e mensagens de erro.
-- [ ] Executar os testes específicos da rota.
+- [x] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
+- [x] Preservar suporte a `.jpg` e `.jpeg`.
+- [x] Preservar resposta e mensagens de erro.
+- [x] Executar os testes específicos da rota.
 
 **Validação:** ambos os casos passam e a rota não contém lógica manual do ciclo temporário.
 
@@ -386,9 +386,9 @@ Estados sugeridos:
 
 ### Task 33 — Migrar a rota PNG para JPG
 
-- [ ] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
-- [ ] Preservar validação, adapter, resposta e mensagens de erro.
-- [ ] Executar o teste específico da rota.
+- [x] Substituir UUID, caminhos, upload e limpeza manuais pelo serviço.
+- [x] Preservar validação, adapter, resposta e mensagens de erro.
+- [x] Executar o teste específico da rota.
 
 **Validação:** o teste passa e nenhuma das cinco rotas mantém lógica manual duplicada.
 
@@ -396,12 +396,12 @@ Estados sugeridos:
 
 ### Task 34 — Testar diretamente o serviço temporário
 
-- [ ] Testar normalização das extensões.
-- [ ] Testar unicidade em várias alocações consecutivas.
-- [ ] Testar contenção dos caminhos no diretório-base.
-- [ ] Testar persistência em múltiplos blocos.
-- [ ] Testar remoção idempotente.
-- [ ] Testar limpeza de arquivo parcial após falha simulada.
+- [x] Testar normalização das extensões.
+- [x] Testar unicidade em várias alocações consecutivas.
+- [x] Testar contenção dos caminhos no diretório-base.
+- [x] Testar persistência em múltiplos blocos.
+- [x] Testar remoção idempotente.
+- [x] Testar limpeza de arquivo parcial após falha simulada.
 
 **Validação:** as garantias do serviço são verificadas sem passar pelas rotas HTTP.
 
@@ -409,12 +409,12 @@ Estados sugeridos:
 
 ### Task 35 — Executar regressão e revisar duplicação
 
-- [ ] Executar toda a suíte com `pytest -q` pelo menos duas vezes.
-- [ ] Buscar geração manual de UUID nas rotas.
-- [ ] Buscar gravações `open(..., "wb")` nas rotas.
-- [ ] Confirmar que existe uma única configuração de diretório temporário.
-- [ ] Revisar status, mídia, nome de download e conteúdo das cinco respostas.
-- [ ] Executar `git diff --check`.
+- [x] Executar toda a suíte com `pytest -q` pelo menos duas vezes.
+- [x] Buscar geração manual de UUID nas rotas.
+- [x] Buscar gravações `open(..., "wb")` nas rotas.
+- [x] Confirmar que existe uma única configuração de diretório temporário.
+- [x] Revisar status, mídia, nome de download e conteúdo das cinco respostas.
+- [x] Executar `git diff --check`.
 
 **Validação:** todos os critérios do Grupo 4 e os testes do Grupo 3 passam sem regressão.
 
@@ -422,9 +422,9 @@ Estados sugeridos:
 
 ### Task 36 — Criar o commit da centralização
 
-- [ ] Revisar o diff completo do grupo.
-- [ ] Criar o commit `chore(api): centralize temporary file lifecycle`.
-- [ ] Confirmar o commit com `git show --stat --oneline HEAD`.
+- [x] Revisar o diff completo do grupo.
+- [x] Criar o commit `chore(api): centralize temporary file lifecycle`.
+- [x] Confirmar o commit com `git show --stat --oneline HEAD`.
 
 **Validação:** o quarto commit contém o serviço completo, a migração das rotas e os testes específicos do serviço.
 
@@ -434,12 +434,12 @@ Estados sugeridos:
 
 ### Task 37 — Executar a validação final
 
-- [ ] Executar a suíte completa em Python 3.10.
-- [ ] Importar a aplicação e listar as rotas registradas.
-- [ ] Confirmar que não há caches ou ambientes virtuais rastreados.
-- [ ] Confirmar que `app/converter.py` não existe.
-- [ ] Confirmar que as cinco rotas usam adapters e o serviço temporário.
-- [ ] Confirmar que o working tree está limpo.
+- [x] Executar a suíte completa em Python 3.10.
+- [x] Importar a aplicação e listar as rotas registradas.
+- [x] Confirmar que não há caches ou ambientes virtuais rastreados.
+- [x] Confirmar que `app/converter.py` não existe.
+- [x] Confirmar que as cinco rotas usam adapters e o serviço temporário.
+- [x] Confirmar que o working tree está limpo.
 
 **Validação:** todos os itens da definição de pronto do PRD foram atendidos.
 
@@ -447,10 +447,10 @@ Estados sugeridos:
 
 ### Task 38 — Auditar a série de commits
 
-- [ ] Confirmar que existem exatamente os quatro commits estruturais planejados.
-- [ ] Confirmar a ordem e as mensagens Conventional Commits.
-- [ ] Revisar o conteúdo de cada commit isoladamente.
-- [ ] Registrar qualquer desvio técnico aprovado durante a implementação.
+- [x] Confirmar que existem exatamente os quatro commits estruturais planejados.
+- [x] Confirmar a ordem e as mensagens Conventional Commits.
+- [x] Revisar o conteúdo de cada commit isoladamente.
+- [x] Registrar qualquer desvio técnico aprovado durante a implementação.
 
 **Validação:** o histórico apresenta uma evolução compreensível, reversível por etapa e alinhada ao PRD.
 

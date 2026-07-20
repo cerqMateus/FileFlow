@@ -150,10 +150,10 @@ Estados sugeridos:
 
 ### Task 12 — Preparar as dependências de teste
 
-- [ ] Criar `requirements-dev.txt` referenciando as dependências da aplicação.
-- [ ] Adicionar versões compatíveis de `pytest` e `httpx`.
-- [ ] Instalar as dependências no ambiente Python 3.10.
-- [ ] Confirmar que `pytest --version` e a importação de `TestClient` funcionam.
+- [x] Criar `requirements-dev.txt` referenciando as dependências da aplicação.
+- [x] Adicionar versões compatíveis de `pytest` e `httpx`.
+- [x] Instalar as dependências no ambiente Python 3.10.
+- [x] Confirmar que `pytest --version` e a importação de `TestClient` funcionam.
 
 **Validação:** uma instalação limpa de `requirements-dev.txt` disponibiliza o runner e o cliente HTTP de teste.
 
@@ -161,10 +161,10 @@ Estados sugeridos:
 
 ### Task 13 — Criar a infraestrutura compartilhada de testes
 
-- [ ] Criar `tests/__init__.py` somente se necessário para imports explícitos.
-- [ ] Criar `tests/conftest.py` com o `TestClient` e isolamento por `tmp_path`.
-- [ ] Impedir que testes escrevam no diretório `temp/` real.
-- [ ] Definir mecanismo de restauração automática dos patches após cada teste.
+- [x] Criar `tests/__init__.py` somente se necessário para imports explícitos.
+- [x] Criar `tests/conftest.py` com o `TestClient` e isolamento por `tmp_path`.
+- [x] Impedir que testes escrevam no diretório `temp/` real.
+- [x] Definir mecanismo de restauração automática dos patches após cada teste.
 
 **Validação:** um smoke test do cliente responde sem abrir porta de rede e sem criar arquivos em `temp/`.
 
@@ -172,13 +172,13 @@ Estados sugeridos:
 
 ### Task 14 — Implementar os adapters falsos
 
-- [ ] Criar `tests/fakes.py`.
-- [ ] Implementar fake de PDF para DOCX.
-- [ ] Implementar fake de DOCX para PDF.
-- [ ] Implementar fake de PDF para SVG.
-- [ ] Implementar fake de imagem para as duas direções.
-- [ ] Fazer cada fake produzir bytes determinísticos e registrar suas chamadas.
-- [ ] Permitir configurar sucesso ou falha sem usar bibliotecas externas.
+- [x] Criar `tests/fakes.py`.
+- [x] Implementar fake de PDF para DOCX.
+- [x] Implementar fake de DOCX para PDF.
+- [x] Implementar fake de PDF para SVG.
+- [x] Implementar fake de imagem para as duas direções.
+- [x] Fazer cada fake produzir bytes determinísticos e registrar suas chamadas.
+- [x] Permitir configurar sucesso ou falha sem usar bibliotecas externas.
 
 **Validação:** os fakes respeitam os protocolos e criam somente os arquivos solicitados pelo teste.
 
@@ -186,10 +186,10 @@ Estados sugeridos:
 
 ### Task 15 — Testar `POST /convert/pdf-to-docx`
 
-- [ ] Substituir a factory pelo fake correspondente.
-- [ ] Enviar um upload `.pdf` mínimo.
-- [ ] Verificar HTTP 200, mídia DOCX e `Content-Disposition`.
-- [ ] Verificar conteúdo, invocação do fake e limpeza dos temporários.
+- [x] Substituir a factory pelo fake correspondente.
+- [x] Enviar um upload `.pdf` mínimo.
+- [x] Verificar HTTP 200, mídia DOCX e `Content-Disposition`.
+- [x] Verificar conteúdo, invocação do fake e limpeza dos temporários.
 
 **Validação:** o teste passa sem executar `pdf2docx`.
 
@@ -197,10 +197,10 @@ Estados sugeridos:
 
 ### Task 16 — Testar `POST /convert/docx-to-pdf`
 
-- [ ] Substituir a factory pelo fake correspondente.
-- [ ] Enviar um upload `.docx` mínimo.
-- [ ] Verificar HTTP 200, mídia PDF e `Content-Disposition`.
-- [ ] Verificar conteúdo, invocação do fake e limpeza dos temporários.
+- [x] Substituir a factory pelo fake correspondente.
+- [x] Enviar um upload `.docx` mínimo.
+- [x] Verificar HTTP 200, mídia PDF e `Content-Disposition`.
+- [x] Verificar conteúdo, invocação do fake e limpeza dos temporários.
 
 **Validação:** o teste passa sem executar LibreOffice.
 
@@ -208,10 +208,10 @@ Estados sugeridos:
 
 ### Task 17 — Testar `POST /convert/pdf-to-svg`
 
-- [ ] Substituir a factory pelo fake correspondente.
-- [ ] Enviar um upload `.pdf` mínimo.
-- [ ] Verificar HTTP 200, mídia SVG e `Content-Disposition`.
-- [ ] Verificar conteúdo, invocação do fake e limpeza dos temporários.
+- [x] Substituir a factory pelo fake correspondente.
+- [x] Enviar um upload `.pdf` mínimo.
+- [x] Verificar HTTP 200, mídia SVG e `Content-Disposition`.
+- [x] Verificar conteúdo, invocação do fake e limpeza dos temporários.
 
 **Validação:** o teste passa sem executar PyMuPDF.
 
@@ -219,10 +219,10 @@ Estados sugeridos:
 
 ### Task 18 — Testar `POST /convert/jpg-to-png`
 
-- [ ] Substituir a factory pelo fake de imagem.
-- [ ] Enviar uploads `.jpg` e `.jpeg` em casos parametrizados.
-- [ ] Verificar HTTP 200, mídia PNG e `Content-Disposition`.
-- [ ] Verificar conteúdo, método chamado no fake e limpeza dos temporários.
+- [x] Substituir a factory pelo fake de imagem.
+- [x] Enviar uploads `.jpg` e `.jpeg` em casos parametrizados.
+- [x] Verificar HTTP 200, mídia PNG e `Content-Disposition`.
+- [x] Verificar conteúdo, método chamado no fake e limpeza dos temporários.
 
 **Validação:** os testes passam sem executar Pillow.
 
@@ -230,10 +230,10 @@ Estados sugeridos:
 
 ### Task 19 — Testar `POST /convert/png-to-jpg`
 
-- [ ] Substituir a factory pelo fake de imagem.
-- [ ] Enviar um upload `.png` mínimo.
-- [ ] Verificar HTTP 200, mídia JPEG e `Content-Disposition`.
-- [ ] Verificar conteúdo, método chamado no fake e limpeza dos temporários.
+- [x] Substituir a factory pelo fake de imagem.
+- [x] Enviar um upload `.png` mínimo.
+- [x] Verificar HTTP 200, mídia JPEG e `Content-Disposition`.
+- [x] Verificar conteúdo, método chamado no fake e limpeza dos temporários.
 
 **Validação:** o teste passa sem executar Pillow.
 
@@ -241,10 +241,10 @@ Estados sugeridos:
 
 ### Task 20 — Testar validações de extensão
 
-- [ ] Criar casos parametrizados para as cinco rotas.
-- [ ] Enviar uma extensão não permitida para cada rota.
-- [ ] Verificar HTTP 400 e a mensagem de erro correspondente.
-- [ ] Confirmar que nenhum adapter é chamado e nenhum temporário é criado.
+- [x] Criar casos parametrizados para as cinco rotas.
+- [x] Enviar uma extensão não permitida para cada rota.
+- [x] Verificar HTTP 400 e a mensagem de erro correspondente.
+- [x] Confirmar que nenhum adapter é chamado e nenhum temporário é criado.
 
 **Validação:** todos os contratos de rejeição passam de forma determinística.
 
@@ -252,10 +252,10 @@ Estados sugeridos:
 
 ### Task 21 — Testar falhas de conversão
 
-- [ ] Configurar um fake booleano para retornar falha.
-- [ ] Configurar o fake de DOCX para PDF para retornar `None`.
-- [ ] Verificar HTTP 500.
-- [ ] Confirmar a remoção do upload e de qualquer saída parcial criada pelo fake.
+- [x] Configurar um fake booleano para retornar falha.
+- [x] Configurar o fake de DOCX para PDF para retornar `None`.
+- [x] Verificar HTTP 500.
+- [x] Confirmar a remoção do upload e de qualquer saída parcial criada pelo fake.
 
 **Validação:** nenhuma falha testada deixa resíduos no diretório isolado.
 
@@ -263,10 +263,10 @@ Estados sugeridos:
 
 ### Task 22 — Consolidar e executar a suíte
 
-- [ ] Remover duplicação nos testes por meio de fixtures e parametrização onde isso não prejudicar a leitura.
-- [ ] Executar `pytest -q` mais de uma vez para detectar dependência de ordem ou resíduos.
-- [ ] Confirmar que nenhuma engine externa foi acionada.
-- [ ] Executar `git diff --check`.
+- [x] Remover duplicação nos testes por meio de fixtures e parametrização onde isso não prejudicar a leitura.
+- [x] Executar `pytest -q` mais de uma vez para detectar dependência de ordem ou resíduos.
+- [x] Confirmar que nenhuma engine externa foi acionada.
+- [x] Executar `git diff --check`.
 
 **Validação:** a suíte completa passa repetidamente e não escreve no diretório temporário real.
 
@@ -274,9 +274,9 @@ Estados sugeridos:
 
 ### Task 23 — Criar o commit dos testes
 
-- [ ] Revisar o diff completo do grupo.
-- [ ] Criar o commit `chore(tests): cover conversion routes with fake adapters`.
-- [ ] Confirmar o commit com `git show --stat --oneline HEAD`.
+- [x] Revisar o diff completo do grupo.
+- [x] Criar o commit `chore(tests): cover conversion routes with fake adapters`.
+- [x] Confirmar o commit com `git show --stat --oneline HEAD`.
 
 **Validação:** o terceiro commit contém somente dependências e código de teste.
 

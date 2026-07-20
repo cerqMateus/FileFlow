@@ -70,31 +70,25 @@ O FileFlow utiliza o **Adapter Pattern** para isolar as dependências de bibliot
 
 ```
 file_flow/
-├── app/
-│   ├── __init__.py           # Módulo Python
-│   ├── main.py               # API FastAPI e rotas
-│   ├── converter.py          # Funções legadas de conversão
-│   └── converters/           # Módulo de conversores (Adapter Pattern)
-│       ├── __init__.py       # Exports públicos
-│       ├── base.py           # Protocolos/interfaces dos conversores
-│       ├── factory.py        # Factory para instanciar adaptadores
-│       └── adapters/         # Implementações concretas
-│           ├── pdf_adapter.py    # Adaptadores para PDF (pdf2docx, PyMuPDF)
-│           ├── docx_adapter.py   # Adaptador para DOCX (LibreOffice)
-│           └── image_adapter.py  # Adaptador para imagens (Pillow)
-├── static/
-│   └── script.js             # JavaScript do frontend
-├── templates/
-│   ├── home.html             # Página inicial
-│   ├── converter.html        # Página de conversão
-│   └── index.html            # Interface do usuário
-├── temp/                     # Diretório para arquivos temporários
+├── backend/
+│   ├── app/
+│   │   ├── main.py               # API FastAPI e rotas
+│   │   ├── converters/           # Protocolos, factory e adapters
+│   │   └── services/             # Serviços da aplicação
+│   ├── tests/                     # Testes do backend
+│   ├── static/                    # JavaScript legado temporário
+│   ├── templates/                 # Templates legados temporários
+│   ├── temp/                      # Arquivos temporários em runtime
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── docs/                          # PRDs, backlogs e baselines
 ├── scripts/
-│   └── 01.md                 # Documentação de refatoração
-├── Dockerfile                # Configuração do container
-├── requirements.txt          # Dependências Python
-└── README.md                 # Documentação
+│   └── 01.md                     # Documentação de refatoração
+└── README.md                     # Documentação principal
 ```
+
+Os diretórios `backend/templates/` e `backend/static/` permanecem apenas durante a migração para Next.js e serão removidos quando o backend passar a servir exclusivamente a API.
 
 ## 🔧 Instalação e Configuração
 
@@ -123,6 +117,7 @@ python -m venv venv
 #### 3. Instale as dependências
 
 ```powershell
+cd backend
 pip install -r requirements.txt
 ```
 
@@ -151,14 +146,22 @@ brew install --cask libreoffice
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+Alternativamente, a partir da raiz do repositório:
+
+```powershell
+.\venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --reload --host 0.0.0.0 --port 8000
+```
+
 Acesse: [http://localhost:8000](http://localhost:8000)
 
 ### Instalação com Docker
 
+Execute os comandos desta seção a partir da raiz do repositório.
+
 #### 1. Build da imagem
 
 ```powershell
-docker build -t fileflow:latest .
+docker build -t fileflow:latest backend
 ```
 
 #### 2. Execute o container
@@ -184,7 +187,7 @@ docker stop fileflow
 docker rm fileflow
 
 # Rebuild e restart
-docker stop fileflow; docker rm fileflow; docker build -t fileflow:latest .; docker run -d -p 8000:8000 --name fileflow fileflow:latest
+docker stop fileflow; docker rm fileflow; docker build -t fileflow:latest backend; docker run -d -p 8000:8000 --name fileflow fileflow:latest
 ```
 
 ## 🛠️ Detalhes Técnicos

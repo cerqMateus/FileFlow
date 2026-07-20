@@ -10,7 +10,7 @@ type ConverterCardProps = Readonly<{
 export function ConverterCard({ converter }: ConverterCardProps) {
   return (
     <Link
-      href={{ pathname: converter.route }}
+      href={converter.route}
       className="group flex aspect-square flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white p-8 shadow-lg transition-all duration-300 hover:border-indigo-200 hover:shadow-xl"
     >
       <span

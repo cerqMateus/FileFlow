@@ -18,3 +18,4 @@ export { isFastApiErrorBody } from "./api/fastapi-error";
 export type { FastApiErrorBody } from "./api/fastapi-error";
 export type { ConversionState } from "./model/conversion-state";
 export { ConverterCard } from "./components/converter-card";
+export { ConverterPage } from "./components/converter-page";

@@ -736,79 +736,81 @@ Cada descrição de PR deverá informar:
 
 ### Task 54 — Preparar mocks nas fronteiras corretas
 
-- [ ] Interceptar `fetch` ou rede na camada HTTP, sem mockar detalhes do React.
-- [ ] Fornecer respostas binárias determinísticas.
-- [ ] Controlar `URL.createObjectURL` e `URL.revokeObjectURL`.
-- [ ] Controlar criação e clique de anchors sem depender de download real.
-- [ ] Controlar user agent móvel por uma fronteira testável.
-- [ ] Restaurar todos os mocks após cada teste.
+- [x] Interceptar `fetch` ou rede na camada HTTP, sem mockar detalhes do React.
+- [x] Fornecer respostas binárias determinísticas.
+- [x] Controlar `URL.createObjectURL` e `URL.revokeObjectURL`.
+- [x] Controlar criação e clique de anchors sem depender de download real.
+- [x] Controlar user agent móvel por uma fronteira testável.
+- [x] Restaurar todos os mocks após cada teste.
 
 **Validação:** testes não acessam rede, não baixam arquivos reais e não vazam estado global.
 
 ### Task 55 — Testar submissão e contrato multipart
 
-- [ ] Selecionar arquivo válido pelo input.
-- [ ] Submeter o formulário.
-- [ ] Verificar método POST.
-- [ ] Verificar endpoint correspondente ao catálogo.
-- [ ] Verificar que `FormData` contém exatamente o arquivo no campo `file`.
-- [ ] Verificar que o código não define manualmente `Content-Type` multipart.
+- [x] Selecionar arquivo válido pelo input.
+- [x] Submeter o formulário.
+- [x] Verificar método POST.
+- [x] Verificar endpoint correspondente ao catálogo.
+- [x] Verificar que `FormData` contém exatamente o arquivo no campo `file`.
+- [x] Verificar que o código não define manualmente `Content-Type` multipart.
 
 **Validação:** divergência do contrato FastAPI causa falha do teste.
 
 ### Task 56 — Testar estados e prevenção de reenvio
 
-- [ ] Testar submissão sem arquivo.
-- [ ] Testar estado selecionado.
-- [ ] Manter uma resposta pendente para observar `converting`.
-- [ ] Verificar botão desabilitado, spinner e textos de processamento.
-- [ ] Tentar uma segunda submissão e confirmar que não há segunda requisição.
-- [ ] Resolver a resposta e verificar restauração do formulário.
+- [x] Testar submissão sem arquivo.
+- [x] Testar estado selecionado.
+- [x] Manter uma resposta pendente para observar `converting`.
+- [x] Verificar botão desabilitado, spinner e textos de processamento.
+- [x] Tentar uma segunda submissão e confirmar que não há segunda requisição.
+- [x] Resolver a resposta e verificar restauração do formulário.
 
 **Validação:** estados transitórios e bloqueio de concorrência são observáveis e determinísticos.
 
 ### Task 57 — Testar sucesso e download desktop
 
-- [ ] Responder com Blob de tipo esperado.
-- [ ] Verificar criação da object URL.
-- [ ] Verificar nome `original_convertido.ext`.
-- [ ] Verificar criação, clique e remoção do anchor temporário.
-- [ ] Verificar mensagem atual de sucesso.
-- [ ] Verificar revogação da URL no momento previsto.
+- [x] Responder com Blob de tipo esperado.
+- [x] Verificar criação da object URL.
+- [x] Verificar nome `original_convertido.ext`.
+- [x] Verificar criação, clique e remoção do anchor temporário.
+- [x] Verificar mensagem atual de sucesso.
+- [x] Verificar revogação da URL no momento previsto.
 
 **Validação:** fluxo desktop completo passa sem temporizadores reais desnecessários.
 
 ### Task 58 — Testar sucesso e link móvel
 
-- [ ] Simular user agent móvel.
-- [ ] Verificar link visível com texto, URL e nome corretos.
-- [ ] Verificar tentativa automática de clique.
-- [ ] Verificar que o link permanece utilizável pelo período definido.
-- [ ] Verificar cleanup da object URL.
+- [x] Simular user agent móvel.
+- [x] Verificar link visível com texto, URL e nome corretos.
+- [x] Verificar tentativa automática de clique.
+- [x] Verificar que o link permanece utilizável pelo período definido.
+- [x] Verificar cleanup da object URL.
 
 **Validação:** comportamento móvel permanece distinto e equivalente ao legado.
 
 ### Task 59 — Testar todos os formatos de erro
 
-- [ ] Testar erro JSON com `detail` string.
-- [ ] Testar JSON com shape desconhecido.
-- [ ] Testar body não JSON.
-- [ ] Testar body vazio.
-- [ ] Testar rejeição de rede.
-- [ ] Verificar mensagem exibida, estilo de erro e restauração do botão em todos os casos.
-- [ ] Confirmar que nenhum download é iniciado após erro.
+- [x] Testar erro JSON com `detail` string.
+- [x] Testar JSON com shape desconhecido.
+- [x] Testar body não JSON.
+- [x] Testar body vazio.
+- [x] Testar rejeição de rede.
+- [x] Verificar mensagem exibida, estilo de erro e restauração do botão em todos os casos.
+- [x] Confirmar que nenhum download é iniciado após erro.
 
 **Validação:** erros externos nunca resultam em acesso inseguro ou estado preso em processamento.
 
 ### Task 60 — Publicar o PR de testes do fluxo
 
-- [ ] Executar testes com timers reais e falsos conforme apropriado e sem flakiness.
-- [ ] Executar lint, typecheck, testes, coverage e build.
-- [ ] Auditar cobertura dos itens da seção 11.2 do PRD.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `test(frontend): cover conversion workflow`.
-- [ ] Publicar `test/frontend-conversion-flow` e abrir o PR.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 11.
+- [x] Executar testes com timers reais e falsos conforme apropriado e sem flakiness.
+- [x] Executar lint, typecheck, testes, coverage e build.
+- [x] Auditar cobertura dos itens da seção 11.2 do PRD.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `test(frontend): cover conversion workflow`.
+- [x] Publicar `test/frontend-conversion-flow` e abrir o PR.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 11.
+
+**Evidência de execução:** Vitest 4.1.10 executou 49 testes em seis arquivos, duas vezes sem flakiness e novamente sob coverage V8. A cobertura global ficou em 89,61% de statements, 81% de branches, 97,36% de functions e 89,54% de lines. Os testes do Grupo 10 cobrem o contrato multipart dos cinco conversores, estados e prevenção de reenvio, downloads desktop e móvel, timers e cleanup, além de erros estruturados, não estruturados, vazios e de rede. Em conjunto com o Grupo 9, todos os itens da seção 11.2 do PRD estão cobertos. Lint, typecheck, build de produção e `git diff --check` passaram; nenhum código de produção foi alterado.
 
 **Validação:** PR incorporado com cobertura integral das interações previstas no PRD.
 

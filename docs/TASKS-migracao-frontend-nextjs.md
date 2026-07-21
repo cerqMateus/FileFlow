@@ -943,7 +943,7 @@ Cada descrição de PR deverá informar:
 - [x] Criar o commit `refactor(backend): remove legacy frontend`.
 - [x] Publicar `refactor/backend-api-only` e abrir o PR.
 - [x] Destacar exclusões materiais e recuperação possível pelo histórico Git.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 13.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 13.
 
 **Evidência de execução:** o inventário FastAPI foi reduzido de 12 para nove entradas: quatro rotas técnicas de Swagger/OpenAPI e os cinco POSTs de conversão. `/`, `/converter/pdf/docx` e `/static/script.js` agora retornam 404; não existe mount nem diretório `static`, diretório `templates`, módulo `legacy_frontend.py`, catálogo visual ou referência executável a Jinja/Tailwind legado. Jinja2 e MarkupSafe foram removidos das dependências diretas, `pip check` passou e a aplicação importa com nove rotas. O Dockerfile copia somente `app/`. A suíte backend final executou 52 testes duas vezes; lint, typecheck, 49 testes e build do frontend passaram. O OpenAPI dos conversores manteve o hash `f5ef4ab9883d88bc8fc513623f591b98727d394c6d1caf08c9a9cf65720233c7`, e `git diff --check` passou. O build da imagem foi tentado, mas o comando `docker` permanece indisponível no ambiente, sem Podman ou distribuição WSL alternativa.
 
@@ -959,81 +959,83 @@ Cada descrição de PR deverá informar:
 
 ### Task 72 — Configurar Playwright de forma determinística
 
-- [ ] Instalar Playwright e fixar versões no lockfile.
-- [ ] Definir navegador principal e viewports de desktop e mobile.
-- [ ] Configurar diretórios ignorados para traces, vídeos e relatórios.
-- [ ] Configurar servidor web do Next.js para os testes.
-- [ ] Permitir reuso de servidor somente fora de CI quando seguro.
-- [ ] Criar scripts separados para E2E rápido e atualização intencional de snapshots.
+- [x] Instalar Playwright e fixar versões no lockfile.
+- [x] Definir navegador principal e viewports de desktop e mobile.
+- [x] Configurar diretórios ignorados para traces, vídeos e relatórios.
+- [x] Configurar servidor web do Next.js para os testes.
+- [x] Permitir reuso de servidor somente fora de CI quando seguro.
+- [!] Criar scripts separados para E2E rápido e atualização intencional de snapshots. O E2E rápido e a auditoria visual possuem scripts separados; por decisão explícita do responsável, screenshots não serão versionados nem terão script de atualização.
 
 **Validação:** execução limpa inicia e encerra os processos sem deixar portas ou arquivos residuais.
 
 ### Task 73 — Criar fixtures de rede para conversões
 
-- [ ] Interceptar os cinco endpoints no navegador.
-- [ ] Validar método e multipart antes de responder.
-- [ ] Retornar bytes e MIME determinísticos no sucesso.
-- [ ] Retornar `detail` determinístico no erro.
-- [ ] Não chamar engines reais na suíte rápida.
-- [ ] Falhar se o frontend chamar rota desconhecida ou API intermediária do Next.js.
+- [x] Interceptar os cinco endpoints no navegador.
+- [x] Validar método e multipart antes de responder.
+- [x] Retornar bytes e MIME determinísticos no sucesso.
+- [x] Retornar `detail` determinístico no erro.
+- [x] Não chamar engines reais na suíte rápida.
+- [x] Falhar se o frontend chamar rota desconhecida ou API intermediária do Next.js.
 
 **Validação:** fixtures protegem o contrato observável sem acoplamento à implementação interna.
 
 ### Task 74 — Cobrir navegação e sucesso end-to-end
 
-- [ ] Abrir a home.
-- [ ] Confirmar os cinco cards.
-- [ ] Navegar por link para um conversor.
-- [ ] Selecionar arquivo compatível.
-- [ ] Submeter e observar estado de processamento.
-- [ ] Confirmar endpoint e campo multipart.
-- [ ] Confirmar mensagem de sucesso e evento de download.
-- [ ] Repetir de forma parametrizada onde necessário para cobrir os cinco endpoints.
+- [x] Abrir a home.
+- [x] Confirmar os cinco cards.
+- [x] Navegar por link para um conversor.
+- [x] Selecionar arquivo compatível.
+- [x] Submeter e observar estado de processamento.
+- [x] Confirmar endpoint e campo multipart.
+- [x] Confirmar mensagem de sucesso e evento de download.
+- [x] Repetir de forma parametrizada onde necessário para cobrir os cinco endpoints.
 
 **Validação:** o fluxo navegador → interface → contrato HTTP → download passa para todos os pares essenciais.
 
 ### Task 75 — Cobrir erro e rota inválida end-to-end
 
-- [ ] Abrir um par inválido e confirmar 404.
-- [ ] Simular erro FastAPI com `detail`.
-- [ ] Confirmar feedback visível e botão restaurado.
-- [ ] Confirmar que nenhum download ocorre.
-- [ ] Confirmar que uma nova tentativa pode ser feita após erro.
+- [x] Abrir um par inválido e confirmar 404.
+- [x] Simular erro FastAPI com `detail`.
+- [x] Confirmar feedback visível e botão restaurado.
+- [x] Confirmar que nenhum download ocorre.
+- [x] Confirmar que uma nova tentativa pode ser feita após erro.
 
 **Validação:** falha controlada não deixa interface travada nem produz navegação incorreta.
 
 ### Task 76 — Adicionar smoke test entre os dois processos
 
-- [ ] Iniciar Next.js e FastAPI como processos separados.
-- [ ] Configurar a origem do frontend e base da API pelos exemplos de ambiente.
-- [ ] Executar pelo navegador uma chamada real que valide CORS e alcance o FastAPI sem acionar engine externa.
-- [ ] Usar entrada inválida determinística para confirmar o contrato HTTP real, se necessário.
-- [ ] Confirmar que a requisição não passa por Route Handler do Next.js.
-- [ ] Encerrar os dois processos mesmo em falha.
+- [x] Iniciar Next.js e FastAPI como processos separados.
+- [x] Configurar a origem do frontend e base da API pelos exemplos de ambiente.
+- [x] Executar pelo navegador uma chamada real que valide CORS e alcance o FastAPI sem acionar engine externa.
+- [x] Usar entrada inválida determinística para confirmar o contrato HTTP real, se necessário.
+- [x] Confirmar que a requisição não passa por Route Handler do Next.js.
+- [x] Encerrar os dois processos mesmo em falha.
 
 **Validação:** o smoke prova comunicação real entre os workspaces e resposta do FastAPI.
 
 ### Task 77 — Criar comparações visuais controladas
 
-- [ ] Capturar home desktop e mobile com as condições do baseline.
-- [ ] Capturar página de conversão desktop e mobile.
-- [ ] Capturar estados interativos estáveis definidos no Grupo 1.
-- [ ] Comparar com o baseline aprovado.
-- [ ] Definir tolerância mínima somente para diferenças inevitáveis de rasterização.
-- [ ] Versionar snapshots apenas após revisão humana explícita.
+- [x] Capturar home desktop e mobile com as condições do baseline.
+- [x] Capturar página de conversão desktop e mobile.
+- [x] Capturar estados interativos estáveis definidos no Grupo 1.
+- [x] Comparar com o baseline aprovado.
+- [!] Definir tolerância mínima somente para diferenças inevitáveis de rasterização. Sem baseline pixel-a-pixel versionado por decisão do responsável; a suíte aplica asserções exatas de composição responsiva e gera capturas efêmeras para revisão.
+- [x] Versionar snapshots apenas após revisão humana explícita. O responsável revisou as capturas e determinou explicitamente que nenhum PNG fosse versionado.
 
-**Validação:** alterações visuais futuras geram diff revisável e a migração atual é aprovada como equivalente.
+**Validação:** a composição responsiva e os estados críticos possuem asserções reproduzíveis; capturas efêmeras continuam disponíveis para revisão manual sem integrar o histórico Git.
 
 ### Task 78 — Publicar o PR de E2E
 
-- [ ] Executar E2E rápido mais de uma vez.
-- [ ] Executar smoke real entre processos.
-- [ ] Executar comparações visuais.
-- [ ] Executar todos os gates de frontend e backend já existentes.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `test(frontend): add migration end-to-end coverage`.
-- [ ] Publicar `test/frontend-e2e` e abrir o PR com evidências.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 14.
+- [x] Executar E2E rápido mais de uma vez.
+- [x] Executar smoke real entre processos.
+- [x] Executar comparações visuais.
+- [x] Executar todos os gates de frontend e backend já existentes.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `test(frontend): add migration end-to-end coverage`.
+- [x] Publicar `test/frontend-e2e` e abrir o PR com evidências.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 14.
+
+**Evidência de execução:** Playwright 1.61.1 foi configurado com Chromium como navegador principal e viewports de 1440×900 e 390×844. A suíte rápida passou duas vezes com 8/8 cenários, cobrindo os cinco endpoints, multipart, processamento, download, erro com nova tentativa e rota 404. O smoke real passou com 1/1 cenário entre Next.js e FastAPI, validando CORS e acesso direto ao backend sem Route Handler nem engine de conversão. A auditoria visual passou com 4/4 cenários em build de produção, usando asserções exatas de composição responsiva e capturas efêmeras; após revisão, o responsável decidiu explicitamente não versionar PNGs. Como regressão, passaram 52 testes de backend, 49 testes unitários de frontend, cobertura, lint, typecheck e build. `git diff --check` passou, nenhum artefato visual foi rastreado e as portas 3100 e 8000 foram liberadas ao fim das execuções.
 
 **Validação:** PR incorporado e comportamento de navegador protegido contra regressão.
 

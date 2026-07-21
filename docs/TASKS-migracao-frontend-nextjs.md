@@ -578,79 +578,81 @@ Cada descrição de PR deverá informar:
 
 ### Task 41 — Implementar o cliente HTTP binário
 
-- [ ] Criar uma função única `convertFile` na camada `api/` da feature.
-- [ ] Receber configuração tipada e `File`.
-- [ ] Montar `FormData` com exatamente o campo `file`.
-- [ ] Compor a base pública da API com o endpoint conhecido.
-- [ ] Não definir manualmente o header multipart e seu boundary.
-- [ ] Retornar `Blob` no sucesso.
-- [ ] Não encaminhar a requisição por Route Handler ou Server Action.
+- [x] Criar uma função única `convertFile` na camada `api/` da feature.
+- [x] Receber configuração tipada e `File`.
+- [x] Montar `FormData` com exatamente o campo `file`.
+- [x] Compor a base pública da API com o endpoint conhecido.
+- [x] Não definir manualmente o header multipart e seu boundary.
+- [x] Retornar `Blob` no sucesso.
+- [x] Não encaminhar a requisição por Route Handler ou Server Action.
 
 **Validação:** uma requisição inspecionada usa o endpoint, método, campo e corpo esperados.
 
 ### Task 42 — Implementar parsing defensivo de erros
 
-- [ ] Tentar validar `{"detail": string}` em respostas não bem-sucedidas.
-- [ ] Usar mensagem de fallback para JSON inválido ou shape desconhecido.
-- [ ] Usar status e status text quando agregarem informação segura.
-- [ ] Não exibir stack trace nem conteúdo binário ao usuário.
-- [ ] Representar falha por tipo/erro próprio pequeno, se isso simplificar o consumidor.
+- [x] Tentar validar `{"detail": string}` em respostas não bem-sucedidas.
+- [x] Usar mensagem de fallback para JSON inválido ou shape desconhecido.
+- [x] Usar status e status text quando agregarem informação segura.
+- [x] Não exibir stack trace nem conteúdo binário ao usuário.
+- [x] Representar falha por tipo/erro próprio pequeno, se isso simplificar o consumidor.
 
 **Validação:** erros FastAPI, JSON desconhecido, texto e resposta vazia resultam em mensagens determinísticas.
 
 ### Task 43 — Implementar o controlador de estado do formulário
 
-- [ ] Usar a união discriminada definida no Grupo 5.
-- [ ] Transicionar de seleção para conversão, sucesso ou erro explicitamente.
-- [ ] Bloquear o botão durante a conversão.
-- [ ] Exibir spinner e textos atuais durante processamento.
-- [ ] Restaurar o botão após sucesso ou falha.
-- [ ] Impedir submissão sem arquivo e manter a mensagem atual.
-- [ ] Não adicionar Redux, Context global ou biblioteca de requisições.
+- [x] Usar a união discriminada definida no Grupo 5.
+- [x] Transicionar de seleção para conversão, sucesso ou erro explicitamente.
+- [x] Bloquear o botão durante a conversão.
+- [x] Exibir spinner e textos atuais durante processamento.
+- [x] Restaurar o botão após sucesso ou falha.
+- [x] Impedir submissão sem arquivo e manter a mensagem atual.
+- [x] Não adicionar Redux, Context global ou biblioteca de requisições.
 
 **Validação:** não existem booleanos independentes capazes de representar estados contraditórios.
 
 ### Task 44 — Implementar naming e download desktop
 
-- [ ] Derivar o nome base removendo somente a última extensão, como no legado.
-- [ ] Acrescentar `_convertido` e a extensão de destino do catálogo.
-- [ ] Criar object URL a partir do Blob.
-- [ ] Criar e acionar um link temporário com atributo `download`.
-- [ ] Remover o elemento temporário do DOM.
-- [ ] Revogar a object URL de forma determinística, inclusive em unmount ou nova conversão.
+- [x] Derivar o nome base removendo somente a última extensão, como no legado.
+- [x] Acrescentar `_convertido` e a extensão de destino do catálogo.
+- [x] Criar object URL a partir do Blob.
+- [x] Criar e acionar um link temporário com atributo `download`.
+- [x] Remover o elemento temporário do DOM.
+- [x] Revogar a object URL de forma determinística, inclusive em unmount ou nova conversão.
 
 **Validação:** o nome e o início automático do download correspondem ao legado e não há vazamento de object URLs.
 
 ### Task 45 — Implementar o comportamento móvel existente
 
-- [ ] Isolar a detecção de ambiente móvel em módulo cliente testável.
-- [ ] Preservar a regra atual de user agent sem ampliá-la nesta entrega.
-- [ ] Mostrar o link manual com o texto e as classes equivalentes.
-- [ ] Preservar a tentativa automática de clique após o intervalo atual.
-- [ ] Manter a URL válida enquanto o link manual puder ser usado.
-- [ ] Revogar a URL quando ela deixar de ser necessária.
+- [x] Isolar a detecção de ambiente móvel em módulo cliente testável.
+- [x] Preservar a regra atual de user agent sem ampliá-la nesta entrega.
+- [x] Mostrar o link manual com o texto e as classes equivalentes.
+- [x] Preservar a tentativa automática de clique após o intervalo atual.
+- [x] Manter a URL válida enquanto o link manual puder ser usado.
+- [x] Revogar a URL quando ela deixar de ser necessária.
 
 **Validação:** ambiente móvel recebe link visível e ambiente desktop recebe download automático sem link persistente.
 
 ### Task 46 — Limitar corretamente o Client Component
 
-- [ ] Colocar `"use client"` somente na raiz interativa necessária.
-- [ ] Manter layout, página e catálogo fora do bundle cliente quando possível.
-- [ ] Garantir propriedades serializáveis na fronteira Server/Client.
-- [ ] Marcar módulos com APIs exclusivas do navegador como client-only quando útil.
-- [ ] Auditar que não há acesso a segredo ou variável server-only no cliente.
+- [x] Colocar `"use client"` somente na raiz interativa necessária.
+- [x] Manter layout, página e catálogo fora do bundle cliente quando possível.
+- [x] Garantir propriedades serializáveis na fronteira Server/Client.
+- [x] Marcar módulos com APIs exclusivas do navegador como client-only quando útil.
+- [x] Auditar que não há acesso a segredo ou variável server-only no cliente.
 
 **Validação:** build conclui sem violações Server/Client e a diretiva não se espalha pelas páginas.
 
 ### Task 47 — Publicar o PR do fluxo interativo
 
-- [ ] Exercitar manualmente sucesso e erro com respostas controladas.
-- [ ] Executar lint, typecheck e build.
-- [ ] Auditar que existe uma única chamada de conversão e uma única implementação de download.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(frontend): migrate conversion workflow`.
-- [ ] Publicar `refactor/frontend-conversion-flow` e abrir o PR.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 9.
+- [x] Exercitar manualmente sucesso e erro com respostas controladas.
+- [x] Executar lint, typecheck e build.
+- [x] Auditar que existe uma única chamada de conversão e uma única implementação de download.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(frontend): migrate conversion workflow`.
+- [x] Publicar `refactor/frontend-conversion-flow` e abrir o PR.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 9.
+
+**Validação controlada aprovada:** em 21 de julho de 2026, a integração oficial informou que nenhum navegador estava conectado. O cliente HTTP real foi exercitado com respostas controladas para sucesso, erro FastAPI, JSON desconhecido, texto e corpo vazio; também foram verificados endpoint, método, campo multipart `file`, ausência de `Content-Type` manual, `Blob`, naming, detecção móvel e ciclo de vida do download. O frontend de produção respondeu `200` com o formulário esperado e uma API temporária respondeu ao preflight e aos cenários de sucesso e erro. Essa API não acionou as engines reais de conversão. Após revisar essa limitação, o responsável autorizou seguir com o PR; a integração com o FastAPI real permanece protegida pelos Grupos 11, 13 e 14.
 
 **Validação:** PR incorporado e fluxo completo funciona no Next.js contra API configurada.
 

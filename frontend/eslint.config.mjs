@@ -38,6 +38,19 @@ export default defineConfig([
     },
   },
   {
+    files: ["e2e/**/*.ts", "playwright*.ts"],
+    rules: {
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          devDependencies: true,
+          optionalDependencies: false,
+          peerDependencies: false,
+        },
+      ],
+    },
+  },
+  {
     files: ["src/app/**/*.{ts,tsx}", "src/features/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [

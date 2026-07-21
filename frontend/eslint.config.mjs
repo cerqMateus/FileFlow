@@ -25,6 +25,19 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
+    rules: {
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          devDependencies: true,
+          optionalDependencies: false,
+          peerDependencies: false,
+        },
+      ],
+    },
+  },
+  {
     files: ["src/app/**/*.{ts,tsx}", "src/features/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [

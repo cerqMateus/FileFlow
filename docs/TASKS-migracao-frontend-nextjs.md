@@ -664,65 +664,67 @@ Cada descrição de PR deverá informar:
 
 ### Task 48 — Instalar e configurar testes de componentes
 
-- [ ] Selecionar runner compatível com Next.js e TypeScript.
-- [ ] Configurar ambiente DOM e Testing Library.
-- [ ] Criar setup compartilhado mínimo.
-- [ ] Adicionar scripts `test` e `test:coverage` sem incluir coverage gerado no Git.
-- [ ] Fazer aliases e CSS funcionarem nos testes sem configurações duplicadas.
-- [ ] Fixar dependências no lockfile.
+- [x] Selecionar runner compatível com Next.js e TypeScript.
+- [x] Configurar ambiente DOM e Testing Library.
+- [x] Criar setup compartilhado mínimo.
+- [x] Adicionar scripts `test` e `test:coverage` sem incluir coverage gerado no Git.
+- [x] Fazer aliases e CSS funcionarem nos testes sem configurações duplicadas.
+- [x] Fixar dependências no lockfile.
 
 **Validação:** um teste simples importa código via `@/` e renderiza um componente.
 
 ### Task 49 — Testar o catálogo tipado
 
-- [ ] Verificar que existem exatamente cinco entradas.
-- [ ] Verificar ordem, pares, labels, títulos, descrições, ícones e endpoints.
-- [ ] Verificar extensões aceitas, incluindo `.jpeg`.
-- [ ] Verificar extensão de download de cada par.
-- [ ] Verificar ausência de chaves duplicadas.
+- [x] Verificar que existem exatamente cinco entradas.
+- [x] Verificar ordem, pares, labels, títulos, descrições, ícones e endpoints.
+- [x] Verificar extensões aceitas, incluindo `.jpeg`.
+- [x] Verificar extensão de download de cada par.
+- [x] Verificar ausência de chaves duplicadas.
 
 **Validação:** qualquer divergência dos metadados legados causa falha clara.
 
 ### Task 50 — Testar resolução e geração de rotas
 
-- [ ] Testar os cinco pares válidos.
-- [ ] Testar formato de origem inválido.
-- [ ] Testar formato de destino inválido.
-- [ ] Testar dois formatos válidos em um par não suportado.
-- [ ] Testar valores vazios e diferenças de caixa sem normalização não especificada.
+- [x] Testar os cinco pares válidos.
+- [x] Testar formato de origem inválido.
+- [x] Testar formato de destino inválido.
+- [x] Testar dois formatos válidos em um par não suportado.
+- [x] Testar valores vazios e diferenças de caixa sem normalização não especificada.
 
 **Validação:** somente os cinco pares do PRD são aceitos.
 
 ### Task 51 — Testar a home
 
-- [ ] Verificar header, subtítulo e footer.
-- [ ] Verificar cinco cards e ausência de cards extras.
-- [ ] Verificar textos e ícones.
-- [ ] Verificar href das cinco rotas.
-- [ ] Verificar que os links possuem nomes acessíveis.
+- [x] Verificar header, subtítulo e footer.
+- [x] Verificar cinco cards e ausência de cards extras.
+- [x] Verificar textos e ícones.
+- [x] Verificar href das cinco rotas.
+- [x] Verificar que os links possuem nomes acessíveis.
 
 **Validação:** home perde o teste se um conversor, texto ou link divergir.
 
 ### Task 52 — Testar a página de conversão
 
-- [ ] Parametrizar renderização para os cinco pares.
-- [ ] Verificar título, descrição, labels e ícone de cada par.
-- [ ] Verificar o `accept` correto do input.
-- [ ] Verificar link Voltar.
-- [ ] Verificar que par inválido aciona 404.
-- [ ] Verificar metadados quando possível sem acoplar ao framework internamente.
+- [x] Parametrizar renderização para os cinco pares.
+- [x] Verificar título, descrição, labels e ícone de cada par.
+- [x] Verificar o `accept` correto do input.
+- [x] Verificar link Voltar.
+- [x] Verificar que par inválido aciona 404.
+- [x] Verificar metadados quando possível sem acoplar ao framework internamente.
 
 **Validação:** as seis rotas de interface do baseline possuem cobertura determinística.
 
 ### Task 53 — Publicar o PR de testes de páginas
 
-- [ ] Executar testes mais de uma vez para detectar dependência de ordem.
-- [ ] Executar lint, typecheck, testes e build.
-- [ ] Executar `git diff --check`.
-- [ ] Confirmar que código de produção só mudou quando necessário à testabilidade e sem alterar comportamento.
-- [ ] Criar o commit `test(frontend): cover catalog and pages`.
-- [ ] Publicar `test/frontend-routes` e abrir o PR.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 10.
+- [x] Executar testes mais de uma vez para detectar dependência de ordem.
+- [x] Executar lint, typecheck, testes e build.
+- [x] Executar `git diff --check`.
+- [x] Confirmar que código de produção só mudou quando necessário à testabilidade e sem alterar comportamento.
+- [x] Criar o commit `test(frontend): cover catalog and pages`.
+- [x] Publicar `test/frontend-routes` e abrir o PR.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 10.
+
+**Evidência de execução:** Vitest 4.1.10 com jsdom e Testing Library executou 34 testes em quatro arquivos, repetidos com sucesso e novamente sob coverage V8. O setup importa CSS global e código por `@/`; catálogo, resolução, home, cinco apresentações, parâmetros estáticos, metadados e `notFound()` estão cobertos. Lint, typecheck, build e `git diff --check` passaram. `vite-tsconfig-paths` foi mantido porque a resolução nativa do Vite produziu um caminho `/@fs/` inválido no workspace espelhado do sandbox, enquanto o plugin passou repetidamente. O audit registrou duas vulnerabilidades moderadas no PostCSS empacotado pelo Next.js existente; `npm audit fix --force` não foi aplicado porque propôs downgrade quebrável para Next.js 9.3.3.
 
 **Validação:** PR incorporado com cobertura de catálogo, home, páginas e 404.
 

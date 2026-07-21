@@ -2,8 +2,9 @@
 
 ## 1. Identificação
 
-- **Status:** Proposto
+- **Status:** Em andamento — Grupo 14 adiado
 - **Data:** 20 de julho de 2026
+- **Última auditoria:** 21 de julho de 2026
 - **Tipo:** Refatoração arquitetural
 - **Objetivo:** separar integralmente frontend e backend e substituir o frontend Jinja2/HTML/JavaScript por uma aplicação Next.js tipada, organizada e testável
 - **Escopo da entrega:** reorganização física do repositório, criação do frontend Next.js, adaptação operacional do FastAPI para atuar somente como API e remoção completa do frontend legado
@@ -11,12 +12,12 @@
 
 ## 2. Contexto
 
-O FileFlow utiliza atualmente uma única aplicação FastAPI para duas responsabilidades diferentes:
+Antes desta migração, o FileFlow utilizava uma única aplicação FastAPI para duas responsabilidades diferentes:
 
 1. expor cinco endpoints de conversão de arquivos;
 2. renderizar a interface por meio de Jinja2, servir JavaScript estático e manter metadados de apresentação.
 
-Em `app/main.py`, as rotas de conversão convivem com a montagem de `StaticFiles`, a configuração de `Jinja2Templates`, o catálogo visual `CONVERTER_CONFIG` e as rotas HTML `/` e `/converter/{from_format}/{to_format}`. O frontend está distribuído entre `templates/` e `static/`, sem uma fronteira física ou de tipos em relação ao backend.
+Na implementação legada, as rotas de conversão conviviam com `StaticFiles`, `Jinja2Templates`, o catálogo visual `CONVERTER_CONFIG` e as rotas HTML. Esse frontend distribuído entre `templates/` e `static/` foi removido nos Grupos 6–12 e permanece disponível somente no histórico Git e no baseline textual.
 
 A refatoração estrutural anterior consolidou os adapters, os testes dos contratos HTTP e o ciclo de vida dos arquivos temporários. Essa base permite agora extrair a interface sem reimplementar a lógica de conversão.
 
@@ -535,3 +536,11 @@ Ficam explicitamente para entregas posteriores:
 ## 18. Resultado esperado
 
 Ao final, o FileFlow terá duas aplicações claramente delimitadas: um backend FastAPI responsável apenas por conversão e contratos HTTP e um frontend Next.js responsável apenas pela experiência do usuário. A interface permanecerá funcionalmente equivalente, enquanto a base passará a oferecer tipagem estrita, organização por funcionalidade, testes próprios, builds independentes e ausência completa do frontend legado.
+
+## 19. Estado da execução
+
+Em 21 de julho de 2026, os Grupos 1–13 estavam incorporados. O backend atua somente como API, o frontend Next.js substituiu integralmente o Jinja2 e os cinco fluxos possuem cobertura unitária, de integração, end-to-end e visual controlada.
+
+O responsável decidiu adiar o Grupo 14. Por isso, ainda não existem imagem independente do frontend, proxy reverso ou `compose.yaml`, e os gates de container/topologia da seção 11.4 não foram executados. Esta lacuna impede que o status seja alterado para `Concluído` e que a definição de pronto da seção 14 seja considerada integralmente atendida.
+
+O Grupo 15 atualizou a documentação do runtime local, auditou ausência de redundância e repetiu todos os gates não relacionados a containers. O relatório detalhado, os resultados, os desvios e a rastreabilidade estão em [`docs/auditoria-migracao-nextjs.md`](auditoria-migracao-nextjs.md).

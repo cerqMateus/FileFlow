@@ -1044,6 +1044,7 @@ Cada descrição de PR deverá informar:
 **Branch:** `chore/split-runtime`
 **Commit:** `chore(deploy): split frontend and backend runtime`
 **Dependência:** Grupo 13 incorporado à `main`.
+**Status:** adiado por decisão explícita do responsável em 21 de julho de 2026; nenhuma task deste grupo foi executada e não existe branch ou PR correspondente.
 
 ### Task 79 — Finalizar a imagem do backend
 
@@ -1118,94 +1119,96 @@ Cada descrição de PR deverá informar:
 
 **Branch:** `docs/complete-nextjs-migration`
 **Commit:** `docs(architecture): complete Next.js migration`
-**Dependência:** Grupo 14 incorporado à `main`.
+**Dependência excepcional:** Grupo 13 incorporado à `main`; Grupo 14 adiado pelo responsável. Este grupo documenta e audita o estado real, mas não encerra o PRD.
 
 ### Task 85 — Atualizar o README para a arquitetura final
 
-- [ ] Substituir a árvore de diretórios antiga.
-- [ ] Remover referências a HTML, JavaScript Vanilla, Jinja2 e Tailwind por CDN.
-- [ ] Documentar Next.js, App Router, TypeScript e Tailwind local.
-- [ ] Documentar pré-requisitos de Python, Node LTS, npm, LibreOffice e Docker.
-- [ ] Documentar instalação e execução independentes de frontend e backend.
-- [ ] Documentar execução conjunta pelo Compose/proxy.
-- [ ] Atualizar comandos de teste, lint, typecheck, build e E2E.
-- [ ] Preservar a documentação funcional dos cinco endpoints.
+- [x] Substituir a árvore de diretórios antiga.
+- [x] Remover referências a HTML, JavaScript Vanilla, Jinja2 e Tailwind por CDN.
+- [x] Documentar Next.js, App Router, TypeScript e Tailwind local.
+- [!] Documentar pré-requisitos de Python, Node LTS, npm, LibreOffice e Docker. Os requisitos locais foram documentados; Docker foi registrado como indisponível e adiado, não como pré-requisito funcional atual.
+- [x] Documentar instalação e execução independentes de frontend e backend.
+- [!] Documentar execução conjunta pelo Compose/proxy. Não existe composição para documentar; o README registra explicitamente a pendência e orienta execução em processos locais separados.
+- [x] Atualizar comandos de teste, lint, typecheck, build e E2E.
+- [x] Preservar a documentação funcional dos cinco endpoints.
 
 **Validação:** uma pessoa nova consegue executar os dois workspaces seguindo somente o README.
 
 ### Task 86 — Documentar configuração e operação
 
-- [ ] Explicar `NEXT_PUBLIC_API_BASE_URL` e seu momento de resolução no build.
-- [ ] Explicar a allowlist de CORS do backend.
-- [ ] Explicar desenvolvimento em portas separadas.
-- [ ] Explicar roteamento de produção por `/convert/*`.
-- [ ] Explicar onde arquivos temporários existem e quem os limpa.
-- [ ] Não documentar funcionalidades adiadas como se estivessem disponíveis.
+- [x] Explicar `NEXT_PUBLIC_API_BASE_URL` e seu momento de resolução no build.
+- [x] Explicar a allowlist de CORS do backend.
+- [x] Explicar desenvolvimento em portas separadas.
+- [!] Explicar roteamento de produção por `/convert/*`. A topologia planejada foi identificada, mas permanece indisponível porque o Grupo 14 foi adiado.
+- [x] Explicar onde arquivos temporários existem e quem os limpa.
+- [x] Não documentar funcionalidades adiadas como se estivessem disponíveis.
 
-**Validação:** exemplos correspondem aos `.env.example`, Dockerfiles e `compose.yaml` reais.
+**Validação:** exemplos correspondem aos `.env.example` e processos reais; a ausência de Dockerfile do frontend, proxy e `compose.yaml` está declarada sem comandos fictícios.
 
 ### Task 87 — Executar auditoria de ausência de redundância
 
-- [ ] Confirmar ausência de `templates/` e `static/` legados.
-- [ ] Confirmar ausência de `Jinja2Templates`, `StaticFiles` e `CONVERTER_CONFIG`.
-- [ ] Confirmar ausência de `window.converterConfig` e Tailwind CDN.
-- [ ] Confirmar que há um único pacote Python em `backend/app/`.
-- [ ] Confirmar que há um único catálogo visual dos conversores.
-- [ ] Confirmar que há uma única função de transporte e uma única implementação de download.
-- [ ] Confirmar ausência de Route Handlers e Server Actions de conversão.
-- [ ] Confirmar que não existem pastas genéricas proibidas nem imports profundos burlando a API pública.
+- [x] Confirmar ausência de `templates/` e `static/` legados.
+- [x] Confirmar ausência de `Jinja2Templates`, `StaticFiles` e `CONVERTER_CONFIG`.
+- [x] Confirmar ausência de `window.converterConfig` e Tailwind CDN.
+- [x] Confirmar que há um único pacote Python em `backend/app/`.
+- [x] Confirmar que há um único catálogo visual dos conversores.
+- [x] Confirmar que há uma única função de transporte e uma única implementação de download.
+- [x] Confirmar ausência de Route Handlers e Server Actions de conversão.
+- [x] Confirmar que não existem pastas genéricas proibidas nem imports profundos burlando a API pública.
 
 **Validação:** buscas registradas no PR não encontram implementações concorrentes.
 
 ### Task 88 — Executar auditoria de escopo e paridade
 
-- [ ] Comparar textos, ícones, URLs e estados com o baseline.
-- [ ] Comparar desktop e mobile com as evidências aprovadas.
-- [ ] Confirmar exatamente cinco conversores.
-- [ ] Confirmar ausência de autenticação, histórico, preview, batch ou outras features adiadas.
-- [ ] Confirmar contratos multipart, status, MIME e erro dos cinco endpoints.
-- [ ] Registrar diferenças inevitáveis e obter aprovação explícita, ou corrigi-las antes do merge.
+- [x] Comparar textos, ícones, URLs e estados com o baseline.
+- [x] Comparar desktop e mobile com as evidências aprovadas.
+- [x] Confirmar exatamente cinco conversores.
+- [x] Confirmar ausência de autenticação, histórico, preview, batch ou outras features adiadas.
+- [x] Confirmar contratos multipart, status, MIME e erro dos cinco endpoints.
+- [x] Registrar diferenças inevitáveis e obter aprovação explícita, ou corrigi-las antes do merge. A aceitação visual e a decisão de não versionar PNGs foram registradas no Grupo 13.
 
 **Validação:** não existe mudança funcional ou visual intencional fora do PRD.
 
 ### Task 89 — Executar todos os gates finais
 
-- [ ] Criar instalação Python limpa e executar todos os testes backend duas vezes.
-- [ ] Criar instalação npm limpa pelo lockfile.
-- [ ] Executar lint, typecheck, testes e coverage do frontend.
-- [ ] Executar build de produção do Next.js.
-- [ ] Executar E2E rápido e comparações visuais.
-- [ ] Executar smoke entre processos.
-- [ ] Construir imagens de frontend e backend.
-- [ ] Subir e validar a composição completa.
-- [ ] Executar `git diff --check`.
-- [ ] Confirmar que as validações não deixam arquivos não rastreados.
+- [!] Criar instalação Python limpa e executar todos os testes backend duas vezes. A instalação limpa Python 3.10 foi iniciada, mas ficou sem espaço em disco; no ambiente 3.10 existente, `pip check` passou e 52 testes passaram duas vezes.
+- [x] Criar instalação npm limpa pelo lockfile.
+- [x] Executar lint, typecheck, testes e coverage do frontend.
+- [x] Executar build de produção do Next.js.
+- [x] Executar E2E rápido e comparações visuais.
+- [x] Executar smoke entre processos.
+- [!] Construir imagens de frontend e backend. Não executado: Grupo 14 adiado e runtime de containers indisponível.
+- [!] Subir e validar a composição completa. Não existe `compose.yaml`: Grupo 14 adiado.
+- [x] Executar `git diff --check`.
+- [x] Confirmar que as validações não deixam artefatos não rastreados; somente os quatro documentos intencionais compõem o diff.
 
-**Validação:** todos os gates da seção 11.4 do PRD passam em ambiente limpo.
+**Validação parcial:** todos os gates sem containers passaram. A instalação Python limpa ficou sem espaço, e os gates de imagens/Compose permanecem adiados com o Grupo 14.
 
 ### Task 90 — Encerrar o PRD e o backlog
 
-- [ ] Atualizar o status do PRD de `Proposto` para `Concluído` somente após todos os gates.
-- [ ] Adicionar data de conclusão e resumo de resultados ao PRD.
-- [ ] Marcar todas as tasks efetivamente concluídas neste backlog.
-- [ ] Registrar desvios aprovados, decisões de versão e follow-ups fora do escopo.
-- [ ] Auditar os 15 commits e PRs na ordem planejada.
-- [ ] Confirmar que cada grupo possui branch/PR rastreável.
+- [!] Atualizar o status do PRD de `Proposto` para `Concluído` somente após todos os gates. O status foi atualizado para `Em andamento — Grupo 14 adiado`, pois a definição de pronto não foi atingida.
+- [!] Adicionar data de conclusão e resumo de resultados ao PRD. Foi adicionada a data da auditoria e um resumo parcial; não há data de conclusão porque o PRD permanece em andamento.
+- [x] Marcar todas as tasks efetivamente concluídas neste backlog.
+- [x] Registrar desvios aprovados, decisões de versão e follow-ups fora do escopo.
+- [!] Auditar os 15 commits e PRs na ordem planejada. A base estrutural e os Grupos 1–13 possuem 14 PRs incorporados; o PR do Grupo 14 não existe porque o grupo foi adiado.
+- [!] Confirmar que cada grupo possui branch/PR rastreável. Grupos 1–13 confirmados; Grupo 14 sem branch/PR por decisão do responsável.
 
 **Validação:** PRD e backlog refletem o estado real do repositório e não antecipam conclusão.
 
 ### Task 91 — Publicar o PR final de documentação
 
-- [ ] Revisar que o diff contém somente documentação e ajustes finais estritamente necessários à precisão.
-- [ ] Executar novamente os gates afetados por qualquer ajuste final.
-- [ ] Criar o commit `docs(architecture): complete Next.js migration`.
-- [ ] Publicar `docs/complete-nextjs-migration`.
-- [ ] Abrir o PR com links para os 14 PRs anteriores e o relatório de validação final.
-- [ ] Aguardar todos os checks e aprovação.
-- [ ] Entregar o PR pronto e aguardar o merge manual e a remoção da branch pelo responsável.
-- [ ] Confirmar `main` sincronizada e working tree limpo.
+- [x] Revisar que o diff contém somente documentação e ajustes finais estritamente necessários à precisão.
+- [x] Executar novamente os gates afetados por qualquer ajuste final.
+- [x] Criar o commit `docs(architecture): complete Next.js migration`.
+- [x] Publicar `docs/complete-nextjs-migration`.
+- [x] Abrir o PR com links para os 14 PRs anteriores e o relatório de validação final.
+- [-] Aguardar todos os checks e aprovação.
+- [-] Entregar o PR pronto e aguardar o merge manual e a remoção da branch pelo responsável.
+- [x] Confirmar `main` sincronizada na criação da branch e working tree limpo após a publicação.
 
-**Validação:** PR final incorporado, série completa auditável e definição de pronto atendida.
+**Evidência de execução:** o README foi refeito para a arquitetura Next.js/FastAPI e documenta execução local, ambiente público, CORS, temporários, cinco endpoints e todos os comandos de qualidade. As auditorias não encontraram frontend legado, APIs intermediárias, catálogos ou transportes concorrentes. Backend passou 52 testes duas vezes; frontend passou instalação pelo lockfile, lint, typecheck, 49 testes, cobertura e build; Playwright passou 8/8 duas vezes, smoke 1/1 e visual 4/4. A instalação Python 3.10 limpa ficou sem espaço em disco, mas `pip check` e as duas passagens passaram no ambiente 3.10 existente. Grupo 14, imagens e Compose permanecem explicitamente adiados; por isso, o PRD segue `Em andamento`. O relatório registra os PRs #1–#14, nenhum PNG foi versionado, as portas 3100/8000 foram liberadas e `git diff --check` passou.
+
+**Validação parcial:** PR documental pronto para revisão; a série executada está auditável, mas a definição de pronto depende do Grupo 14.
 
 ## 19. Matriz de rastreabilidade do PRD
 

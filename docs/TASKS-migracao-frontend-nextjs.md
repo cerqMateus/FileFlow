@@ -808,7 +808,7 @@ Cada descrição de PR deverá informar:
 - [x] Executar `git diff --check`.
 - [x] Criar o commit `test(frontend): cover conversion workflow`.
 - [x] Publicar `test/frontend-conversion-flow` e abrir o PR.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 11.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 11.
 
 **Evidência de execução:** Vitest 4.1.10 executou 49 testes em seis arquivos, duas vezes sem flakiness e novamente sob coverage V8. A cobertura global ficou em 89,61% de statements, 81% de branches, 97,36% de functions e 89,54% de lines. Os testes do Grupo 10 cobrem o contrato multipart dos cinco conversores, estados e prevenção de reenvio, downloads desktop e móvel, timers e cleanup, além de erros estruturados, não estruturados, vazios e de rede. Em conjunto com o Grupo 9, todos os itens da seção 11.2 do PRD estão cobertos. Lint, typecheck, build de produção e `git diff --check` passaram; nenhum código de produção foi alterado.
 
@@ -822,55 +822,57 @@ Cada descrição de PR deverá informar:
 
 ### Task 61 — Definir configuração tipada de origens
 
-- [ ] Criar configuração backend com uma única fonte para origens permitidas.
-- [ ] Ler uma lista explícita de variável de ambiente.
-- [ ] Normalizar espaços e entradas vazias.
-- [ ] Validar esquema e protocolo das origens.
-- [ ] Proibir `*` quando credenciais ou ambiente de produção tornarem isso inseguro.
-- [ ] Definir valor local seguro compatível com a porta de desenvolvimento do Next.js.
+- [x] Criar configuração backend com uma única fonte para origens permitidas.
+- [x] Ler uma lista explícita de variável de ambiente.
+- [x] Normalizar espaços e entradas vazias.
+- [x] Validar esquema e protocolo das origens.
+- [x] Proibir `*` quando credenciais ou ambiente de produção tornarem isso inseguro.
+- [x] Definir valor local seguro compatível com a porta de desenvolvimento do Next.js.
 
 **Validação:** configuração válida produz lista determinística e configuração inválida falha no startup com mensagem clara.
 
 ### Task 62 — Aplicar CORS no FastAPI
 
-- [ ] Adicionar `CORSMiddleware` na composição da aplicação.
-- [ ] Permitir somente métodos necessários aos fluxos atuais e preflight.
-- [ ] Permitir somente headers necessários.
-- [ ] Não habilitar credenciais sem necessidade do produto atual.
-- [ ] Não alterar endpoints, respostas ou OpenAPI das conversões.
+- [x] Adicionar `CORSMiddleware` na composição da aplicação.
+- [x] Permitir somente métodos necessários aos fluxos atuais e preflight.
+- [x] Permitir somente headers necessários.
+- [x] Não habilitar credenciais sem necessidade do produto atual.
+- [x] Não alterar endpoints, respostas ou OpenAPI das conversões.
 
 **Validação:** requests same-origin continuam funcionando e cross-origin permitido recebe headers corretos.
 
 ### Task 63 — Criar exemplos de ambiente
 
-- [ ] Criar `backend/.env.example` sem segredos.
-- [ ] Documentar a origem local do frontend.
-- [ ] Documentar múltiplas origens quando suportadas.
-- [ ] Garantir que `.env` real permaneça ignorado.
-- [ ] Não duplicar a mesma configuração em módulo e documentação executável.
+- [x] Criar `backend/.env.example` sem segredos.
+- [x] Documentar a origem local do frontend.
+- [x] Documentar múltiplas origens quando suportadas.
+- [x] Garantir que `.env` real permaneça ignorado.
+- [x] Não duplicar a mesma configuração em módulo e documentação executável.
 
 **Validação:** uma pessoa consegue iniciar os dois serviços localmente copiando somente os exemplos documentados.
 
 ### Task 64 — Testar CORS positivo e negativo
 
-- [ ] Testar preflight de uma origem permitida.
-- [ ] Testar POST ou resposta aplicável com origem permitida.
-- [ ] Testar origem não permitida.
-- [ ] Testar configuração com múltiplas origens.
-- [ ] Testar entrada inválida ou wildcard proibido.
-- [ ] Confirmar que os fakes de conversão continuam isolando engines externas.
+- [x] Testar preflight de uma origem permitida.
+- [x] Testar POST ou resposta aplicável com origem permitida.
+- [x] Testar origem não permitida.
+- [x] Testar configuração com múltiplas origens.
+- [x] Testar entrada inválida ou wildcard proibido.
+- [x] Confirmar que os fakes de conversão continuam isolando engines externas.
 
 **Validação:** allowlist é comprovada por testes positivos e negativos.
 
 ### Task 65 — Publicar o PR de CORS
 
-- [ ] Executar testes Python duas vezes.
-- [ ] Executar os testes frontend existentes.
-- [ ] Comparar o OpenAPI das conversões.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `chore(backend): configure frontend origins`.
-- [ ] Publicar `chore/backend-cors` e abrir o PR.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 12.
+- [x] Executar testes Python duas vezes.
+- [x] Executar os testes frontend existentes.
+- [x] Comparar o OpenAPI das conversões.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `chore(backend): configure frontend origins`.
+- [x] Publicar `chore/backend-cors` e abrir o PR.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 12.
+
+**Evidência de execução:** a configuração `BACKEND_CORS_ORIGINS` possui default local `http://localhost:3000`, normaliza espaços, entradas vazias, duplicatas e portas padrão, valida URLs HTTP(S) e rejeita wildcard, credenciais, paths, queries, fragments e valores vazios ou malformados. O `CORSMiddleware` permite apenas origens explícitas, método `POST` e `Content-Type`, sem credenciais; preflight, POST permitido, origem negada, múltiplas origens e restrições de método/header estão cobertos com adapters fake. A suíte backend final executou 46 testes duas vezes; os 49 testes frontend passaram. O hash do OpenAPI dos cinco conversores permaneceu `f5ef4ab9883d88bc8fc513623f591b98727d394c6d1caf08c9a9cf65720233c7`, idêntico ao baseline. `.env` real permanece ignorado, `backend/.env.example` não contém segredos e `git diff --check` passou.
 
 **Validação:** PR incorporado e frontend separado autorizado somente por configuração explícita.
 

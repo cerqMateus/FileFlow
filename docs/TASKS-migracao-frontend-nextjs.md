@@ -870,7 +870,7 @@ Cada descrição de PR deverá informar:
 - [x] Executar `git diff --check`.
 - [x] Criar o commit `chore(backend): configure frontend origins`.
 - [x] Publicar `chore/backend-cors` e abrir o PR.
-- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 12.
+- [x] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 12.
 
 **Evidência de execução:** a configuração `BACKEND_CORS_ORIGINS` possui default local `http://localhost:3000`, normaliza espaços, entradas vazias, duplicatas e portas padrão, valida URLs HTTP(S) e rejeita wildcard, credenciais, paths, queries, fragments e valores vazios ou malformados. O `CORSMiddleware` permite apenas origens explícitas, método `POST` e `Content-Type`, sem credenciais; preflight, POST permitido, origem negada, múltiplas origens e restrições de método/header estão cobertos com adapters fake. A suíte backend final executou 46 testes duas vezes; os 49 testes frontend passaram. O hash do OpenAPI dos cinco conversores permaneceu `f5ef4ab9883d88bc8fc513623f591b98727d394c6d1caf08c9a9cf65720233c7`, idêntico ao baseline. `.env` real permanece ignorado, `backend/.env.example` não contém segredos e `git diff --check` passou.
 
@@ -884,66 +884,70 @@ Cada descrição de PR deverá informar:
 
 ### Task 66 — Remover composição HTML do FastAPI
 
-- [ ] Remover o módulo temporário de rotas legadas criado no Grupo 3.
-- [ ] Remover handlers `GET /` e `GET /converter/{from_format}/{to_format}` do backend.
-- [ ] Remover montagem `/static`.
-- [ ] Remover configuração de `Jinja2Templates`.
-- [ ] Remover imports de `Request`, `StaticFiles` e `Jinja2Templates` sem consumidores.
-- [ ] Manter Swagger/OpenAPI técnico do FastAPI.
+- [x] Remover o módulo temporário de rotas legadas criado no Grupo 3.
+- [x] Remover handlers `GET /` e `GET /converter/{from_format}/{to_format}` do backend.
+- [x] Remover montagem `/static`.
+- [x] Remover configuração de `Jinja2Templates`.
+- [x] Remover imports de `Request`, `StaticFiles` e `Jinja2Templates` sem consumidores.
+- [x] Manter Swagger/OpenAPI técnico do FastAPI.
 
 **Validação:** inventário de rotas contém API técnica e os cinco POSTs, mas nenhuma página do produto ou mount estático.
 
 ### Task 67 — Excluir todos os arquivos de frontend legado
 
-- [ ] Excluir `backend/templates/home.html`.
-- [ ] Excluir `backend/templates/converter.html`.
-- [ ] Excluir `backend/templates/index.html`.
-- [ ] Excluir `backend/static/script.js`.
-- [ ] Remover os diretórios vazios `templates/` e `static/`.
-- [ ] Confirmar que não existem cópias equivalentes em outro caminho.
+- [x] Excluir `backend/templates/home.html`.
+- [x] Excluir `backend/templates/converter.html`.
+- [x] Excluir `backend/templates/index.html`.
+- [x] Excluir `backend/static/script.js`.
+- [x] Remover os diretórios vazios `templates/` e `static/`.
+- [x] Confirmar que não existem cópias equivalentes em outro caminho.
 
 **Validação:** buscas por nomes e trechos exclusivos do legado não encontram uma segunda implementação.
 
 ### Task 68 — Remover catálogo visual do backend
 
-- [ ] Excluir `CONVERTER_CONFIG`.
-- [ ] Remover títulos, descrições, ícones e labels exclusivos da interface.
-- [ ] Confirmar que mensagens HTTP dos endpoints não foram confundidas com textos visuais e removidas.
-- [ ] Confirmar que o catálogo tipado do frontend é a única fonte de apresentação.
+- [x] Excluir `CONVERTER_CONFIG`.
+- [x] Remover títulos, descrições, ícones e labels exclusivos da interface.
+- [x] Confirmar que mensagens HTTP dos endpoints não foram confundidas com textos visuais e removidas.
+- [x] Confirmar que o catálogo tipado do frontend é a única fonte de apresentação.
 
 **Validação:** backend não conhece navegação nem metadados de UI.
 
 ### Task 69 — Limpar dependências e configuração obsoletas
 
-- [ ] Remover Jinja2 das dependências diretas.
-- [ ] Remover MarkupSafe somente se não for exigida transitivamente e não houver uso direto.
-- [ ] Atualizar lock/inventário Python conforme o padrão existente.
-- [ ] Remover paths de templates e static da configuração do backend.
-- [ ] Atualizar Dockerfile para não copiar ou preparar recursos removidos.
+- [x] Remover Jinja2 das dependências diretas.
+- [x] Remover MarkupSafe somente se não for exigida transitivamente e não houver uso direto.
+- [x] Atualizar lock/inventário Python conforme o padrão existente.
+- [x] Remover paths de templates e static da configuração do backend.
+- [x] Atualizar Dockerfile para não copiar ou preparar recursos removidos.
 
 **Validação:** instalação limpa e importação do backend funcionam sem dependências diretas do frontend legado.
 
 ### Task 70 — Provar ausência do legado por testes e buscas
 
-- [ ] Adicionar teste de ausência das rotas HTML do produto.
-- [ ] Adicionar teste de ausência do mount `/static`.
-- [ ] Buscar `Jinja2Templates`, `StaticFiles`, `CONVERTER_CONFIG` e `window.converterConfig`.
-- [ ] Buscar `cdn.tailwindcss.com` em todo o repositório.
-- [ ] Buscar diretórios `templates` e `static` fora de dependências ignoradas.
-- [ ] Confirmar que os cinco endpoints continuam cobertos e inalterados.
+- [x] Adicionar teste de ausência das rotas HTML do produto.
+- [x] Adicionar teste de ausência do mount `/static`.
+- [x] Buscar `Jinja2Templates`, `StaticFiles`, `CONVERTER_CONFIG` e `window.converterConfig`.
+- [x] Buscar `cdn.tailwindcss.com` em todo o repositório.
+- [x] Buscar diretórios `templates` e `static` fora de dependências ignoradas.
+- [x] Confirmar que os cinco endpoints continuam cobertos e inalterados.
 
 **Validação:** testes e buscas falhariam se o legado fosse reintroduzido.
 
 ### Task 71 — Publicar o PR de remoção
 
-- [ ] Executar testes Python duas vezes.
-- [ ] Executar lint, typecheck, testes e build do frontend.
-- [ ] Construir a imagem do backend.
-- [ ] Executar `git diff --check`.
-- [ ] Criar o commit `refactor(backend): remove legacy frontend`.
-- [ ] Publicar `refactor/backend-api-only` e abrir o PR.
-- [ ] Destacar exclusões materiais e recuperação possível pelo histórico Git.
-- [ ] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 13.
+- [x] Executar testes Python duas vezes.
+- [x] Executar lint, typecheck, testes e build do frontend.
+- [!] Construir a imagem do backend. Bloqueado pela ausência de Docker, Podman e distribuição WSL; adiamento até o Grupo 14 já autorizado no Grupo 2.
+- [x] Executar `git diff --check`.
+- [x] Criar o commit `refactor(backend): remove legacy frontend`.
+- [x] Publicar `refactor/backend-api-only` e abrir o PR.
+- [x] Destacar exclusões materiais e recuperação possível pelo histórico Git.
+- [-] Entregar o PR pronto e aguardar o merge manual pelo responsável antes de iniciar o Grupo 13.
+
+**Evidência de execução:** o inventário FastAPI foi reduzido de 12 para nove entradas: quatro rotas técnicas de Swagger/OpenAPI e os cinco POSTs de conversão. `/`, `/converter/pdf/docx` e `/static/script.js` agora retornam 404; não existe mount nem diretório `static`, diretório `templates`, módulo `legacy_frontend.py`, catálogo visual ou referência executável a Jinja/Tailwind legado. Jinja2 e MarkupSafe foram removidos das dependências diretas, `pip check` passou e a aplicação importa com nove rotas. O Dockerfile copia somente `app/`. A suíte backend final executou 52 testes duas vezes; lint, typecheck, 49 testes e build do frontend passaram. O OpenAPI dos conversores manteve o hash `f5ef4ab9883d88bc8fc513623f591b98727d394c6d1caf08c9a9cf65720233c7`, e `git diff --check` passou. O build da imagem foi tentado, mas o comando `docker` permanece indisponível no ambiente, sem Podman ou distribuição WSL alternativa.
+
+**Exclusões e recuperação:** `backend/app/legacy_frontend.py`, os três templates HTML e `backend/static/script.js` foram excluídos intencionalmente. Todo o conteúdo pode ser recuperado pelo histórico Git do commit anterior a este grupo.
 
 **Validação:** PR incorporado; FastAPI atua somente como API e não existe frontend redundante.
 

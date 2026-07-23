@@ -11,7 +11,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src e2e next.config.ts postcss.config.mjs eslint.config.mjs vitest.config.ts playwright.config.ts playwright.smoke.config.ts playwright.visual.config.ts playwright.shared.ts --max-warnings=0",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "lint": "eslint src e2e next.config.ts drizzle.config.ts postcss.config.mjs eslint.config.mjs vitest.config.ts playwright.config.ts playwright.smoke.config.ts playwright.visual.config.ts playwright.shared.ts --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -20,11 +23,16 @@
     "test:e2e:visual": "cross-env NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 npm run build && playwright test --config=playwright.visual.config.ts"
   },
   "dependencies": {
+    "better-auth": "1.6.25",
+    "drizzle-orm": "0.45.2",
+    "pg": "8.22.0",
     "next": "16.2.10",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@next/env": "16.2.10",
     "@playwright/test": "1.61.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.1",
@@ -32,8 +40,11 @@
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "@types/node": "24.13.3",
+    "@types/pg": "8.20.0",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "auth": "1.6.25",
+    "drizzle-kit": "0.31.10",
     "@vitejs/plugin-react": "6.0.3",
     "@vitest/coverage-v8": "4.1.10",
     "cross-env": "10.1.0",

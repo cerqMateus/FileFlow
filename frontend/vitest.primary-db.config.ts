@@ -4,10 +4,16 @@ import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+import { configurePrimaryAuthTestEnvironment } from "./src/test/primary-auth-environment";
+
 const localEnvironment = loadEnv("development", process.cwd(), "");
 for (const [name, value] of Object.entries(localEnvironment)) {
   process.env[name] ??= value;
 }
+
+configurePrimaryAuthTestEnvironment(
+  "https://fileflow-auth-test.invalid",
+);
 
 export default defineConfig({
   plugins: [tsconfigPaths()],

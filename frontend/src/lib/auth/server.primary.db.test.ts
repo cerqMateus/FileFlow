@@ -29,23 +29,7 @@ let auth: AuthInstance;
 let pool: DatabasePool;
 
 function configureEnvironment(): void {
-  if (process.env.ALLOW_PRIMARY_AUTH_TESTS !== "true") {
-    throw new Error(
-      "Testes no banco principal exigem ALLOW_PRIMARY_AUTH_TESTS=true.",
-    );
-  }
-
-  const databaseUrl = process.env.DATABASE_URL ?? process.env.CONNECTION_STRING;
-  if (databaseUrl === undefined || databaseUrl === "") {
-    throw new Error("DATABASE_URL ou CONNECTION_STRING deve ser definida.");
-  }
-
-  process.env.DATABASE_URL = databaseUrl;
   Object.assign(process.env, { NODE_ENV: "production", TEST: "false" });
-  process.env.BETTER_AUTH_SECRET =
-    "primary-database-integration-test-secret-32";
-  process.env.BETTER_AUTH_URL = AUTH_ORIGIN;
-  process.env.BETTER_AUTH_TRUSTED_ORIGINS = AUTH_ORIGIN;
 }
 
 function request(
@@ -114,6 +98,20 @@ afterAll(async () => {
 });
 
 describe.sequential("Better Auth no banco principal", () => {
+  it("confirma o histórico aplicado de migrations sem alterar o schema", async () => {
+    const migrationTable = await pool.query<{ name: string | null }>(
+      "select to_regclass('drizzle.__drizzle_migrations')::text as name",
+    );
+    expect(migrationTable.rows[0]?.name).toBe(
+      "drizzle.__drizzle_migrations",
+    );
+
+    const migrationCount = await pool.query<{ count: number }>(
+      'select count(*)::int as count from "drizzle"."__drizzle_migrations"',
+    );
+    expect(migrationCount.rows[0]?.count).toBeGreaterThanOrEqual(1);
+  });
+
   it("cobre cadastro, sessão, login, expiração e logout com limpeza própria", async () => {
     const anonymous = await request("/get-session");
     expect(anonymous.status).toBe(200);

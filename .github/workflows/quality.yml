@@ -1,0 +1,84 @@
+name: Quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+      DATABASE_URL: postgresql://fileflow_owner:ci-placeholder@ep-fileflow-ci-pooler.sa-east-1.aws.neon.tech/fileflow_ci?sslmode=require
+      DATABASE_MIGRATION_URL: postgresql://fileflow_owner:ci-placeholder@ep-fileflow-ci.sa-east-1.aws.neon.tech/fileflow_ci?sslmode=require
+      BETTER_AUTH_SECRET: ci-only-secret-at-least-32-characters-long
+      BETTER_AUTH_URL: http://127.0.0.1:3100
+      BETTER_AUTH_TRUSTED_ORIGINS: http://127.0.0.1:3100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:coverage
+      - run: npm run audit:auth:schema
+      - run: npm run build
+      - run: npm run audit:bundle
+      - run: npm run test:e2e
+      - run: npm run test:e2e:visual
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - run: python -m pip install -r backend/requirements-dev.txt
+      - run: python -m pytest backend/tests
+
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      DATABASE_URL: postgresql://fileflow_owner:ci-placeholder@ep-fileflow-ci-pooler.sa-east-1.aws.neon.tech/fileflow_ci?sslmode=require
+      BETTER_AUTH_SECRET: ci-only-secret-at-least-32-characters-long
+      BETTER_AUTH_URL: http://127.0.0.1:3100
+      BETTER_AUTH_TRUSTED_ORIGINS: http://127.0.0.1:3100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: python -m pip install -r ../backend/requirements-dev.txt
+      - run: npm run test:e2e:smoke

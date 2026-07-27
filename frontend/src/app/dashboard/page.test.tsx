@@ -10,6 +10,9 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/auth/session", () => ({
   getServerSession: mocks.getServerSession,
 }));
+vi.mock("@/features/auth", () => ({
+  LogoutButton: () => <button type="button">Sair</button>,
+}));
 vi.mock("next/headers", () => ({ headers: mocks.headers }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 
@@ -37,7 +40,7 @@ describe("DashboardPage", () => {
     );
   });
 
-  it("renderiza somente conteúdo mínimo após validação server-side", async () => {
+  it("renderiza os dados da sessão após validação server-side", async () => {
     const requestHeaders = new Headers({ cookie: "session=opaque" });
     mocks.headers.mockResolvedValue(requestHeaders);
     mocks.getServerSession.mockResolvedValue({
@@ -55,7 +58,9 @@ describe("DashboardPage", () => {
       screen.getByRole("heading", { level: 1, name: "Área protegida" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Sessão autenticada")).toBeInTheDocument();
-    expect(screen.queryByText("pessoa@example.test")).not.toBeInTheDocument();
+    expect(screen.getByText("Pessoa Teste")).toBeInTheDocument();
+    expect(screen.getByText("pessoa@example.test")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sair" })).toBeInTheDocument();
     expect(mocks.getServerSession).toHaveBeenCalledWith(requestHeaders);
   });
 });

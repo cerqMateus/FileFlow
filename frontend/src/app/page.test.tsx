@@ -22,8 +22,14 @@ describe("HomePage", () => {
   it("renderiza exatamente os cinco cards com links acessíveis", () => {
     render(<HomePage />);
 
-    const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(5);
+    expect(screen.getByRole("link", { name: "Entrar" })).toHaveAttribute(
+      "href",
+      "/auth",
+    );
+    expect(screen.getByRole("link", { name: "Criar conta" })).toHaveAttribute(
+      "href",
+      "/auth?modo=cadastro",
+    );
 
     for (const converter of listConverters()) {
       const link = screen.getByRole("link", {
@@ -42,5 +48,10 @@ describe("HomePage", () => {
         within(link).getByText(getHomeDescription(converter)),
       ).toBeInTheDocument();
     }
+
+    const converterLinks = listConverters().map((converter) =>
+      screen.getByRole("link", { name: new RegExp(converter.title, "i") }),
+    );
+    expect(converterLinks).toHaveLength(5);
   });
 });

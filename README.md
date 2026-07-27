@@ -4,7 +4,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.123.4-009688?logo=fastapi)
 ![Next.js](https://img.shields.io/badge/Next.js-16.2.10-black?logo=next.js)
 
-O FileFlow converte documentos e imagens por meio de dois workspaces independentes: uma interface Next.js e uma API FastAPI. O navegador envia o arquivo diretamente ao backend, recebe a resposta binária e inicia o download localmente.
+O FileFlow converte documentos e imagens por meio de dois workspaces independentes: uma interface Next.js e uma API FastAPI. O navegador envia o arquivo diretamente ao backend, recebe a resposta binária e inicia o download localmente. O frontend também oferece autenticação persistente com Better Auth, Drizzle ORM e PostgreSQL Neon; os conversores continuam públicos.
 
 ## Conversões suportadas
 
@@ -36,16 +36,18 @@ FileFlow/
 ├── frontend/
 │   ├── e2e/                  # Playwright
 │   ├── src/
-│   │   ├── app/              # App Router e páginas
-│   │   ├── config/           # configuração pública validada
-│   │   └── features/conversion/
+│   │   ├── app/              # App Router, páginas e Route Handler de auth
+│   │   ├── config/           # configuração pública e privada validada
+│   │   ├── db/               # conexão e schema Drizzle
+│   │   └── features/         # autenticação e conversão
+│   ├── drizzle/              # migration SQL e metadados versionados
 │   ├── package.json
 │   └── package-lock.json
 ├── docs/
 └── README.md
 ```
 
-O FastAPI serve somente a API e sua documentação técnica. A home e as páginas de conversão são renderizadas exclusivamente pelo Next.js. Não existem templates Jinja2, arquivos estáticos legados, Route Handlers ou Server Actions intermediando uploads.
+O FastAPI serve somente a API e sua documentação técnica. A home, autenticação, dashboard e páginas de conversão são renderizadas pelo Next.js. O único Route Handler do frontend delega `/api/auth/*` ao Better Auth; nenhum Route Handler ou Server Action intermedeia uploads.
 
 ### Rotas da interface
 
@@ -57,6 +59,9 @@ O FastAPI serve somente a API e sua documentação técnica. A home e as página
 | `/converter/pdf/svg` | PDF para SVG |
 | `/converter/jpg/png` | JPG para PNG |
 | `/converter/png/jpg` | PNG para JPG |
+| `/auth` | Login; use `?modo=cadastro` para criar conta |
+| `/dashboard` | Área autenticada com nome, e-mail e logout |
+| `/api/auth/*` | Endpoints nativos do Better Auth |
 | Qualquer par não suportado | Página 404 |
 
 ## Pré-requisitos
@@ -65,6 +70,8 @@ O FastAPI serve somente a API e sua documentação técnica. A home e as página
 - Node.js 24.18.x e npm 11.16.x;
 - LibreOffice disponível no `PATH` para DOCX → PDF;
 - Chromium do Playwright para os testes end-to-end.
+- acesso autorizado ao banco Neon principal, com URLs pooled e direta;
+- um secret aleatório de pelo menos 32 caracteres para o Better Auth.
 
 No Windows, instale o LibreOffice e, se necessário, adicione seu diretório de programas à sessão:
 
@@ -119,7 +126,7 @@ Copy-Item .env.example .env.local
 npm run dev
 ```
 
-A interface estará em [http://localhost:3000](http://localhost:3000).
+Substitua todos os placeholders de `.env.local` localmente e nunca envie esse arquivo ao Git. A interface estará em [http://localhost:3000](http://localhost:3000).
 
 ## Configuração
 
@@ -138,6 +145,18 @@ No desenvolvimento com portas separadas, use:
 ```dotenv
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
+
+### Autenticação e banco
+
+| Variável | Escopo | Uso |
+| --- | --- | --- |
+| `DATABASE_URL` | Servidor | conexão pooled do Neon usada em runtime |
+| `DATABASE_MIGRATION_URL` | Ferramenta administrativa | conexão direta usada apenas pelo Drizzle Kit |
+| `BETTER_AUTH_SECRET` | Servidor | assinatura/criptografia; mínimo de 32 caracteres |
+| `BETTER_AUTH_URL` | Servidor | origem canônica exata do frontend |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Servidor | origens explícitas separadas por vírgula |
+
+`DATABASE_URL`, URLs de migration e secrets nunca podem possuir prefixo `NEXT_PUBLIC_`. A aplicação não executa migrations ao iniciar. Consulte o [runbook de autenticação](docs/RUNBOOK-auth.md) antes de aplicar migration, rotacionar secret, configurar preview ou realizar rollback.
 
 ### `BACKEND_CORS_ORIGINS`
 
@@ -174,7 +193,19 @@ npm run typecheck
 npm test
 npm run test:coverage
 npm run build
+npm run audit:bundle
+npm run audit:auth:schema
 ```
+
+Os testes que persistem autenticação usam exclusivamente o banco principal por decisão do projeto. Eles não fazem parte de `npm test`, não aplicam migrations e exigem opt-in explícito:
+
+```powershell
+cd frontend
+npm run test:auth:primary
+npm run test:auth:primary:e2e
+```
+
+Essas suítes usam um worker, e-mails/IPs exclusivos e removem por igualdade exata somente os registros criados na execução. Não as execute em paralelo. O workflow `Primary database authentication checks` também exige disparo manual, confirmação textual, environment protegido e o secret `PRIMARY_DATABASE_URL`.
 
 ### End-to-end
 
@@ -196,6 +227,7 @@ npm run test:e2e:visual
 - `test:e2e` usa respostas de rede determinísticas, cobre os cinco conversores e não aciona engines reais;
 - `test:e2e:smoke` inicia Next.js e FastAPI separadamente e valida uma chamada real, CORS e ausência de API intermediária;
 - `test:e2e:visual` usa o build de produção, valida layouts desktop/mobile e gera capturas efêmeras em `test-results/`.
+- `test:auth:primary:e2e` cobre cadastro, login, reload, proteção, callbacks, logout e ausência de credenciais no Web Storage contra o banco principal.
 
 Capturas, traces e relatórios são ignorados pelo Git. Não há snapshots PNG versionados.
 
@@ -222,9 +254,13 @@ A separação de runtime planejada foi adiada. Atualmente:
 
 Não trate o Dockerfile atual como implantação completa do produto. Até a implementação dessa etapa, execute frontend e backend como processos locais separados conforme as instruções acima.
 
+## Operação e release
+
+Os gates sem persistência rodam automaticamente em pull requests por `.github/workflows/quality.yml`. Testes contra o banco principal permanecem manuais. Domínio, trusted origins, cookies HTTPS, conectividade e smoke devem ser validados em preview/staging antes do rollout. A ordem de migration, deploy, smoke, monitoramento e recuperação está em [docs/RUNBOOK-auth.md](docs/RUNBOOK-auth.md).
+
 ## Limites intencionais
 
-O produto possui exatamente cinco conversores. Autenticação, histórico, preview, processamento em lote, fila de jobs, progresso real, analytics e novos formatos não fazem parte da implementação atual.
+O produto possui exatamente cinco conversores. Autenticação existe somente para `/dashboard`; histórico, verificação de e-mail, recuperação de senha, login social, processamento em lote, fila de jobs, progresso real, analytics e novos formatos não fazem parte da implementação atual.
 
 ## Contribuindo
 

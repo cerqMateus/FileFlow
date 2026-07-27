@@ -479,75 +479,77 @@ A suíte deve ser serial, criar e-mails e chaves próprias e deixar zero resídu
 ## 9. Grupo 5 - Qualidade, documentação e release
 
 **Branch:** `chore/auth-release-readiness`
-**Dependência:** Grupo 4 incorporado à `main` e ambiente Neon de testes disponível.
+**Dependência:** Grupo 4 incorporado à `main`; acesso opt-in ao banco Neon principal. Plataforma e domínio são necessários somente para concluir a Task 35.
 
-### Task 30 - Automatizar o banco de testes
+### Task 30 - Automatizar testes seguros no banco principal
 
-- [ ] Definir como o CI obtém uma branch/database Neon isolada.
-- [ ] Garantir que credenciais de testes não tenham acesso à produção.
-- [ ] Aplicar migrations antes da suíte de integração/E2E.
-- [ ] Usar e-mails únicos por execução.
-- [ ] Limpar usuários e registros auxiliares criados pela suíte.
-- [ ] Tornar falha de migration um bloqueio do pipeline.
-- [ ] Redigir secrets em logs e relatórios.
-- [ ] Documentar fallback quando branches efêmeras não estiverem disponíveis.
+- [x] Criar workflow manual protegido, sem execução no CI padrão.
+- [x] Exigir autorização explícita e impedir execuções concorrentes.
+- [x] Confirmar o histórico de migration sem aplicar mudanças durante testes.
+- [x] Usar e-mails únicos por execução.
+- [x] Limpar usuários e registros auxiliares criados pela suíte.
+- [x] Proibir operações estruturais, `TRUNCATE` e limpeza por padrão amplo.
+- [x] Redigir secrets em logs e relatórios.
+- [x] Documentar recuperação de resíduos por identificadores exatos se a execução for interrompida.
 
 **Validação:** duas execuções consecutivas partem de estado controlado e passam sem interferência entre si.
 
 ### Task 31 - Implementar E2E de cadastro e login
 
-- [ ] Testar cadastro válido até `/dashboard`.
-- [ ] Testar confirmação divergente sem request de cadastro.
-- [ ] Testar e-mail duplicado com mensagem segura.
-- [ ] Testar login válido até `/dashboard`.
-- [ ] Testar login inválido sem criar sessão.
-- [ ] Testar persistência da sessão após recarregamento.
-- [ ] Evitar dependência de ordem entre testes.
+- [x] Testar cadastro válido até `/dashboard`.
+- [x] Testar confirmação divergente sem request de cadastro.
+- [x] Testar e-mail duplicado com mensagem segura.
+- [x] Testar login válido até `/dashboard`.
+- [x] Testar login inválido sem criar sessão.
+- [x] Testar persistência da sessão após recarregamento.
+- [x] Evitar dependência de ordem entre testes.
 
-**Validação:** Playwright passa repetidamente contra Next.js e Neon de testes reais.
+**Validação:** Playwright passa repetidamente contra Next.js e o banco Neon principal, em execução opt-in e serial.
 
 ### Task 32 - Implementar E2E de proteção e logout
 
-- [ ] Testar redirecionamento anônimo de `/dashboard`.
-- [ ] Testar retorno por callback interno após login.
-- [ ] Testar rejeição de callback externo e protocol-relative.
-- [ ] Testar exibição de nome/e-mail autenticados.
-- [ ] Testar logout e bloqueio de novo acesso ao dashboard.
-- [ ] Testar labels, teclado e foco no fluxo principal.
-- [ ] Confirmar ausência de token em local/session storage.
+- [x] Testar redirecionamento anônimo de `/dashboard`.
+- [x] Testar retorno por callback interno após login.
+- [x] Testar rejeição de callback externo e protocol-relative.
+- [x] Testar exibição de nome/e-mail autenticados.
+- [x] Testar logout e bloqueio de novo acesso ao dashboard.
+- [x] Testar labels, teclado e foco no fluxo principal.
+- [x] Confirmar ausência de token em local/session storage.
 
 **Validação:** E2E demonstra RF-04 a RF-07 e os controles básicos de segurança do navegador.
 
 ### Task 33 - Executar regressão completa e auditoria de segurança
 
-- [ ] Executar frontend lint, typecheck, testes, cobertura e build.
-- [ ] Executar E2E de autenticação, E2E existente, smoke e visual quando disponível.
-- [ ] Executar a suíte completa do backend FastAPI.
-- [ ] Confirmar que os cinco conversores permanecem públicos.
-- [ ] Confirmar por interceptação de rede que uploads continuam indo ao FastAPI.
-- [ ] Buscar secrets, connection strings, tokens e cookies no diff e bundle.
-- [ ] Inspecionar headers de cookie em build de produção.
-- [ ] Confirmar que logs não capturam corpos de `/api/auth/*`.
-- [ ] Verificar que schema e migrations continuam sincronizados.
+- [x] Executar frontend lint, typecheck, testes, cobertura e build.
+- [x] Executar E2E de autenticação, E2E existente, smoke e visual quando disponível.
+- [x] Executar a suíte completa do backend FastAPI.
+- [x] Confirmar que os cinco conversores permanecem públicos.
+- [x] Confirmar por interceptação de rede que uploads continuam indo ao FastAPI.
+- [x] Buscar secrets, connection strings, tokens e cookies no diff e bundle.
+- [x] Inspecionar headers de cookie em build de produção.
+- [x] Confirmar que logs não capturam corpos de `/api/auth/*`.
+- [x] Verificar que schema e migrations continuam sincronizados.
 
 **Validação:** todos os gates do PRD passam e a auditoria não encontra regressão ou vazamento.
 
 ### Task 34 - Atualizar documentação de setup e operação
 
-- [ ] Atualizar README com infraestrutura e fluxo de autenticação.
-- [ ] Documentar criação segura de `.env.local` a partir de `.env.example`.
-- [ ] Documentar variáveis públicas, privadas e de migration.
-- [ ] Documentar comandos de schema e migrations.
-- [ ] Documentar separação entre runtime pooled e migration direta.
-- [ ] Documentar ambientes Neon e proibição de testes em produção.
-- [ ] Documentar rotação de secret e efeito sobre sessões.
-- [ ] Documentar aplicação de migration antes do deploy dependente.
-- [ ] Documentar recuperação por restore/branch Neon.
-- [ ] Registrar que política de privacidade deve cobrir nome, e-mail e metadados de sessão antes do lançamento público.
+- [x] Atualizar README com infraestrutura e fluxo de autenticação.
+- [x] Documentar criação segura de `.env.local` a partir de `.env.example`.
+- [x] Documentar variáveis públicas, privadas e de migration.
+- [x] Documentar comandos de schema e migrations.
+- [x] Documentar separação entre runtime pooled e migration direta.
+- [x] Documentar a política de banco principal único e os guardrails dos testes opt-in.
+- [x] Documentar rotação de secret e efeito sobre sessões.
+- [x] Documentar aplicação de migration antes do deploy dependente.
+- [x] Documentar recuperação por restore/branch Neon.
+- [x] Registrar que política de privacidade deve cobrir nome, e-mail e metadados de sessão antes do lançamento público.
 
 **Validação:** uma pessoa sem contexto consegue configurar desenvolvimento, testar, migrar e diagnosticar a feature sem receber um secret por canal inseguro.
 
 ### Task 35 - Preparar e validar staging/preview
+
+**Status em 2026-07-27:** os dois deployments Railway encontrados no repositório estão inativos e usam commits anteriores à migração atual. Não existe domínio de preview ativo nem acesso Railway configurado localmente; os itens abaixo permanecem pendentes e bloqueiam a autorização de produção.
 
 - [ ] Definir domínio canônico de staging/preview.
 - [ ] Configurar `BETTER_AUTH_URL` e trusted origins exatas.
@@ -563,13 +565,13 @@ A suíte deve ser serial, criar e-mails e chaves próprias e deixar zero resídu
 
 ### Task 36 - Publicar o PR de release readiness
 
-- [ ] Criar `test(auth): add database and browser coverage` após Tasks 30 a 33.
-- [ ] Criar `docs(auth): document setup and operations` após Tasks 34 e 35.
-- [ ] Executar todos os gates finais e `git diff --check`.
+- [x] Criar `test(auth): add database and browser coverage` após Tasks 30 a 33.
+- [x] Criar `docs(auth): document setup and operations` com o runbook da Task 34 e o checklist pendente da Task 35.
+- [x] Executar todos os gates finais e `git diff --check`.
 - [ ] Incluir no PR matriz dos critérios de aceite e seus testes.
-- [ ] Incluir plano de aplicação da migration de produção.
-- [ ] Incluir plano de rollback de aplicação e recuperação do banco.
-- [ ] Confirmar que nenhuma decisão adiada foi implementada.
+- [x] Incluir plano de aplicação da migration de produção.
+- [x] Incluir plano de rollback de aplicação e recuperação do banco.
+- [x] Confirmar que nenhuma decisão adiada foi implementada.
 - [ ] Entregar o PR pronto e aguardar merge manual.
 
 **Validação:** PR incorporado com testes, documentação e evidência de staging suficientes para autorizar produção.

@@ -467,9 +467,10 @@ Os nomes exatos poderão ser ajustados à CLI fixada, mantendo estas garantias:
 2. revisar o diff TypeScript;
 3. gerar migration SQL com Drizzle Kit;
 4. revisar o SQL;
-5. aplicar primeiro em testes;
-6. executar testes de integração e E2E;
-7. aplicar em produção antes de disponibilizar o código dependente.
+5. criar ponto de restauração antes de mudanças destrutivas;
+6. aplicar no banco principal único;
+7. executar as validações opt-in permitidas pela política de banco único;
+8. disponibilizar o código dependente somente após migration bem-sucedida.
 
 `drizzle-kit push` não poderá ser usado em produção. Migrations e metadados Drizzle deverão ser versionados. A aplicação não deverá executar migrations automaticamente ao iniciar.
 
@@ -493,7 +494,7 @@ Regras obrigatórias:
 - `.env.example` conter apenas placeholders seguros;
 - `.env.local`, secrets da plataforma e connection strings reais não serão versionados;
 - `BETTER_AUTH_URL` de produção deverá usar HTTPS;
-- cada ambiente deverá possuir segredo e credenciais de banco próprios.
+- o banco principal único não poderá receber reset, `truncate`, `drop` ou limpeza ampla durante testes.
 
 ## 16. Segurança e privacidade
 
@@ -573,7 +574,9 @@ Não registrar corpo de requests de `/api/auth/*`, headers `Cookie`/`Set-Cookie`
 
 ### 18.2. Testes de integração
 
-Executados contra banco exclusivo de testes com migrations aplicadas:
+O projeto adotou um único banco Neon principal. Por isso, esta suíte será opt-in,
+serial e executada somente mediante comando explícito. Cada execução deverá usar
+identificadores próprios e remover somente os registros que ela criou:
 
 - criar usuário, conta de credencial e sessão;
 - impedir e-mail duplicado;
@@ -585,7 +588,10 @@ Executados contra banco exclusivo de testes com migrations aplicadas:
 - persistir e respeitar rate limiting entre requisições;
 - confirmar que schema e migrations estão sincronizados.
 
-Os testes usarão e-mails únicos e limparão seus próprios registros. Nunca usarão a branch de produção.
+Os testes usarão e-mails, IPs reservados e chaves únicas, com teardown garantido.
+São proibidos `truncate`, `drop`, reset de schema e exclusão de registros
+preexistentes. A suíte não fará parte de `npm test` nem do CI padrão enquanto
+existir apenas o banco principal.
 
 ### 18.3. Testes E2E com Playwright
 

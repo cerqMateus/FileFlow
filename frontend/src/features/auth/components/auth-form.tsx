@@ -133,7 +133,7 @@ export function AuthForm({ mode, callbackUrl }: AuthFormProps) {
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           {isSignUp
-            ? "Crie sua conta para acessar sua área protegida."
+            ? "Crie sua conta para acessar os conversores."
             : "Use seus dados para acessar sua conta."}
         </p>
       </div>

@@ -28,7 +28,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
   ]);
 
   if (session !== null) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
   const mode: AuthMode =

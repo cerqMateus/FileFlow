@@ -5,30 +5,39 @@ import { ConversionForm } from "./conversion-form";
 
 type ConverterPageProps = Readonly<{
   converter: Converter;
+  userName?: string;
 }>;
 
-export function ConverterPage({ converter }: ConverterPageProps) {
+export function ConverterPage({ converter, userName }: ConverterPageProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 text-slate-800">
-      <Link
-        href="/"
-        className="absolute left-4 top-4 flex items-center gap-2 font-semibold text-slate-500 transition-colors hover:text-indigo-600"
-      >
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+    <div className="flex min-h-screen flex-col items-center bg-slate-50 px-4 py-6 text-slate-800">
+      <header className="mb-6 flex w-full max-w-4xl items-center justify-between gap-4">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-semibold text-slate-500 transition-colors hover:text-indigo-600"
         >
-          <path
-            fillRule="evenodd"
-            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-            clipRule="evenodd"
-          />
-        </svg>
-        Voltar
-      </Link>
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Voltar
+        </Link>
+
+        {userName === undefined ? null : (
+          <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+            {userName}
+          </div>
+        )}
+      </header>
 
       <main className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl">
         <div className="px-8 pb-4 pt-8 text-center">

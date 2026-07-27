@@ -32,13 +32,13 @@ describe("AuthPage", () => {
     });
   });
 
-  it("usa login e dashboard como padrões", async () => {
+  it("usa login e a home como padrões", async () => {
     render(await AuthPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByTestId("auth-form")).toHaveAttribute("data-mode", "login");
     expect(screen.getByTestId("auth-form")).toHaveAttribute(
       "data-callback",
-      "/dashboard",
+      "/",
     );
   });
 
@@ -75,7 +75,7 @@ describe("AuthPage", () => {
     expect(screen.getByTestId("auth-form")).toHaveAttribute("data-mode", "login");
     expect(screen.getByTestId("auth-form")).toHaveAttribute(
       "data-callback",
-      "/dashboard",
+      "/",
     );
   });
 
@@ -87,7 +87,7 @@ describe("AuthPage", () => {
 
     await expect(
       AuthPage({ searchParams: Promise.resolve({ modo: "cadastro" }) }),
-    ).rejects.toThrow("NEXT_REDIRECT:/dashboard");
-    expect(mocks.redirect).toHaveBeenCalledWith("/dashboard");
+    ).rejects.toThrow("NEXT_REDIRECT:/");
+    expect(mocks.redirect).toHaveBeenCalledWith("/");
   });
 });

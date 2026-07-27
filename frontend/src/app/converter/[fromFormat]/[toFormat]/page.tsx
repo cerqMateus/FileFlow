@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 
 import {
   ConverterPage,
   listConverters,
   resolveConverter,
 } from "@/features/conversion";
+import { getServerSession } from "@/lib/auth/session";
 
 type ConverterRouteParams = Readonly<{
   fromFormat: string;
@@ -47,5 +49,18 @@ export default async function ConverterRoute({ params }: ConverterRouteProps) {
     notFound();
   }
 
-  return <ConverterPage converter={converter} />;
+  const session = await getServerSession(await headers());
+
+  if (session === null) {
+    redirect(
+      `/auth?callbackURL=${encodeURIComponent(`/converter/${fromFormat}/${toFormat}`)}`,
+    );
+  }
+
+  return (
+    <ConverterPage
+      converter={converter}
+      userName={session.user.name ?? session.user.email ?? "Usuário"}
+    />
+  );
 }

@@ -1,4 +1,4 @@
-const DEFAULT_CALLBACK_URL = "/dashboard";
+const DEFAULT_CALLBACK_URL = "/";
 const INTERNAL_ORIGIN = "https://fileflow.internal";
 const UNSAFE_CHARACTER = /[\\\u0000-\u001f\u007f]/u;
 

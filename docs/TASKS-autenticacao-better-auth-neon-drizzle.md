@@ -73,6 +73,11 @@ Antes do fim do Grupo 2, será necessário acesso autorizado ao Neon para criar 
 
 Nenhuma credencial real será colocada neste documento ou no repositório.
 
+**Decisão posterior ao Grupo 2:** o FileFlow usará somente o banco Neon
+principal. Testes de integração que persistem dados serão opt-in, seriais,
+usarão identificadores exclusivos e limparão somente seus próprios registros.
+Operações estruturais ou limpeza ampla permanecem proibidas.
+
 ### 3.3. Limites mantidos em todos os grupos
 
 - O FastAPI não receberá Better Auth, cookies ou lógica de usuário.
@@ -265,7 +270,7 @@ Nenhuma credencial real será colocada neste documento ou no repositório.
 ## 7. Grupo 3 - Serviço de autenticação e sessão server-side
 
 **Branch:** `feat/auth-server-session`
-**Dependência:** Grupo 2 incorporado à `main` e migration aplicada no ambiente de testes.
+**Dependência:** Grupo 2 incorporado à `main` e migration aplicada no banco principal.
 
 ### Task 14 - Expor o handler oficial do Better Auth
 
@@ -313,7 +318,7 @@ Nenhuma credencial real será colocada neste documento ou no repositório.
 - [ ] Testar limite de cadastro de 5 tentativas por 60 segundos.
 - [ ] Tratar `429` sem expor detalhes internos.
 
-**Validação:** testes automatizados cobrem origem, cookie e abuso com banco exclusivo de testes.
+**Validação:** testes automatizados opt-in cobrem origem, cookie e abuso no banco principal, com chaves exclusivas e limpeza restrita.
 
 ### Task 18 - Cobrir os contratos de autenticação por integração
 
@@ -328,6 +333,9 @@ Nenhuma credencial real será colocada neste documento ou no repositório.
 - [ ] Limpar os dados exclusivos criados pelos testes.
 
 **Validação:** a suíte prova o ciclo completo sem depender ainda dos formulários visuais.
+
+**Política de banco único:** executar somente por `npm run test:auth:primary`.
+A suíte deve ser serial, criar e-mails e chaves próprias e deixar zero resíduos.
 
 ### Task 19 - Auditar isolamento em relação ao FastAPI
 

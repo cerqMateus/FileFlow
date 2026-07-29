@@ -13,6 +13,10 @@ const nunitoSans = Nunito_Sans({
 export const metadata: Metadata = {
   title: "FileFlow - Conversor Universal",
   description: "Converta seus arquivos de forma simples e rápida.",
+  applicationName: "FileFlow",
+  icons: {
+    icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 type RootLayoutProps = Readonly<{

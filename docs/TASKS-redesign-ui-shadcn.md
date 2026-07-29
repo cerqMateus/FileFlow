@@ -1,910 +1,445 @@
 # Tasks — Redesign da interface com Tailwind CSS e shadcn/ui
 
-## 1. Referências, escopo e estados
+## 1. Referências e convenções
 
-Este backlog executa, em ordem obrigatória:
+- [PRD do redesign](PRD-redesign-ui-shadcn.md)
+- [SPEC técnica](SPEC-redesign-ui-shadcn.md)
+- [Referências visuais](assets/redesign-ui/)
 
-- [PRD — Redesign da interface com Tailwind CSS e shadcn/ui](PRD-redesign-ui-shadcn.md);
-- [SPEC técnica — Redesign da interface com Tailwind CSS e shadcn/ui](SPEC-redesign-ui-shadcn.md).
+Estados: `[ ]` pendente, `[-]` em andamento, `[x]` concluída e `[!]` bloqueada.
 
-As referências visuais aprovadas estão em [`assets/redesign-ui/`](assets/redesign-ui/). Elas orientam a reconstrução vetorial da marca e não podem ser importadas pela aplicação.
+Os grupos são sequenciais. Cada grupo parte da `main` atualizada, usa a branch indicada e deve ser incorporado antes do próximo. Commits seguem Conventional Commits em inglês. O gate de cada grupo concentra as verificações e evita repeti-las em toda task.
 
-Estados:
+## 2. Guardrails do projeto
 
-- `[ ]` pendente;
-- `[-]` em andamento;
-- `[x]` concluída e validada;
-- `[!]` bloqueada, acompanhada de motivo e evidência.
+- Preservar autenticação, sessão, redirects internos e `callbackURL`.
+- Manter home e conversores protegidos por sessão.
+- Preservar os cinco pares de conversão, endpoints e extensões atuais.
+- Manter upload direto ao FastAPI; não alterar backend, banco ou contratos HTTP.
+- Manter o catálogo como fonte única dos conversores.
+- Usar Nunito Sans, tokens semânticos e componentes shadcn apenas quando necessários.
+- Não importar os PNGs de referência no runtime; a marca de produção será SVG.
+- Não incluir dark mode, histórico, batch, preview, recuperação de senha ou login social.
+- Não versionar `node_modules`, `.next`, `test-results`, coverage, caches, segredos ou `.env`.
 
-Uma task só poderá ser marcada como concluída após a execução de sua validação. Tasks devem ser executadas na ordem numérica dentro do grupo. Grupos devem ser executados na ordem definida neste documento.
+## 3. Sequência de entrega
 
-## 2. Regras obrigatórias de branches, commits e Pull Requests
-
-### 2.1. Fluxo sequencial
-
-Cada grupo corresponde a uma branch e a um Pull Request coeso:
-
-1. aguardar o merge manual do PR anterior;
-2. atualizar `main` por fast-forward;
-3. confirmar equivalência com `origin/main`;
-4. inventariar alterações locais e preservar trabalho não relacionado;
-5. confirmar working tree limpo para iniciar o grupo;
-6. criar a branch indicada a partir da `main` atualizada;
-7. implementar somente as tasks do grupo;
-8. executar validações focais após cada avanço significativo;
-9. executar todas as validações do grupo;
-10. revisar o diff completo e executar `git diff --check`;
-11. criar os commits planejados, em inglês e com Conventional Commits;
-12. publicar a branch sem `--force`;
-13. abrir PR não-draft, salvo bloqueio real documentado;
-14. corrigir checks e review na mesma branch;
-15. aguardar merge antes do grupo seguinte.
-
-Branches empilhadas são proibidas. Uma branch dependente não nasce de outra branch de feature.
-
-### 2.2. Regras de commits
-
-- Mensagens devem seguir exatamente ou refinar semanticamente os commits planejados.
-- Não usar `--no-verify`, `--force`, `wip`, `changes`, `updates` ou mensagens genéricas.
-- Dependência e `package-lock.json` pertencem ao commit que introduz a capacidade.
-- Testes devem acompanhar a funcionalidade quando isso mantiver o commit validável.
-- Não misturar refatoração alheia, backend, banco ou deploy.
-- Não versionar `node_modules`, `.next`, `test-results`, coverage, caches, secrets ou `.env`.
-- Não modificar código somente para facilitar a separação de commits.
-
-### 2.3. Conteúdo mínimo de cada PR
-
-Cada PR deverá informar:
-
-- grupo e tasks concluídas;
-- objetivo e limites;
-- arquivos/componentes principais;
-- decisões e desvios da SPEC;
-- dependências adicionadas;
-- comandos executados e resultados;
-- viewports e estados revisados;
-- impacto de acessibilidade;
-- confirmação de upload direto ao FastAPI;
-- confirmação de que os PNGs de referência não foram usados em runtime;
-- riscos e rollback;
-- links para PRD, SPEC e este backlog.
-
-## 3. Premissas e guardrails
-
-- O comportamento atual do código é a baseline: home e conversores exigem sessão.
-- O `callbackURL` interno deve continuar funcionando.
-- O FastAPI não será alterado.
-- Uploads não passarão pelo Next.js.
-- O catálogo continuará sendo fonte única dos cinco conversores.
-- Não haverá dark mode, histórico, batch, preview, recuperação de senha ou login social.
-- A fonte preferida é Nunito Sans; mudança exige evidência e atualização documental.
-- O shadcn será inicializado com Radix.
-- Não usar `shadcn add --all`.
-- Não usar imagens geradas como asset de produção.
-- Claims de segurança, retenção ou limites dependem de aprovação específica.
-
-## 4. Mapa dos grupos
-
-| Grupo | Branch | Commits planejados | Resultado |
+| Grupo | Status | Branch | Resultado |
 | --- | --- | --- | --- |
-| 1 | `docs/ui-redesign-plan` | `docs(ui): plan shadcn redesign` | PRD, SPEC, backlog e referências aprovados |
-| 2 | `chore/ui-design-system` | `chore(ui): add shadcn design system`; `feat(brand): add FileFlow vector identity` | Fundação visual e marca vetorial disponíveis |
-| 3 | `feat/ui-app-shell` | `feat(ui): add responsive application shell`; `test(ui): cover application shell` | Cabeçalho, navegação e menu compartilhados |
-| 4 | `feat/ui-auth-redesign` | `feat(auth): redesign authentication experience`; `test(auth): cover redesigned authentication` | Login/cadastro unificados e acessíveis |
-| 5 | `feat/ui-home-redesign` | `feat(ui): redesign converter home`; `test(ui): cover converter catalog experience` | Home, filtros e cards novos |
-| 6 | `feat/ui-converter-redesign` | `feat(ui): redesign conversion workflow`; `test(ui): cover redesigned conversion states` | Template de conversão e dropzone novos |
-| 7 | `test/ui-accessibility-visual` | `test(ui): harden accessibility and visual coverage`; `perf(ui): preserve frontend bundle budget` | Acessibilidade, responsividade e regressão validadas |
-| 8 | `docs/ui-redesign-release` | `docs(ui): complete shadcn redesign rollout` | Auditoria final e documentação concluídas |
+| 1 | Concluído | `docs/ui-redesign-plan` | PRD, SPEC, tasks e referências |
+| 2 | Pendente | `chore/ui-design-system` | Design system e marca vetorial |
+| 3 | Pendente | `feat/ui-app-shell` | Shell responsivo da aplicação |
+| 4 | Pendente | `feat/ui-auth-redesign` | Login e cadastro redesenhados |
+| 5 | Pendente | `feat/ui-home-redesign` | Nova home de conversores |
+| 6 | Pendente | `feat/ui-converter-redesign` | Novo fluxo de conversão |
+| 7 | Pendente | `test/ui-accessibility-visual` | Hardening visual e acessível |
+| 8 | Pendente | `docs/ui-redesign-release` | Documentação e encerramento |
 
-## 5. Grupo 1 — Planejamento e referências
+## 4. Grupo 1 — Planejamento e referências
 
-**Branch:** `docs/ui-redesign-plan`
-**Commit:** `docs(ui): plan shadcn redesign`
-**Dependência:** estado atual da `main` inventariado; nenhuma implementação do redesign em andamento.
+**Status:** concluído.
 
-### Task 1 — Registrar o baseline do repositório
+- [x] Baseline, escopo e sequência definidos.
+- [x] PRD, SPEC e backlog criados.
+- [x] Referências visuais adicionadas e validadas.
 
-- [ ] Confirmar branch atual e divergência de `main`/`origin/main`.
-- [ ] Registrar `git status --short`.
-- [ ] Identificar arquivos de planejamento já presentes no working tree.
-- [ ] Identificar `node_modules/` ou outros artefatos locais sem incluí-los.
-- [ ] Confirmar versões atuais de Next.js, React, Tailwind, Node e npm.
-- [ ] Confirmar que `components.json` ainda não existe na baseline.
-- [ ] Confirmar que os cinco conversores, auth e testes estão verdes antes do redesign.
+## 5. Grupo 2 — Design system e marca vetorial
 
-**Validação:** baseline redigida no PR, sem descarte de mudanças locais e com comandos/versões reproduzíveis.
+**Branch:** `chore/ui-design-system` · **Dependência:** Grupo 1 incorporado à `main`.
 
-### Task 2 — Versionar as referências visuais
-
-- [ ] Confirmar os dois PNGs em `docs/assets/redesign-ui/`.
-- [ ] Confirmar nomes `fileflow-mark-reference.png` e `fileflow-logo-lockup-reference.png`.
-- [ ] Validar os hashes registrados na SPEC.
-- [ ] Confirmar que os arquivos abrem e não estão truncados.
-- [ ] Confirmar que não há cópias sob `frontend/public/`.
-- [ ] Confirmar que nenhuma referência absoluta a `Downloads` permanece nos documentos.
-
-**Validação:** hashes locais correspondem à SPEC e links relativos renderizam no repositório.
-
-**Dependência:** Task 1.
-
-### Task 3 — Revisar PRD, SPEC e backlog
-
-- [ ] Revisar o PRD contra o código atual.
-- [ ] Revisar a SPEC contra o PRD e versões fixadas.
-- [ ] Revisar este backlog e a ordem dos oito grupos.
-- [ ] Confirmar que toda task possui validação objetiva.
-- [ ] Confirmar links relativos e UTF-8.
-- [ ] Confirmar que referências PNG são documentação, não runtime.
-- [ ] Resolver qualquer contradição com PRDs antigos pelo estado atual do código.
-
-**Validação:** os três documentos concordam sobre escopo, auth, assets, arquitetura, testes e definição de pronto.
-
-**Dependência:** Task 2.
-
-### Task 4 — Aprovar o plano de entrega
-
-- [ ] Obter aprovação explícita da identidade de referência.
-- [ ] Obter aprovação do PRD.
-- [ ] Obter aprovação da SPEC.
-- [ ] Obter aprovação dos oito grupos e commits planejados.
-- [ ] Atualizar status do PRD e da SPEC de `Proposto/Proposta` para `Aprovado/Aprovada`.
-- [ ] Registrar decisões ou ajustes aprovados.
-
-**Validação:** não resta decisão capaz de alterar dependências, arquitetura ou ordem dos grupos.
-
-**Dependência:** Task 3.
-
-### Task 5 — Publicar o PR documental
-
-- [ ] Revisar que o diff contém somente PRD, SPEC, TASKS e dois assets de referência.
-- [ ] Executar `git diff --check`.
-- [ ] Criar `docs(ui): plan shadcn redesign`.
-- [ ] Publicar a branch.
-- [ ] Abrir PR com mapa dos oito grupos.
-- [ ] Aguardar checks, aprovação e merge manual.
-
-**Validação:** documentos e referências estão em `main`; implementação ainda não começou.
-
-**Dependência:** Task 4.
-
-## 6. Grupo 2 — Design system e marca vetorial
-
-**Branch:** `chore/ui-design-system`
-**Dependência:** Grupo 1 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `chore(ui): add shadcn design system`
 2. `feat(brand): add FileFlow vector identity`
 
-### Task 6 — Auditar a inicialização do shadcn
+### Task 6 — Inicializar shadcn/ui
 
-- [ ] Confirmar working tree limpo.
-- [ ] Registrar cópia/diff de `globals.css`, `layout.tsx`, `package.json` e aliases antes da CLI.
-- [ ] Consultar `shadcn info` ou equivalente disponível.
-- [ ] Executar dry-run quando suportado.
-- [ ] Confirmar base Radix e style `new-york`.
-- [ ] Confirmar que Tailwind CSS 4 será detectado sem criar config legado desnecessário.
+- [ ] Executar `npx shadcn@latest init -d --base radix` em `frontend/`.
+- [ ] Usar estilo `new-york`, RSC, TypeScript, CSS variables e aliases da SPEC.
+- [ ] Revisar `components.json`, `globals.css`, dependências e `src/lib/utils.ts`.
+- [ ] Manter Tailwind CSS 4 sem criar configuração legada desnecessária.
+- [ ] Não executar `shadcn add --all` nem sobrescrever arquivos sem revisar o diff.
 
-**Validação:** plano de alterações automáticas conhecido antes da escrita.
+**Aceite:** typecheck e build passam com a fundação mínima, antes de migrar páginas.
 
-### Task 7 — Inicializar shadcn com configuração mínima
+### Task 7 — Implementar tokens e tipografia
 
-- [ ] Executar `npx shadcn@latest init -d --base radix` dentro de `frontend/`.
-- [ ] Criar/revisar `components.json` conforme a SPEC.
-- [ ] Revisar dependências adicionadas.
-- [ ] Confirmar `src/lib/utils.ts` com `cn`.
-- [ ] Impedir overwrite não intencional de config existente.
-- [ ] Não adicionar componentes ainda sem uso.
+- [ ] Aplicar tokens de fundo, texto, card, borda, ring, estados e cores da marca definidos na SPEC.
+- [ ] Integrar Nunito Sans com `next/font` e aplicar a variável no elemento `html`.
+- [ ] Preservar `@import "tailwindcss"` e as sources necessárias.
+- [ ] Evitar referência circular em `--font-sans` e remover a fonte anterior somente quando não houver consumidores.
+- [ ] Usar tokens semânticos em vez de cores Tailwind ou hexadecimais fundamentais espalhados.
 
-**Validação:** `npm run typecheck` e `npm run build` passam com a fundação mínima.
+**Aceite:** fonte e tokens aparecem no build sem erro de hidratação ou regressão de contraste.
 
-**Dependência:** Task 6.
+### Task 8 — Adicionar primitivas base
 
-### Task 8 — Implementar tokens e fonte
+- [ ] Adicionar `button`, `card`, `badge`, `separator` e `tooltip`.
+- [ ] Adicionar Lucide e manter ícones em tamanhos consistentes.
+- [ ] Definir variantes de botão previstas na SPEC e alvos de ação com pelo menos 44 px.
+- [ ] Testar somente extensões próprias; não duplicar testes internos do shadcn.
 
-- [ ] Migrar `globals.css` para tokens semânticos da SPEC.
-- [ ] Manter `@import "tailwindcss"` e sources corretos.
-- [ ] Integrar Nunito Sans por `next/font`.
-- [ ] Aplicar variável de fonte no `html`.
-- [ ] Remover Inter somente quando nenhum consumidor permanecer.
-- [ ] Evitar referência circular de `--font-sans`.
-- [ ] Definir fundo, foreground, borda, ring, success e cores de marca.
-- [ ] Validar contraste inicial.
+**Aceite:** primitivas compilam, usam tokens e têm foco visível.
 
-**Validação:** fonte carrega no build, tokens aparecem no CSS final e não há flash/erro de hidratação.
+### Task 9 — Criar assets vetoriais da marca
 
-**Dependência:** Task 7.
+- [ ] Reconstruir em SVG o símbolo com três formas, o lockup, a versão monocromática e o favicon.
+- [ ] Usar fundo transparente e remover dependência de fonte, bitmap, filtro ou metadata desnecessária.
+- [ ] Preservar progressão, proporção, arredondamento e paleta das referências aprovadas.
+- [ ] Garantir legibilidade nos tamanhos definidos na SPEC, incluindo favicon.
 
-### Task 9 — Adicionar primitivas iniciais
+**Aceite:** quatro SVGs otimizados existem em `frontend/public/brand` e nenhum PNG de docs foi copiado.
 
-- [ ] Instalar `button`, `card`, `badge`, `separator` e `tooltip`.
-- [ ] Adicionar `lucide-react` na versão compatível.
-- [ ] Revisar source gerado e imports.
-- [ ] Confirmar targets de ação principais com pelo menos 44 px.
-- [ ] Confirmar variantes sem cores ad hoc.
-- [ ] Adicionar testes somente para extensões próprias, não para internals do shadcn.
+### Task 10 — Criar `FileFlowLogo`
 
-**Validação:** story/test harness temporário ou testes de composição demonstram variantes sem warning de acessibilidade.
+- [ ] Implementar variantes completa e compacta com dimensões reservadas para evitar CLS.
+- [ ] Suportar uso decorativo ou nome acessível conforme o consumidor.
+- [ ] Aplicar a marca no favicon e nos metadados pertinentes.
+- [ ] Cobrir props, variantes e nome acessível do link que envolve a marca.
 
-**Dependência:** Task 8.
+**Aceite:** ambas as variantes renderizam corretamente e não incluem `docs/assets` no bundle.
 
-### Task 10 — Criar a marca vetorial
+### Gate do Grupo 2
 
-- [ ] Reconstruir o símbolo com três formas SVG.
-- [ ] Criar lockup com wordmark convertido em paths.
-- [ ] Criar versão monocromática.
-- [ ] Criar favicon simplificado.
-- [ ] Usar fundo transparente.
-- [ ] Remover metadata, filtros e dependência de fonte.
-- [ ] Otimizar SVGs sem deformação.
-- [ ] Comparar proporção e paleta com os PNGs de referência.
-- [ ] Testar 16, 24, 32, 128 e 512 px.
+- [ ] Executar lint, typecheck, testes, build e auditoria de bundle.
+- [ ] Revisar dependências, lockfile, diff e imports dos PNGs de referência.
+- [ ] Criar os commits planejados e abrir o PR do grupo.
 
-**Validação:** quatro SVGs da SPEC existem em `frontend/public/brand`, são vetoriais e legíveis nos tamanhos previstos.
+## 6. Grupo 3 — Shell da aplicação
 
-**Dependência:** Task 9.
+**Branch:** `feat/ui-app-shell` · **Dependência:** Grupo 2 incorporado à `main`.
 
-### Task 11 — Criar componente da marca
-
-- [ ] Criar `FileFlowLogo` com modo completo e compacto.
-- [ ] Reservar dimensões para evitar CLS.
-- [ ] Definir semântica decorativa/acessível correta.
-- [ ] Não importar os PNGs de docs.
-- [ ] Testar props e nome acessível do link consumidor.
-- [ ] Substituir favicon/metadados quando aplicável.
-
-**Validação:** componente renderiza as duas variantes e nenhuma referência `docs/assets` entra no bundle.
-
-**Dependência:** Task 10.
-
-### Task 12 — Validar e publicar o design system
-
-- [ ] Executar lint, typecheck, testes e build.
-- [ ] Executar auditoria de bundle.
-- [ ] Buscar hex/classes fundamentais duplicadas no código novo.
-- [ ] Buscar import dos PNGs de referência.
-- [ ] Revisar `package.json` e lockfile.
-- [ ] Executar `git diff --check`.
-- [ ] Criar os dois commits planejados.
-- [ ] Publicar PR e aguardar merge.
-
-**Validação:** fundação e marca podem ser consumidas pelo Grupo 3 sem migrar páginas ainda.
-
-**Dependência:** Task 11.
-
-## 7. Grupo 3 — Shell da aplicação
-
-**Branch:** `feat/ui-app-shell`
-**Dependência:** Grupo 2 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `feat(ui): add responsive application shell`
 2. `test(ui): cover application shell`
 
-### Task 13 — Criar `PageContainer` e skip link
+### Task 11 — Criar `PageContainer` e skip link
 
-- [ ] Implementar contrato de `PageContainer`.
-- [ ] Evitar `main` aninhado.
-- [ ] Criar skip link visível no foco.
-- [ ] Adicionar ID estável ao conteúdo principal.
-- [ ] Validar paddings e max-width nos breakpoints.
+- [ ] Implementar largura máxima e paddings responsivos conforme a SPEC.
+- [ ] Garantir um único landmark `main` e um ID estável para o conteúdo.
+- [ ] Adicionar skip link visível ao receber foco.
 
-**Validação:** teclado alcança o conteúdo principal e não há scroll horizontal a 320 px.
+**Aceite:** teclado alcança o conteúdo principal e não há scroll horizontal a 320 px.
 
-### Task 14 — Criar cabeçalho desktop
+### Task 12 — Criar cabeçalho desktop
 
-- [ ] Usar `FileFlowLogo` ligado a `/`.
-- [ ] Adicionar links `Conversores` e `Como funciona`.
-- [ ] Usar tokens e altura estável.
-- [ ] Definir estados hover, active e focus-visible.
-- [ ] Não adicionar links sem destino real.
+- [ ] Usar `FileFlowLogo` como link para a home.
+- [ ] Adicionar somente os links reais `Conversores` e `Como funciona`.
+- [ ] Definir estados hover, ativo e `focus-visible` com altura estável.
+- [ ] Manter o cabeçalho como landmark semântico.
 
-**Validação:** cabeçalho é um landmark, links têm nomes acessíveis e logo não causa layout shift.
+**Aceite:** links têm nomes acessíveis, destinos válidos e a logo não causa layout shift.
 
-**Dependência:** Task 13.
+### Task 13 — Criar menu do usuário
 
-### Task 15 — Criar menu do usuário
+- [ ] Adicionar `avatar` e `dropdown-menu`.
+- [ ] Exibir imagem ou iniciais determinísticas, além de nome/e-mail disponíveis.
+- [ ] Integrar o logout existente sem inventar telas de perfil ou configurações.
+- [ ] Garantir navegação por teclado e restauração de foco ao fechar.
 
-- [ ] Instalar `avatar` e `dropdown-menu`.
-- [ ] Renderizar imagem ou iniciais determinísticas.
-- [ ] Exibir nome/e-mail disponíveis.
-- [ ] Integrar logout existente.
-- [ ] Restaurar foco após fechar.
-- [ ] Não inventar perfil ou configurações.
+**Aceite:** logout invalida a sessão e mantém o redirecionamento atual.
 
-**Validação:** menu funciona por mouse e teclado; logout invalida sessão e redireciona corretamente.
+### Task 14 — Criar navegação mobile
 
-**Dependência:** Task 14.
-
-### Task 16 — Criar navegação mobile
-
-- [ ] Instalar `sheet`.
-- [ ] Criar botão de menu com label.
+- [ ] Adicionar `sheet` com botão de menu nomeado.
 - [ ] Repetir somente links reais e logout.
-- [ ] Fechar ao selecionar link, Escape ou ação de logout.
-- [ ] Impedir escape de foco quando aberto.
-- [ ] Restaurar foco ao gatilho.
+- [ ] Fechar por seleção, Escape ou logout; prender e restaurar foco corretamente.
 
-**Validação:** navegação funciona a 320/375 px sem overflow e atende padrão de dialog/sheet.
+**Aceite:** menu funciona em 320/375 px sem overflow e segue o padrão acessível de dialog/sheet.
 
-**Dependência:** Task 15.
+### Task 15 — Integrar o shell
 
-### Task 17 — Integrar shell nas páginas autenticadas
+- [ ] Aplicar o shell à home e ao template dos conversores.
+- [ ] Reusar a sessão resolvida no servidor e evitar cabeçalhos duplicados.
+- [ ] Manter páginas como Server Components sempre que não houver interatividade local.
+- [ ] Preservar redirects, 404 e comportamento dos cinco conversores.
 
-- [ ] Reusar sessão resolvida no servidor.
-- [ ] Integrar shell na home.
-- [ ] Integrar shell no template de conversor.
-- [ ] Evitar duplicação de header.
-- [ ] Manter páginas como Server Components.
-- [ ] Preservar redirects e 404.
+**Aceite:** todas as páginas autenticadas exibem o shell sem regressão funcional.
 
-**Validação:** home e os cinco conversores exibem shell sem alterar fluxo funcional.
+### Gate do Grupo 3
 
-**Dependência:** Task 16.
-
-### Task 18 — Cobrir e publicar o shell
-
-- [ ] Testar logo, links, avatar, menu e logout.
-- [ ] Testar menu mobile e foco.
-- [ ] Atualizar E2E focal de navegação.
+- [ ] Cobrir logo, links, menus, logout, foco e navegação mobile.
 - [ ] Executar lint, typecheck, testes, build e E2E focal.
-- [ ] Executar `git diff --check`.
-- [ ] Criar os commits planejados.
-- [ ] Publicar PR e aguardar merge.
+- [ ] Revisar o diff, criar os commits planejados e abrir o PR.
 
-**Validação:** shell compartilhado está em `main` e páginas continuam operacionais.
+## 7. Grupo 4 — Redesign da autenticação
 
-**Dependência:** Task 17.
+**Branch:** `feat/ui-auth-redesign` · **Dependência:** Grupo 3 incorporado à `main`.
 
-## 8. Grupo 4 — Redesign da autenticação
-
-**Branch:** `feat/ui-auth-redesign`
-**Dependência:** Grupo 3 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `feat(auth): redesign authentication experience`
 2. `test(auth): cover redesigned authentication`
 
-### Task 19 — Adicionar primitivas de formulário
+### Task 16 — Preparar primitivas e seletor de modo
 
-- [ ] Instalar `alert`, `input`, `label` e `tabs`.
-- [ ] Revisar APIs da versão resolvida.
-- [ ] Manter validação atual sem React Hook Form/Zod.
-- [ ] Confirmar autocomplete e disabled states.
+- [ ] Adicionar `alert`, `input`, `label` e `tabs`.
+- [ ] Implementar `AuthModeTabs` com `Entrar`, `Criar conta` e indicador deslizante.
+- [ ] Sincronizar cadastro com `modo=cadastro` e preservar `callbackURL` ao alternar.
+- [ ] Restaurar o modo ao recarregar, operar por teclado e respeitar movimento reduzido.
+- [ ] Desabilitar a alternância durante submissão.
 
-**Validação:** primitivas compilam e não alteram ainda o contrato Better Auth.
+**Aceite:** URL, callback, teclado e estado visual permanecem sincronizados.
 
-### Task 20 — Implementar `AuthModeTabs`
+### Task 17 — Implementar `AuthShell`
 
-- [ ] Renderizar `Entrar` e `Criar conta` como tabs.
-- [ ] Implementar cápsula deslizante.
-- [ ] Preservar `callbackURL` ao alternar.
-- [ ] Atualizar `modo=cadastro` corretamente.
-- [ ] Restaurar estado ao recarregar URL.
-- [ ] Desabilitar durante submissão.
-- [ ] Respeitar movimento reduzido.
-- [ ] Operar por setas e teclado conforme ARIA.
+- [ ] Criar layout desktop em duas colunas com painel de marca em SVG/CSS.
+- [ ] Posicionar o seletor no canto superior direito da área do formulário.
+- [ ] Em mobile, usar uma coluna e priorizar o formulário em viewports curtas.
+- [ ] Manter elementos decorativos fora da árvore acessível.
 
-**Validação:** testes cobrem URL, callback, teclado e reduced motion.
+**Aceite:** layout não apresenta overflow em desktop ou mobile e não usa os PNGs de referência.
 
-**Dependência:** Task 19.
+### Task 18 — Migrar login
 
-### Task 21 — Implementar `AuthShell`
+- [ ] Compor o formulário com Card, Label, Input, Button e Alert.
+- [ ] Preservar e-mail, senha, autocomplete, validação e mensagens seguras atuais.
+- [ ] Manter foco no resumo de erro, limpeza da senha após falha e estado de envio.
+- [ ] Preservar refresh e redirect interno no sucesso.
+- [ ] Não adicionar recuperação de senha ou login social.
 
-- [ ] Criar layout desktop de duas colunas.
-- [ ] Criar painel de marca com SVG/CSS de baixa opacidade.
-- [ ] Não usar PNG de referência.
-- [ ] Posicionar tabs no topo direito.
-- [ ] Criar layout mobile de uma coluna.
-- [ ] Priorizar formulário na viewport curta.
+**Aceite:** fluxo e testes atuais de login passam com seletores semânticos.
 
-**Validação:** desktop e mobile não têm overflow; painel decorativo não entra na árvore acessível indevidamente.
+### Task 19 — Migrar cadastro
 
-**Dependência:** Task 20.
+- [ ] Preservar nome, e-mail, senha, confirmação e regras por campo.
+- [ ] Usar o CTA `Criar minha conta` e manter autenticação automática/callback vigentes.
+- [ ] Não carregar valores sensíveis indevidamente ao trocar de modo.
+- [ ] Associar erros aos campos com `aria-invalid` e `aria-describedby`.
 
-### Task 22 — Migrar formulário de login
+**Aceite:** cadastro válido e inválido mantêm o comportamento atual.
 
-- [ ] Usar Card/Label/Input/Button/Alert conforme SPEC.
-- [ ] Preservar e-mail, senha, autocomplete e validação.
-- [ ] Preservar mensagens seguras.
-- [ ] Preservar foco do resumo de erro.
-- [ ] Preservar limpeza de senha em falha.
-- [ ] Preservar redirect e refresh no sucesso.
-- [ ] Não adicionar forgot password ou social login.
+### Task 20 — Cobrir estados da autenticação
 
-**Validação:** testes atuais de login passam com seletores semânticos atualizados.
+- [ ] Cobrir login e cadastro nos estados inicial, inválido, enviando, erro e sucesso.
+- [ ] Cobrir refresh em cada modo, callback interno e rejeição de callback externo.
+- [ ] Atualizar E2E e referências visuais de desktop/mobile sem seletores por classe CSS.
 
-**Dependência:** Task 21.
+**Aceite:** ambos os fluxos podem ser concluídos somente por teclado.
 
-### Task 23 — Migrar formulário de cadastro
+### Gate do Grupo 4
 
-- [ ] Preservar nome, e-mail, senha e confirmação.
-- [ ] Preservar regras e mensagens por campo.
-- [ ] Usar botão `Criar minha conta`.
-- [ ] Preservar callback e autenticação automática vigentes.
-- [ ] Garantir alternância sem valores sensíveis indevidos.
+- [ ] Executar lint, typecheck, testes, build, E2E focal e visual da autenticação.
+- [ ] Confirmar que Better Auth e Drizzle não foram alterados.
+- [ ] Revisar o diff, criar os commits planejados e abrir o PR.
 
-**Validação:** testes atuais de cadastro e validação passam.
+## 8. Grupo 5 — Redesign da home
 
-**Dependência:** Task 22.
+**Branch:** `feat/ui-home-redesign` · **Dependência:** Grupo 4 incorporado à `main`.
 
-### Task 24 — Cobrir estados e acessibilidade da auth
-
-- [ ] Testar login/cadastro inicial.
-- [ ] Testar inválido, enviando, erro e sucesso.
-- [ ] Testar foco, labels, aria-invalid e aria-describedby.
-- [ ] Testar refresh em cada modo.
-- [ ] Testar callback interno e rejeição de externo.
-- [ ] Atualizar E2E e capturas visuais de auth.
-
-**Validação:** fluxos funcionam por teclado e testes não dependem de classes CSS.
-
-**Dependência:** Task 23.
-
-### Task 25 — Validar e publicar a autenticação
-
-- [ ] Executar lint, typecheck, testes, build e E2E focal.
-- [ ] Executar visual desktop/mobile de auth.
-- [ ] Confirmar ausência de alteração server-side em Better Auth/Drizzle.
-- [ ] Executar `git diff --check`.
-- [ ] Criar commits planejados.
-- [ ] Publicar PR e aguardar merge.
-
-**Validação:** login e cadastro redesenhados estão em `main` sem regressão funcional.
-
-**Dependência:** Task 24.
-
-## 9. Grupo 5 — Redesign da home
-
-**Branch:** `feat/ui-home-redesign`
-**Dependência:** Grupo 4 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `feat(ui): redesign converter home`
 2. `test(ui): cover converter catalog experience`
 
-### Task 26 — Estender o catálogo de apresentação
+### Task 21 — Estender o catálogo
 
-- [ ] Adicionar `ConverterCategory`.
-- [ ] Adicionar `ConverterIconKey`.
+- [ ] Adicionar `ConverterCategory` e `ConverterIconKey`.
 - [ ] Classificar três conversores como documentos e dois como imagens.
-- [ ] Remover emojis do catálogo.
-- [ ] Resolver ícones por mapa no consumidor.
+- [ ] Remover emojis e resolver ícones Lucide por mapa no consumidor.
 - [ ] Preservar imutabilidade, rotas, endpoints e extensões.
-- [ ] Atualizar testes do catálogo.
 
-**Validação:** catálogo continua com exatamente cinco itens e não contém JSX/emoji.
+**Aceite:** catálogo mantém exatamente cinco itens, sem JSX ou emoji nos dados.
 
-### Task 27 — Implementar hero
+### Task 22 — Implementar hero
 
-- [ ] Renderizar badge, H1, descrição e CTA aprovados.
-- [ ] Criar decoração com SVG/CSS, não PNG.
-- [ ] Adicionar `#conversores` e comportamento do CTA.
-- [ ] Limitar altura da primeira viewport.
-- [ ] Preservar H1 único.
+- [ ] Criar badge, H1, descrição e CTA para a seção de conversores.
+- [ ] Usar texto/SVG local como conteúdo principal, sem imagem pesada de LCP.
+- [ ] Aplicar hierarquia, largura e espaçamento responsivos da SPEC.
 
-**Validação:** CTA chega ao catálogo, foco é previsível e LCP é texto/SVG local.
+**Aceite:** CTA move o foco/navegação para o catálogo de forma previsível.
 
-**Dependência:** Task 26.
+### Task 23 — Implementar filtros
 
-### Task 28 — Implementar catálogo filtrável
+- [ ] Criar filtros Todos, Documentos e Imagens com contagem derivada do catálogo.
+- [ ] Manter o estado no menor Client Component possível.
+- [ ] Expor estado selecionado e operação completa por teclado.
 
-- [ ] Criar tabs `Todos`, `Documentos`, `Imagens`.
-- [ ] Isolar filtro em Client Component pequeno.
-- [ ] Preservar ordem original.
-- [ ] Anunciar contagem de resultados.
-- [ ] Criar estado vazio defensivo.
-- [ ] Adicionar `#como-funciona` na seção apropriada.
+**Aceite:** contagens e resultados são, respectivamente, 5, 3 e 2.
 
-**Validação:** contagens são 5, 3 e 2; página estática não vira Client Component inteira.
+### Task 24 — Redesenhar `ConverterCard`
 
-**Dependência:** Task 27.
+- [ ] Exibir ícone, título, descrição, origem/destino e CTA semântico.
+- [ ] Tornar o card inteiro ou seu CTA claramente clicável, sem controles aninhados.
+- [ ] Aplicar hover/foco sem depender apenas de cor.
+- [ ] Preservar as rotas dos cinco conversores.
 
-### Task 29 — Redesenhar `ConverterCard`
+**Aceite:** todos os cards funcionam por teclado e apontam para destinos corretos.
 
-- [ ] Usar Card, Badge e ícone Lucide.
-- [ ] Exibir par de formatos, título, descrição e ação.
-- [ ] Tornar card inteiro um link.
-- [ ] Remover `aspect-square`.
-- [ ] Alinhar ações no fim dos cards da linha.
-- [ ] Implementar hover/focus/active sem `transition-all`.
-- [ ] Garantir nome acessível único.
+### Task 25 — Completar a home
 
-**Validação:** cinco links apontam para rotas corretas e funcionam por teclado.
+- [ ] Adicionar faixa de benefícios e rodapé conforme o PRD.
+- [ ] Usar somente claims aprovados; não prometer retenção, segurança ou limites não implementados.
+- [ ] Garantir grid de 1/2/3 colunas nos breakpoints definidos.
 
-**Dependência:** Task 28.
+**Aceite:** conteúdo é legível sem overflow e a seção principal continua sendo o catálogo.
 
-### Task 30 — Implementar faixa de benefícios e rodapé
+### Gate do Grupo 5
 
-- [ ] Usar copy factual aprovada.
-- [ ] Evitar claims não verificados.
-- [ ] Usar ícones consistentes.
-- [ ] Remover `Powered by Docker`.
-- [ ] Tornar ano dinâmico ou atualizar estratégia aprovada.
-- [ ] Manter rodapé discreto.
+- [ ] Cobrir catálogo, filtros, cards, links e layout desktop/mobile.
+- [ ] Executar lint, typecheck, testes, build, E2E focal e visual da home.
+- [ ] Revisar o diff, criar os commits planejados e abrir o PR.
 
-**Validação:** revisão de produto aprova a copy e nenhuma infraestrutura aparece na UI.
+## 9. Grupo 6 — Redesign da conversão
 
-**Dependência:** Task 29.
+**Branch:** `feat/ui-converter-redesign` · **Dependência:** Grupo 5 incorporado à `main`.
 
-### Task 31 — Cobrir home responsiva
-
-- [ ] Testar tabs e contagens.
-- [ ] Testar links e nomes acessíveis.
-- [ ] Testar uma coluna mobile.
-- [ ] Testar grid 2/3/5 conforme viewport.
-- [ ] Testar ausência de overflow.
-- [ ] Atualizar E2E de catálogo e capturas visuais.
-
-**Validação:** testes desktop/mobile refletem a nova composição sem seletores frágeis.
-
-**Dependência:** Task 30.
-
-### Task 32 — Validar e publicar a home
-
-- [ ] Executar lint, typecheck, testes, build e E2E focal.
-- [ ] Executar auditoria de bundle.
-- [ ] Revisar screenshots desktop/mobile.
-- [ ] Executar `git diff --check`.
-- [ ] Criar commits planejados.
-- [ ] Publicar PR e aguardar merge.
-
-**Validação:** home nova está em `main` e todos os conversores permanecem alcançáveis.
-
-**Dependência:** Task 31.
-
-## 10. Grupo 6 — Redesign da conversão
-
-**Branch:** `feat/ui-converter-redesign`
-**Dependência:** Grupo 5 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `feat(ui): redesign conversion workflow`
 2. `test(ui): cover redesigned conversion states`
 
-### Task 33 — Adicionar primitivas do fluxo
+### Task 26 — Preparar o template
 
-- [ ] Instalar `breadcrumb` e `progress`.
-- [ ] Revisar Alert já instalado.
-- [ ] Confirmar que nenhuma biblioteca de dropzone é necessária.
-- [ ] Preservar bundle e APIs existentes.
+- [ ] Adicionar somente as primitivas necessárias, como `progress` e `alert`.
+- [ ] Derivar título, descrição, extensões e endpoint do catálogo existente.
+- [ ] Preservar 404 para pares inválidos e Server Component no template externo.
 
-**Validação:** primitivas compilam sem alterar `convertFile` ou download.
+**Aceite:** os cinco pares exibem contexto correto sem duplicar configuração.
 
-### Task 34 — Implementar contexto do conversor
+### Task 27 — Implementar `ConversionSteps`
 
-- [ ] Criar breadcrumb.
-- [ ] Criar ação `Voltar aos conversores`.
-- [ ] Renderizar ícone, título e descrição do catálogo.
-- [ ] Renderizar badges de origem/destino.
-- [ ] Manter metadata e 404 atuais.
+- [ ] Representar seleção, conversão e conclusão.
+- [ ] Diferenciar etapa atual, concluída e futura por texto/ícone, não apenas por cor.
+- [ ] Marcar a etapa atual com semântica acessível e anunciar mudanças relevantes.
+- [ ] Responder a movimento reduzido.
 
-**Validação:** todos os cinco pares exibem conteúdo correto a partir do catálogo único.
+**Aceite:** estados idle, ready, submitting, error e success geram representação coerente.
 
-**Dependência:** Task 33.
+### Task 28 — Implementar `FileDropzone`
 
-### Task 35 — Implementar `ConversionSteps`
+- [ ] Suportar clique, teclado e arrastar/soltar sobre um input de arquivo real.
+- [ ] Usar `accept` derivado do catálogo e validar extensão no cliente.
+- [ ] Aceitar equivalência `.jpg`/`.jpeg` quando prevista.
+- [ ] Exibir instrução, formatos aceitos e erro associado; bloquear durante envio.
+- [ ] Evitar listeners globais e prevenir comportamento padrão somente na área de drop.
 
-- [ ] Criar três etapas semânticas.
-- [ ] Mapear idle, selected, converting, success e error.
-- [ ] Definir `aria-current=step`.
-- [ ] Representar erro por texto/ícone.
-- [ ] Respeitar reduced motion.
-- [ ] Testar mapeamento exaustivo.
+**Aceite:** testes cobrem clique, drop, inválido, equivalências, disabled e nova seleção.
 
-**Validação:** cada estado interno produz exatamente uma representação válida.
+### Task 29 — Implementar arquivo selecionado
 
-**Dependência:** Task 34.
+- [ ] Exibir nome, tamanho formatado, ícone e ação para remover/trocar.
+- [ ] Retornar a idle ao remover e limpar input, erro e estado anterior.
+- [ ] Evitar object URLs desnecessárias ou vazamento ao trocar de arquivo.
 
-### Task 36 — Implementar `FileDropzone`
+**Aceite:** remover e substituir o arquivo não conserva seleção ou mensagem obsoleta.
 
-- [ ] Criar input real e label/ação associada.
-- [ ] Implementar clique e teclado.
-- [ ] Implementar drag-enter/over/leave/drop.
-- [ ] Validar extensão case-insensitive.
-- [ ] Preservar `.jpeg`.
-- [ ] Permitir reeleger o mesmo arquivo após reset.
-- [ ] Criar estado visual de drag-over.
-- [ ] Bloquear interações durante conversão.
-- [ ] Não criar limite de tamanho.
+### Task 30 — Migrar submissão e estados
 
-**Validação:** testes cobrem clique, drop, inválido, `.jpeg`, disabled e reset.
+- [ ] Integrar dropzone e passos ao fluxo atual de `convertFile`.
+- [ ] Preservar upload direto ao FastAPI, timeout, parsing de erro e download.
+- [ ] Exibir progresso indeterminado sem inventar percentual.
+- [ ] Tratar erro com Alert e permitir nova tentativa sem recarregar a página.
+- [ ] No sucesso, oferecer download e opção de converter outro arquivo.
 
-**Dependência:** Task 35.
+**Aceite:** testes atuais de transporte/download passam e todos os estados visuais estão cobertos.
 
-### Task 37 — Implementar arquivo selecionado
+### Task 31 — Implementar painel “Como funciona”
 
-- [ ] Exibir nome, extensão e tamanho informativo.
-- [ ] Criar ação remover/trocar.
-- [ ] Garantir truncamento visual sem perder nome acessível.
-- [ ] Sincronizar fonte única entre estado e input.
-- [ ] Não registrar metadados do arquivo.
+- [ ] Exibir três passos curtos e específicos para o par selecionado.
+- [ ] Posicionar como apoio lateral no desktop e após a ação principal no mobile.
+- [ ] Não incluir detalhes de infraestrutura ou claims não aprovados.
 
-**Validação:** remover volta a idle e trocar não deixa object URL ou seleção antiga.
+**Aceite:** painel não compete com a conversão e não causa overflow.
 
-**Dependência:** Task 36.
+### Task 32 — Cobrir os cinco conversores
 
-### Task 38 — Migrar o formulário e estados
+- [ ] Cobrir arquivo válido/inválido, remoção, envio, erro, sucesso e download.
+- [ ] Atualizar E2E interceptado para os cinco pares sem depender da engine real.
+- [ ] Atualizar referências visuais de idle, ready, submitting, error e success.
 
-- [ ] Compor Card, Steps, Dropzone, Button e Alert.
-- [ ] Desabilitar ação sem arquivo.
-- [ ] Preservar bloqueio de reenvio.
-- [ ] Preservar transporte multipart direto.
-- [ ] Preservar mensagens seguras.
-- [ ] Preservar download desktop/mobile.
-- [ ] Preservar cleanup de object URLs.
-- [ ] Permitir retry após erro.
-- [ ] Permitir nova conversão após sucesso.
+**Aceite:** os cinco fluxos concluem com seletores semânticos e resultados determinísticos.
 
-**Validação:** testes atuais de transporte/download passam e novos estados visuais estão cobertos.
+### Gate do Grupo 6
 
-**Dependência:** Task 37.
+- [ ] Executar lint, typecheck, testes, build, E2E focal e visual dos conversores.
+- [ ] Confirmar que chamadas continuam indo diretamente ao FastAPI.
+- [ ] Revisar o diff, criar os commits planejados e abrir o PR.
 
-### Task 39 — Implementar painel `Como funciona`
+## 10. Grupo 7 — Acessibilidade, responsividade e hardening
 
-- [ ] Exibir três etapas específicas.
-- [ ] Adicionar ação para outro conversor.
-- [ ] Posicionar lateralmente em desktop.
-- [ ] Posicionar abaixo em mobile.
-- [ ] Evitar cards aninhados.
-- [ ] Usar copy factual.
+**Branch:** `test/ui-accessibility-visual` · **Dependência:** Grupo 6 incorporado à `main`.
 
-**Validação:** layout responde sem overflow e painel não precede a ação principal no mobile.
-
-**Dependência:** Task 38.
-
-### Task 40 — Atualizar testes do fluxo
-
-- [ ] Atualizar unitários da conversão.
-- [ ] Atualizar E2E dos cinco endpoints.
-- [ ] Cobrir idle, selected, converting, success e error.
-- [ ] Cobrir retry e novo arquivo.
-- [ ] Cobrir download sugerido.
-- [ ] Cobrir mobile legado.
-- [ ] Atualizar capturas visuais desktop/mobile.
-
-**Validação:** todos os cinco casos passam sem engine real nos E2E interceptados.
-
-**Dependência:** Task 39.
-
-### Task 41 — Validar e publicar conversores
-
-- [ ] Executar lint, typecheck, testes, coverage focal, build e E2E.
-- [ ] Executar smoke entre processos.
-- [ ] Confirmar request direto ao FastAPI.
-- [ ] Revisar screenshots de todos os estados.
-- [ ] Executar `git diff --check`.
-- [ ] Criar commits planejados.
-- [ ] Publicar PR e aguardar merge.
-
-**Validação:** template novo está em `main` com cinco conversores funcionais.
-
-**Dependência:** Task 40.
-
-## 11. Grupo 7 — Acessibilidade, responsividade e hardening
-
-**Branch:** `test/ui-accessibility-visual`
-**Dependência:** Grupo 6 incorporado à `main`.
-**Commits:**
+**Commits planejados:**
 
 1. `test(ui): harden accessibility and visual coverage`
 2. `perf(ui): preserve frontend bundle budget`
 
-### Task 42 — Auditar acessibilidade automatizada
+### Task 33 — Auditar acessibilidade automática
 
-- [ ] Avaliar integração de `@axe-core/playwright`.
-- [ ] Adicionar somente se compatível e útil.
-- [ ] Auditar auth login/cadastro, home e conversor.
-- [ ] Corrigir violações críticas/sérias.
-- [ ] Registrar exceções justificadas sem silenciar genericamente.
+- [ ] Executar axe nas rotas e estados definidos na SPEC.
+- [ ] Corrigir landmarks, nomes acessíveis, labels, descrições de erro e ARIA inválida.
+- [ ] Tratar violações críticas e sérias; documentar exceções reais.
 
-**Validação:** zero violações críticas ou sérias nas rotas cobertas.
+**Aceite:** nenhuma violação crítica ou séria permanece nas rotas cobertas.
 
-### Task 43 — Auditar teclado e foco
+### Task 34 — Auditar teclado, foco e movimento
 
-- [ ] Testar skip link.
-- [ ] Testar tabs de auth.
-- [ ] Testar dropdown e sheet.
-- [ ] Testar filtros da home.
-- [ ] Testar dropzone e retry.
-- [ ] Testar foco em erros.
-- [ ] Testar retorno de foco após overlays.
+- [ ] Concluir login, cadastro, navegação, filtros, seleção e conversão somente por teclado.
+- [ ] Verificar foco inicial, foco após erro, menus, sheet, tabs e retorno de foco.
+- [ ] Confirmar contraste WCAG 2.2 AA e comportamento com `prefers-reduced-motion`.
 
-**Validação:** os três fluxos principais são concluídos somente por teclado.
+**Aceite:** os fluxos principais são operáveis sem mouse e sem perda de contexto.
 
-**Dependência:** Task 42.
+### Task 35 — Auditar responsividade e visual
 
-### Task 44 — Auditar contraste e movimento
+- [ ] Validar viewports de 320, 375, 768, 1024 e 1440 px, além de zoom a 200%.
+- [ ] Cobrir conteúdo longo, mensagens de erro, teclado móvel e ausência de overflow.
+- [ ] Consolidar snapshots determinísticos para auth, home e conversão.
 
-- [ ] Medir tokens de texto, borda, foco, success e destructive.
-- [ ] Validar estados disabled sem perder legibilidade necessária.
-- [ ] Validar `prefers-reduced-motion`.
-- [ ] Remover animações contínuas.
-- [ ] Confirmar que estado não depende só de cor.
+**Aceite:** matriz da SPEC passa e ações permanecem visíveis/utilizáveis.
 
-**Validação:** WCAG 2.2 AA nos componentes críticos e reduced motion funcional.
+### Task 36 — Auditar performance e regressão
 
-**Dependência:** Task 43.
+- [ ] Executar auditoria de bundle e investigar aumentos relevantes.
+- [ ] Executar a suíte completa de lint, typecheck, testes, coverage, build, E2E e visual.
+- [ ] Remover artefatos gerados antes do commit.
 
-### Task 45 — Auditar responsividade
+**Aceite:** gates passam e qualquer desvio de bundle possui justificativa aprovada.
 
-- [ ] Testar 320 × 568.
-- [ ] Testar 375 × 812.
-- [ ] Testar 768 × 1024.
-- [ ] Testar desktop configurado.
-- [ ] Testar desktop amplo.
-- [ ] Validar zoom 200%.
-- [ ] Corrigir scroll horizontal, sobreposição e cortes.
+### Gate do Grupo 7
 
-**Validação:** matriz da SPEC passa e conteúdo/ações permanecem utilizáveis.
+- [ ] Registrar resultados de acessibilidade, viewports, testes e bundle no PR.
+- [ ] Revisar o diff, criar os commits planejados e abrir o PR.
 
-**Dependência:** Task 44.
+## 11. Grupo 8 — Documentação e encerramento
 
-### Task 46 — Consolidar cobertura visual
+**Branch:** `docs/ui-redesign-release` · **Dependência:** Grupo 7 incorporado à `main`.
 
-- [ ] Implementar lista de capturas obrigatórias da SPEC.
-- [ ] Desabilitar animações e caret.
-- [ ] Manter capturas como artefatos, não arquivos versionados.
-- [ ] Atualizar assertions de grid e composição.
-- [ ] Evitar dependência de coordenadas frágeis além do necessário.
+**Commit planejado:** `docs(ui): complete shadcn redesign rollout`
 
-**Validação:** suíte visual passa em desktop e mobile repetidamente.
+### Task 37 — Atualizar documentação operacional
 
-**Dependência:** Task 45.
+- [ ] Documentar instalação, componentes shadcn, tokens, marca e comandos de validação.
+- [ ] Atualizar README e caminhos de assets quando necessário.
+- [ ] Registrar decisões e desvios aprovados da SPEC.
 
-### Task 47 — Auditar performance e bundle
+**Aceite:** uma pessoa nova consegue executar, localizar e validar o design system.
 
-- [ ] Executar `audit:bundle`.
-- [ ] Comparar client chunks antes/depois.
-- [ ] Confirmar ausência dos PNGs de docs no output.
-- [ ] Confirmar imports tree-shakeable de Lucide.
-- [ ] Confirmar Server/Client boundaries.
-- [ ] Remover dependências e componentes shadcn sem uso.
-- [ ] Verificar ausência de layout shift evidente.
+### Task 38 — Auditar escopo e repositório
 
-**Validação:** orçamento existente passa e regressões relevantes têm correção ou aprovação explícita.
+- [ ] Conferir que somente SVGs de produção entram no frontend e que os PNGs permanecem em docs.
+- [ ] Revisar dependências, lockfile e ausência de artefatos/segredos.
+- [ ] Confirmar que backend, auth, upload direto e cinco conversores preservam seus contratos.
 
-**Dependência:** Task 46.
+**Aceite:** o redesign alterou apresentação e usabilidade, não o escopo funcional.
 
-### Task 48 — Executar regressão completa e publicar
+### Task 39 — Encerrar o plano
 
-- [ ] Executar `npm ci` em instalação limpa apropriada.
-- [ ] Executar lint, typecheck, testes, coverage, build e audit bundle.
-- [ ] Executar E2E, smoke e visual.
-- [ ] Executar `git diff --check`.
-- [ ] Revisar diff completo.
-- [ ] Criar commits planejados.
-- [ ] Publicar PR com matriz de evidências.
-- [ ] Aguardar merge.
+- [ ] Executar os gates finais e atualizar os status do PRD, da SPEC e deste backlog.
+- [ ] Registrar resultados, riscos residuais e pendências explicitamente aceitas.
+- [ ] Criar o commit documental e abrir o PR final.
 
-**Validação:** todos os gates finais do frontend passam sem artefatos indevidos.
+**Aceite:** documentação reflete a implementação incorporada à `main`.
 
-**Dependência:** Task 47.
+## 12. Definição de conclusão
 
-## 12. Grupo 8 — Documentação e encerramento
+O redesign estará concluído quando:
 
-**Branch:** `docs/ui-redesign-release`
-**Dependência:** Grupo 7 incorporado à `main`.
-**Commit:** `docs(ui): complete shadcn redesign rollout`
-
-### Task 49 — Atualizar README e documentação operacional
-
-- [ ] Documentar shadcn/ui e componentes pertencentes ao source.
-- [ ] Documentar Nunito Sans e assets SVG.
-- [ ] Atualizar árvore relevante do frontend.
-- [ ] Documentar comandos de validação.
-- [ ] Não documentar mockups PNG como runtime.
-- [ ] Não alterar setup de backend sem necessidade.
-
-**Validação:** pessoa nova entende como executar, validar e localizar o design system.
-
-### Task 50 — Auditar assets e dependências
-
-- [ ] Confirmar somente dois PNGs em `docs/assets/redesign-ui`.
-- [ ] Confirmar quatro SVGs de produção em `frontend/public/brand`.
-- [ ] Confirmar nenhum import de `docs/assets`.
-- [ ] Confirmar ausência de assets duplicados/temporários.
-- [ ] Confirmar ausência de componentes shadcn sem consumidor.
-- [ ] Confirmar ausência de dependências sem uso.
-
-**Validação:** inventário de assets e dependências corresponde à SPEC.
-
-**Dependência:** Task 49.
-
-### Task 51 — Auditar escopo funcional
-
-- [ ] Confirmar exatamente cinco conversores.
-- [ ] Confirmar rotas e 404.
-- [ ] Confirmar auth e callback.
-- [ ] Confirmar uploads diretos.
-- [ ] Confirmar downloads desktop/mobile.
-- [ ] Confirmar ausência de features adiadas.
-- [ ] Confirmar copy sem alegações não aprovadas.
-
-**Validação:** redesign alterou apresentação e usabilidade, não contratos ou escopo de produto.
-
-**Dependência:** Task 50.
-
-### Task 52 — Executar gates finais
-
-- [ ] Executar toda a sequência de hardening novamente.
-- [ ] Executar testes duas vezes quando houver risco de ordem/estado residual.
-- [ ] Confirmar que validações não deixam arquivos não rastreados.
-- [ ] Executar `git diff --check`.
-- [ ] Registrar versões e contagens finais de testes.
-
-**Validação:** evidência reproduzível de todos os gates, sem falha omitida.
-
-**Dependência:** Task 51.
-
-### Task 53 — Atualizar status dos documentos
-
-- [ ] Marcar PRD como `Concluído` somente se critérios de aceite passarem.
-- [ ] Marcar SPEC como `Implementada` somente se contratos forem atendidos.
-- [ ] Marcar tasks concluídas com evidência.
-- [ ] Registrar desvios aprovados.
-- [ ] Registrar decisões adiadas sem tratá-las como entregues.
-- [ ] Adicionar data de conclusão e resumo.
-
-**Validação:** PRD, SPEC e backlog refletem o repositório real.
-
-**Dependência:** Task 52.
-
-### Task 54 — Publicar PR final
-
-- [ ] Revisar diff documental completo.
-- [ ] Criar `docs(ui): complete shadcn redesign rollout`.
-- [ ] Publicar branch.
-- [ ] Abrir PR com links para os sete PRs anteriores.
-- [ ] Incluir matriz de gates, assets e desvios.
-- [ ] Aguardar checks, aprovação e merge manual.
-
-**Validação:** série completa incorporada à `main`, auditável e sem branch dependente pendente.
-
-**Dependência:** Task 53.
-
-## 13. Matriz de rastreabilidade
-
-| Requisito | Grupos |
-| --- | --- |
-| PRD, SPEC, TASKS e referências | 1, 8 |
-| shadcn, tokens e fonte | 2, 7, 8 |
-| marca vetorial | 2, 7, 8 |
-| shell e menu do usuário | 3, 7 |
-| login/cadastro segmentado | 4, 7 |
-| home, filtros e cards | 5, 7 |
-| dropzone e estados de conversão | 6, 7 |
-| upload direto ao FastAPI | 6, 7, 8 |
-| download desktop/mobile | 6, 7, 8 |
-| WCAG 2.2 AA | todos os grupos de UI, consolidado no 7 |
-| responsividade | 3–7 |
-| performance e bundle | 2, 5, 6, consolidado no 7 |
-| documentação final | 8 |
-
-## 14. Ordem resumida
-
-| Faixa | Resultado |
-| --- | --- |
-| Tasks 1–5 | planejamento e referências aprovados |
-| Tasks 6–12 | shadcn, tokens, fonte e marca vetorial |
-| Tasks 13–18 | shell compartilhado |
-| Tasks 19–25 | autenticação redesenhada |
-| Tasks 26–32 | home redesenhada |
-| Tasks 33–41 | conversores redesenhados |
-| Tasks 42–48 | acessibilidade, visual e performance validados |
-| Tasks 49–54 | auditoria e encerramento |
-
-## 15. Definição de conclusão
-
-O redesign estará concluído somente quando:
-
-1. os oito PRs tiverem sido incorporados em ordem;
-2. as 54 tasks estiverem validadas;
-3. PRD e SPEC estiverem refletidos no código;
-4. os PNGs permanecerem somente como referência documental;
-5. SVGs de produção estiverem aprovados;
-6. auth, home e conversores usarem o novo design system;
-7. todos os fluxos funcionais anteriores permanecerem verdes;
-8. acessibilidade, responsividade, bundle e testes passarem;
-9. nenhuma feature fora de escopo ou dependência sem uso permanecer;
-10. documentação final corresponder ao estado real da `main`.
+- os Grupos 1 a 8 estiverem incorporados à `main` na ordem definida;
+- login, home e cinco conversores corresponderem ao PRD e à SPEC;
+- acessibilidade, responsividade, testes, build e bundle passarem;
+- backend, autenticação e upload direto não tiverem regressão;
+- somente SVGs de produção forem usados pela aplicação;
+- documentação e status estiverem atualizados.

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from starlette.concurrency import run_in_threadpool
 
 from app.config import BACKEND_ROOT
 from app.converters import (
@@ -30,7 +31,11 @@ async def pdf_to_docx(
     try:
         await temporary_files.save_upload(file, paths.input)
         converter = get_pdf_to_docx_converter()
-        success = converter.convert(str(paths.input), str(paths.output))
+        success = await run_in_threadpool(
+            converter.convert,
+            str(paths.input),
+            str(paths.output),
+        )
 
         if not success:
             raise HTTPException(status_code=500, detail="Falha ao converter o documento")
@@ -61,7 +66,8 @@ async def docx_to_pdf(
     try:
         await temporary_files.save_upload(file, paths.input)
         converter = get_docx_to_pdf_converter()
-        converted_path = converter.convert(
+        converted_path = await run_in_threadpool(
+            converter.convert,
             str(paths.input),
             str(temporary_files.base_directory),
         )
@@ -100,7 +106,11 @@ async def pdf_to_svg(
     try:
         await temporary_files.save_upload(file, paths.input)
         converter = get_pdf_to_svg_converter()
-        success = converter.convert(str(paths.input), str(paths.output))
+        success = await run_in_threadpool(
+            converter.convert,
+            str(paths.input),
+            str(paths.output),
+        )
 
         if not success:
             raise HTTPException(status_code=500, detail="Falha ao converter o documento")
@@ -133,7 +143,11 @@ async def jpg_to_png(
     try:
         await temporary_files.save_upload(file, paths.input)
         converter = get_image_converter()
-        success = converter.jpg_to_png(str(paths.input), str(paths.output))
+        success = await run_in_threadpool(
+            converter.jpg_to_png,
+            str(paths.input),
+            str(paths.output),
+        )
 
         if not success:
             raise HTTPException(status_code=500, detail="Falha ao converter a imagem")
@@ -163,7 +177,11 @@ async def png_to_jpg(
     try:
         await temporary_files.save_upload(file, paths.input)
         converter = get_image_converter()
-        success = converter.png_to_jpg(str(paths.input), str(paths.output))
+        success = await run_in_threadpool(
+            converter.png_to_jpg,
+            str(paths.input),
+            str(paths.output),
+        )
 
         if not success:
             raise HTTPException(status_code=500, detail="Falha ao converter a imagem")

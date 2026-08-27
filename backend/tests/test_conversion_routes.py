@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 
 import pytest
 from fastapi.routing import APIRoute
@@ -12,6 +13,7 @@ from tests.fakes import (
     FakePDFToDocxConverter,
     FakePDFToSVGConverter,
 )
+from app.converters.adapters.docx_adapter import LibreOfficeAdapter
 
 
 SOURCE_CONTENT = b"source-file-content"
@@ -254,3 +256,31 @@ def test_path_adapter_failure_returns_500_and_cleans_input(
     assert len(fake.calls) == 1
     assert_paths_removed(fake.calls[0][0], fake.output_paths[0])
     assert list(temporary_folder.iterdir()) == []
+
+
+def test_libreoffice_adapter_uses_an_isolated_temporary_profile(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "document.docx"
+    output = tmp_path / "output"
+    source.write_bytes(SOURCE_CONTENT)
+    output.mkdir()
+    observed_profile_directory: list[Path] = []
+
+    def fake_run(command: list[str], **_kwargs: object) -> object:
+        profile_uri = command[2].split("=", maxsplit=1)[1]
+        profile_path = Path(unquote(urlparse(profile_uri).path))
+        if profile_path.drive == "" and str(profile_path).startswith("\\"):
+            profile_path = Path(str(profile_path).lstrip("\\"))
+        observed_profile_directory.append(profile_path)
+        assert profile_path.exists()
+        (output / "document.pdf").write_bytes(b"pdf")
+        return type("Result", (), {"returncode": 0, "stderr": b""})()
+
+    monkeypatch.setattr("app.converters.adapters.docx_adapter.subprocess.run", fake_run)
+    adapter = LibreOfficeAdapter()
+
+    assert adapter.convert(str(source), str(output)) == str(output / "document.pdf")
+    assert len(observed_profile_directory) == 1
+    assert not observed_profile_directory[0].exists()

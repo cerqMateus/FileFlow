@@ -7,6 +7,7 @@ from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
 
 
 BACKEND_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_MAX_UPLOAD_FILE_SIZE = 50 * 1024 * 1024
 
 CORS_ORIGINS_ENV = "BACKEND_CORS_ORIGINS"
 DEFAULT_CORS_ORIGINS = ("http://localhost:3000",)

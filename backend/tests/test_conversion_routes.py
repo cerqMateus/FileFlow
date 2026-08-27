@@ -16,7 +16,10 @@ from tests.fakes import (
 from app.converters.adapters.docx_adapter import LibreOfficeAdapter
 
 
-SOURCE_CONTENT = b"source-file-content"
+PDF_SOURCE_CONTENT = b"%PDF-source-file-content"
+DOCX_SOURCE_CONTENT = b"PK\x03\x04source-file-content"
+JPG_SOURCE_CONTENT = b"\xff\xd8\xffsource-image-content"
+PNG_SOURCE_CONTENT = b"\x89PNG\r\n\x1a\nsource-image-content"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 EXPECTED_CONVERSION_ROUTES = {
     ("/convert/pdf-to-docx", "POST"),
@@ -64,11 +67,11 @@ def test_pdf_to_docx_uses_fake_adapter_and_cleans_files(
 
     response = client.post(
         "/convert/pdf-to-docx",
-        files={"file": ("document.pdf", SOURCE_CONTENT, "application/pdf")},
+        files={"file": ("document.PDF", PDF_SOURCE_CONTENT, "application/pdf")},
     )
 
     assert_download(response, DOCX_MEDIA_TYPE, "FileFlow_Converted.docx", fake.payload)
-    assert fake.received_content == [SOURCE_CONTENT]
+    assert fake.received_content == [PDF_SOURCE_CONTENT]
     assert len(fake.calls) == 1
     assert_paths_removed(*fake.calls[0])
     assert list(temporary_folder.iterdir()) == []
@@ -84,11 +87,11 @@ def test_docx_to_pdf_uses_fake_adapter_and_cleans_files(
 
     response = client.post(
         "/convert/docx-to-pdf",
-        files={"file": ("document.docx", SOURCE_CONTENT, DOCX_MEDIA_TYPE)},
+        files={"file": ("document.DOCX", DOCX_SOURCE_CONTENT, DOCX_MEDIA_TYPE)},
     )
 
     assert_download(response, "application/pdf", "FileFlow_Convertido.pdf", fake.payload)
-    assert fake.received_content == [SOURCE_CONTENT]
+    assert fake.received_content == [DOCX_SOURCE_CONTENT]
     assert len(fake.calls) == 1
     assert_paths_removed(fake.calls[0][0], fake.output_paths[0])
     assert list(temporary_folder.iterdir()) == []
@@ -104,11 +107,11 @@ def test_pdf_to_svg_uses_fake_adapter_and_cleans_files(
 
     response = client.post(
         "/convert/pdf-to-svg",
-        files={"file": ("document.pdf", SOURCE_CONTENT, "application/pdf")},
+        files={"file": ("document.PDF", PDF_SOURCE_CONTENT, "application/pdf")},
     )
 
     assert_download(response, "image/svg+xml", "FileFlow_Converted.svg", fake.payload)
-    assert fake.received_content == [SOURCE_CONTENT]
+    assert fake.received_content == [PDF_SOURCE_CONTENT]
     assert len(fake.calls) == 1
     assert_paths_removed(*fake.calls[0])
     assert list(temporary_folder.iterdir()) == []
@@ -126,11 +129,11 @@ def test_jpg_to_png_uses_fake_adapter_and_cleans_files(
 
     response = client.post(
         "/convert/jpg-to-png",
-        files={"file": (f"image.{extension}", SOURCE_CONTENT, "image/jpeg")},
+        files={"file": (f"image.{extension.upper()}", JPG_SOURCE_CONTENT, "image/jpeg")},
     )
 
     assert_download(response, "image/png", "FileFlow_Converted.png", fake.png_payload)
-    assert fake.received_content == [SOURCE_CONTENT]
+    assert fake.received_content == [JPG_SOURCE_CONTENT]
     assert len(fake.jpg_to_png_calls) == 1
     assert fake.png_to_jpg_calls == []
     assert_paths_removed(*fake.jpg_to_png_calls[0])
@@ -147,11 +150,11 @@ def test_png_to_jpg_uses_fake_adapter_and_cleans_files(
 
     response = client.post(
         "/convert/png-to-jpg",
-        files={"file": ("image.png", SOURCE_CONTENT, "image/png")},
+        files={"file": ("image.PNG", PNG_SOURCE_CONTENT, "image/png")},
     )
 
     assert_download(response, "image/jpeg", "FileFlow_Converted.jpg", fake.jpg_payload)
-    assert fake.received_content == [SOURCE_CONTENT]
+    assert fake.received_content == [PNG_SOURCE_CONTENT]
     assert len(fake.png_to_jpg_calls) == 1
     assert fake.jpg_to_png_calls == []
     assert_paths_removed(*fake.png_to_jpg_calls[0])
@@ -165,31 +168,31 @@ def test_png_to_jpg_uses_fake_adapter_and_cleans_files(
             "/convert/pdf-to-docx",
             "document.txt",
             "get_pdf_to_docx_converter",
-            "Apenas arquivos .pdf são permitidos.",
+            "Apenas arquivos com extensão .pdf são permitidos.",
         ),
         (
             "/convert/docx-to-pdf",
             "document.pdf",
             "get_docx_to_pdf_converter",
-            "Apenas arquivos .docx são permitidos.",
+            "Apenas arquivos com extensão .docx são permitidos.",
         ),
         (
             "/convert/pdf-to-svg",
             "document.svg",
             "get_pdf_to_svg_converter",
-            "Apenas arquivos .pdf são permitidos.",
+            "Apenas arquivos com extensão .pdf são permitidos.",
         ),
         (
             "/convert/jpg-to-png",
             "image.png",
             "get_image_converter",
-            "Apenas arquivos .jpg ou .jpeg são permitidos.",
+            "Apenas arquivos com extensão .jpeg ou .jpg são permitidos.",
         ),
         (
             "/convert/png-to-jpg",
             "image.jpg",
             "get_image_converter",
-            "Apenas arquivos .png são permitidos.",
+            "Apenas arquivos com extensão .png são permitidos.",
         ),
     ],
 )
@@ -210,11 +213,57 @@ def test_invalid_extensions_are_rejected_before_adapter_creation(
 
     response = client.post(
         endpoint,
-        files={"file": (filename, SOURCE_CONTENT, "application/octet-stream")},
+        files={"file": (filename, b"invalid", "application/octet-stream")},
     )
 
     assert response.status_code == 400
     assert response.json() == {"detail": detail}
+    assert list(temporary_folder.iterdir()) == []
+
+
+@pytest.mark.parametrize("filename", [None, ""])
+def test_missing_filename_is_rejected_with_a_friendly_message(filename: str | None) -> None:
+    with pytest.raises(conversion_routes.HTTPException) as error:
+        conversion_routes.validate_extension(filename, {".pdf"})
+
+    assert error.value.status_code == 400
+    assert error.value.detail == "Nome de arquivo inválido ou ausente."
+
+
+@pytest.mark.parametrize(
+    ("endpoint", "filename", "expected_format", "factory_name"),
+    [
+        ("/convert/pdf-to-docx", "document.pdf", "PDF", "get_pdf_to_docx_converter"),
+        ("/convert/docx-to-pdf", "document.docx", "DOCX", "get_docx_to_pdf_converter"),
+        ("/convert/pdf-to-svg", "document.pdf", "PDF", "get_pdf_to_svg_converter"),
+        ("/convert/jpg-to-png", "image.jpg", "JPG", "get_image_converter"),
+        ("/convert/png-to-jpg", "image.png", "PNG", "get_image_converter"),
+    ],
+)
+def test_invalid_magic_bytes_are_rejected_before_adapter_creation(
+    endpoint: str,
+    filename: str,
+    expected_format: str,
+    factory_name: str,
+    app_client: tuple[TestClient, Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client, temporary_folder = app_client
+
+    def forbidden_factory():
+        raise AssertionError("adapter factory must not be called")
+
+    monkeypatch.setattr(conversion_routes, factory_name, forbidden_factory)
+
+    response = client.post(
+        endpoint,
+        files={"file": (filename, b"not-a-valid-file", "application/octet-stream")},
+    )
+
+    assert response.status_code == 400
+    assert response.json() == {
+        "detail": f"O arquivo fornecido não é um {expected_format} válido."
+    }
     assert list(temporary_folder.iterdir()) == []
 
 
@@ -228,7 +277,7 @@ def test_boolean_adapter_failure_returns_500_and_cleans_input(
 
     response = client.post(
         "/convert/pdf-to-docx",
-        files={"file": ("document.pdf", SOURCE_CONTENT, "application/pdf")},
+        files={"file": ("document.pdf", PDF_SOURCE_CONTENT, "application/pdf")},
     )
 
     assert response.status_code == 500
@@ -248,7 +297,7 @@ def test_path_adapter_failure_returns_500_and_cleans_input(
 
     response = client.post(
         "/convert/docx-to-pdf",
-        files={"file": ("document.docx", SOURCE_CONTENT, DOCX_MEDIA_TYPE)},
+        files={"file": ("document.docx", DOCX_SOURCE_CONTENT, DOCX_MEDIA_TYPE)},
     )
 
     assert response.status_code == 500

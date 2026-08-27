@@ -11,7 +11,7 @@ from app.converters import (
     get_pdf_to_docx_converter,
     get_pdf_to_svg_converter,
 )
-from app.services import TemporaryFileService
+from app.services import TemporaryFileService, validate_extension, validate_magic_bytes
 
 
 router = APIRouter()
@@ -23,13 +23,13 @@ async def pdf_to_docx(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ):
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos .pdf são permitidos.")
+    extension = validate_extension(file.filename, {".pdf"})
 
     paths = temporary_files.allocate("pdf", "docx")
 
     try:
         await temporary_files.save_upload(file, paths.input)
+        validate_magic_bytes(paths.input, extension)
         converter = get_pdf_to_docx_converter()
         success = await run_in_threadpool(
             converter.convert,
@@ -57,14 +57,14 @@ async def docx_to_pdf(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ):
-    if not file.filename.endswith(".docx"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos .docx são permitidos.")
+    extension = validate_extension(file.filename, {".docx"})
 
     paths = temporary_files.allocate("docx", "pdf")
     output_path = paths.output
 
     try:
         await temporary_files.save_upload(file, paths.input)
+        validate_magic_bytes(paths.input, extension)
         converter = get_docx_to_pdf_converter()
         converted_path = await run_in_threadpool(
             converter.convert,
@@ -98,13 +98,13 @@ async def pdf_to_svg(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ):
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos .pdf são permitidos.")
+    extension = validate_extension(file.filename, {".pdf"})
 
     paths = temporary_files.allocate("pdf", "svg")
 
     try:
         await temporary_files.save_upload(file, paths.input)
+        validate_magic_bytes(paths.input, extension)
         converter = get_pdf_to_svg_converter()
         success = await run_in_threadpool(
             converter.convert,
@@ -132,16 +132,13 @@ async def jpg_to_png(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ):
-    if not (file.filename.endswith(".jpg") or file.filename.endswith(".jpeg")):
-        raise HTTPException(
-            status_code=400,
-            detail="Apenas arquivos .jpg ou .jpeg são permitidos.",
-        )
+    extension = validate_extension(file.filename, {".jpg", ".jpeg"})
 
     paths = temporary_files.allocate("jpg", "png")
 
     try:
         await temporary_files.save_upload(file, paths.input)
+        validate_magic_bytes(paths.input, extension)
         converter = get_image_converter()
         success = await run_in_threadpool(
             converter.jpg_to_png,
@@ -169,13 +166,13 @@ async def png_to_jpg(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ):
-    if not file.filename.endswith(".png"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos .png são permitidos.")
+    extension = validate_extension(file.filename, {".png"})
 
     paths = temporary_files.allocate("png", "jpg")
 
     try:
         await temporary_files.save_upload(file, paths.input)
+        validate_magic_bytes(paths.input, extension)
         converter = get_image_converter()
         success = await run_in_threadpool(
             converter.png_to_jpg,

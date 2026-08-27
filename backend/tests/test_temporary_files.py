@@ -4,7 +4,7 @@ from pathlib import Path
 
 import anyio
 import pytest
-from fastapi import BackgroundTasks, UploadFile
+from fastapi import BackgroundTasks, HTTPException, UploadFile
 
 from app.services import TemporaryFileService
 
@@ -54,6 +54,42 @@ def test_save_upload_writes_multiple_chunks(tmp_path: Path) -> None:
 
     assert paths.input.read_bytes() == content
     service.remove(paths.input)
+    assert not paths.input.exists()
+
+
+@pytest.mark.parametrize("max_file_size", [0, -1])
+def test_service_rejects_non_positive_max_file_size(
+    tmp_path: Path,
+    max_file_size: int,
+) -> None:
+    with pytest.raises(ValueError, match="max_file_size must be greater than zero"):
+        TemporaryFileService(tmp_path / "temp", max_file_size=max_file_size)
+
+
+def test_save_upload_rejects_empty_file_and_removes_it(tmp_path: Path) -> None:
+    service = TemporaryFileService(tmp_path / "temp")
+    paths = service.allocate("pdf", "docx")
+    upload = UploadFile(file=BytesIO(), filename="document.pdf")
+
+    with pytest.raises(HTTPException) as error:
+        anyio.run(service.save_upload, upload, paths.input)
+
+    assert error.value.status_code == 400
+    assert error.value.detail == "O arquivo enviado está vazio."
+    assert not paths.input.exists()
+
+
+def test_save_upload_rejects_oversized_file_and_removes_partial_file(
+    tmp_path: Path,
+) -> None:
+    service = TemporaryFileService(tmp_path / "temp", chunk_size=4, max_file_size=5)
+    paths = service.allocate("pdf", "docx")
+    upload = UploadFile(file=BytesIO(b"123456"), filename="document.pdf")
+
+    with pytest.raises(HTTPException) as error:
+        anyio.run(service.save_upload, upload, paths.input)
+
+    assert error.value.status_code == 413
     assert not paths.input.exists()
 
 

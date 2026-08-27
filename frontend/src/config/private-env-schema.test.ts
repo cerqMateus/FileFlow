@@ -83,6 +83,34 @@ describe("private environment", () => {
     ).toThrow("DATABASE_URL deve exigir SSL");
   });
 
+  it("accepts local PostgreSQL connections without Neon pooler or SSL rules", () => {
+    const localEnvironment = environmentWith({
+      DATABASE_URL: "postgresql://fileflow:local-password@localhost:5432/fileflow_db",
+      DATABASE_MIGRATION_URL:
+        "postgres://fileflow:local-password@postgres:5432/fileflow_db",
+      NEON_TEST_ENDPOINT_ID: undefined,
+      NEON_TEST_DATABASE: undefined,
+    });
+
+    expect(readPrivateEnv(localEnvironment).databaseUrl).toContain("localhost");
+    expect(readMigrationEnv(localEnvironment).databaseMigrationUrl).toContain(
+      "@postgres:5432",
+    );
+    expect(() => assertTestDatabaseTarget(localEnvironment)).not.toThrow();
+  });
+
+  it("can explicitly enforce Neon constraints for a non-Neon endpoint", () => {
+    expect(() =>
+      readPrivateEnv(
+        environmentWith({
+          DATABASE_URL:
+            "postgresql://fileflow:local-password@localhost:5432/fileflow_db",
+          ENFORCE_NEON_CONSTRAINTS: "true",
+        }),
+      ),
+    ).toThrow("DATABASE_URL deve apontar para um endpoint Neon");
+  });
+
   it("rejects malformed secrets and origins", () => {
     expect(() =>
       readPrivateEnv(
@@ -114,7 +142,7 @@ describe("private environment", () => {
     try {
       readPrivateEnv(
         environmentWith({
-          DATABASE_URL: `postgresql://owner:${leakedValue}@example.com/database`,
+          DATABASE_URL: `mysql://owner:${leakedValue}@example.com/database`,
         }),
       );
     } catch (error) {

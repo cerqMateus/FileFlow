@@ -38,10 +38,11 @@ function parseUrl(name: string, value: string): URL {
   }
 }
 
-function readNeonUrl(
+function readPostgresUrl(
   name: "DATABASE_URL" | "DATABASE_MIGRATION_URL",
   value: string,
   kind: DatabaseConnectionKind,
+  enforceNeonConstraints = false,
 ): string {
   const url = parseUrl(name, value);
 
@@ -59,21 +60,26 @@ function readNeonUrl(
     return invalid(name, "deve conter credenciais, host e database");
   }
 
-  if (!url.hostname.endsWith(NEON_HOST_SUFFIX)) {
-    return invalid(name, "deve apontar para um endpoint Neon");
-  }
+  const isNeonHost = url.hostname.endsWith(NEON_HOST_SUFFIX);
 
-  const isPooled = url.hostname.split(".")[0]?.endsWith("-pooler") === true;
-  if (kind === "runtime" && !isPooled) {
-    return invalid(name, "deve usar a conexão pooled do Neon");
-  }
+  if (enforceNeonConstraints || isNeonHost) {
+    if (!isNeonHost) {
+      return invalid(name, "deve apontar para um endpoint Neon");
+    }
 
-  if (kind === "migration" && isPooled) {
-    return invalid(name, "deve usar a conexão direta do Neon");
-  }
+    const isPooled =
+      url.hostname.split(".")[0]?.endsWith("-pooler") === true;
+    if (kind === "runtime" && !isPooled) {
+      return invalid(name, "deve usar a conexão pooled do Neon");
+    }
 
-  if (url.searchParams.get("sslmode") !== "require") {
-    return invalid(name, "deve exigir SSL com sslmode=require");
+    if (kind === "migration" && isPooled) {
+      return invalid(name, "deve usar a conexão direta do Neon");
+    }
+
+    if (url.searchParams.get("sslmode") !== "require") {
+      return invalid(name, "deve exigir SSL com sslmode=require");
+    }
   }
 
   return value;
@@ -122,10 +128,11 @@ function readTrustedOrigins(value: string): readonly string[] {
 export function readPrivateEnv(
   environment: EnvironmentSource = process.env,
 ): PrivateEnv {
-  const databaseUrl = readNeonUrl(
+  const databaseUrl = readPostgresUrl(
     "DATABASE_URL",
     required(environment, "DATABASE_URL"),
     "runtime",
+    environment.ENFORCE_NEON_CONSTRAINTS === "true",
   );
   const betterAuthSecret = required(environment, "BETTER_AUTH_SECRET");
   if (
@@ -165,10 +172,11 @@ export function readMigrationEnv(
   environment: EnvironmentSource = process.env,
 ): MigrationEnv {
   return Object.freeze({
-    databaseMigrationUrl: readNeonUrl(
+    databaseMigrationUrl: readPostgresUrl(
       "DATABASE_MIGRATION_URL",
       required(environment, "DATABASE_MIGRATION_URL"),
       "migration",
+      environment.ENFORCE_NEON_CONSTRAINTS === "true",
     ),
   });
 }
@@ -196,6 +204,12 @@ export function databaseName(connectionString: string): string {
 export function assertTestDatabaseTarget(
   environment: EnvironmentSource = process.env,
 ): void {
+  const configuredEndpoint = environment.NEON_TEST_ENDPOINT_ID;
+  const configuredDatabase = environment.NEON_TEST_DATABASE;
+  if (configuredEndpoint === undefined && configuredDatabase === undefined) {
+    return;
+  }
+
   const expectedEndpoint = required(environment, "NEON_TEST_ENDPOINT_ID");
   const expectedDatabase = required(environment, "NEON_TEST_DATABASE");
   if (!/^ep-[a-z0-9-]+$/.test(expectedEndpoint)) {

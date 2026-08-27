@@ -13,18 +13,15 @@ export function createDownloadArtifact(
   };
 }
 
-export function clickDownloadAnchor(anchor: HTMLAnchorElement): void {
-  anchor.click();
-}
-
-export function triggerDesktopDownload(artifact: DownloadArtifact): void {
+export function triggerDownload(artifact: DownloadArtifact): void {
   const anchor = document.createElement("a");
   anchor.href = artifact.url;
   anchor.download = artifact.filename;
+  anchor.style.display = "none";
   document.body.appendChild(anchor);
 
   try {
-    clickDownloadAnchor(anchor);
+    anchor.click();
   } finally {
     anchor.remove();
   }

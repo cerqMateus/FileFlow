@@ -11,12 +11,10 @@ import {
 
 import { convertFile } from "../api/convert-file";
 import {
-  clickDownloadAnchor,
   createDownloadArtifact,
   revokeDownloadUrl,
-  triggerDesktopDownload,
+  triggerDownload,
 } from "../browser/download";
-import { isLegacyMobileUserAgent } from "../browser/mobile";
 import type { Converter } from "../config/converters";
 import type { ConversionState } from "../model/conversion-state";
 import { createDownloadFilename } from "../model/download-filename";
@@ -28,8 +26,7 @@ type ConversionFormProps = Readonly<{
 export function ConversionForm({ converter }: ConversionFormProps) {
   const [state, setState] = useState<ConversionState>({ status: "idle" });
   const activeDownloadUrlRef = useRef<string | null>(null);
-  const desktopCleanupTimerRef = useRef<number | null>(null);
-  const mobileDownloadAnchorRef = useRef<HTMLAnchorElement | null>(null);
+  const downloadCleanupTimerRef = useRef<number | null>(null);
   const mountedRef = useRef(false);
   const acceptedFileTypes = converter.acceptedExtensions.join(",");
   const displayedExtension = converter.acceptedExtensions[0];
@@ -42,21 +39,21 @@ export function ConversionForm({ converter }: ConversionFormProps) {
         ? " text-red-600"
         : " text-slate-600";
 
-  const clearDesktopCleanupTimer = useCallback(() => {
-    if (desktopCleanupTimerRef.current !== null) {
-      window.clearTimeout(desktopCleanupTimerRef.current);
-      desktopCleanupTimerRef.current = null;
+  const clearDownloadCleanupTimer = useCallback(() => {
+    if (downloadCleanupTimerRef.current !== null) {
+      window.clearTimeout(downloadCleanupTimerRef.current);
+      downloadCleanupTimerRef.current = null;
     }
   }, []);
 
   const releaseDownloadUrl = useCallback(() => {
-    clearDesktopCleanupTimer();
+    clearDownloadCleanupTimer();
 
     if (activeDownloadUrlRef.current !== null) {
       revokeDownloadUrl(activeDownloadUrlRef.current);
       activeDownloadUrlRef.current = null;
     }
-  }, [clearDesktopCleanupTimer]);
+  }, [clearDownloadCleanupTimer]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -66,23 +63,6 @@ export function ConversionForm({ converter }: ConversionFormProps) {
       releaseDownloadUrl();
     };
   }, [releaseDownloadUrl]);
-
-  useEffect(() => {
-    if (state.status !== "success" || state.downloadUrl === undefined) {
-      return;
-    }
-
-    const mobileClickTimer = window.setTimeout(() => {
-      const anchor = mobileDownloadAnchorRef.current;
-      if (anchor !== null) {
-        clickDownloadAnchor(anchor);
-      }
-    }, 100);
-
-    return () => {
-      window.clearTimeout(mobileClickTimer);
-    };
-  }, [state]);
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
     releaseDownloadUrl();
@@ -125,24 +105,17 @@ export function ConversionForm({ converter }: ConversionFormProps) {
       const artifact = createDownloadArtifact(blob, filename);
       activeDownloadUrlRef.current = artifact.url;
 
-      if (isLegacyMobileUserAgent(window.navigator.userAgent)) {
-        setState({
-          status: "success",
-          filename: artifact.filename,
-          downloadUrl: artifact.url,
-        });
-        return;
-      }
-
-      triggerDesktopDownload(artifact);
-      setState({ status: "success", filename: artifact.filename });
-      desktopCleanupTimerRef.current = window.setTimeout(() => {
+      triggerDownload(artifact);
+      setState({
+        status: "success",
+        filename: artifact.filename,
+        downloadUrl: artifact.url,
+      });
+      downloadCleanupTimerRef.current = window.setTimeout(() => {
         if (activeDownloadUrlRef.current === artifact.url) {
-          revokeDownloadUrl(artifact.url);
-          activeDownloadUrlRef.current = null;
+          releaseDownloadUrl();
         }
-        desktopCleanupTimerRef.current = null;
-      }, 10_000);
+      }, 60_000);
     } catch (error: unknown) {
       if (!mountedRef.current) {
         return;
@@ -223,20 +196,19 @@ export function ConversionForm({ converter }: ConversionFormProps) {
       >
         {state.status === "converting" &&
           "Aguarde, estamos convertendo seu arquivo..."}
-        {state.status === "success" && state.downloadUrl === undefined &&
-          "Sucesso! Seu download deve começar em breve."}
         {state.status === "success" && state.downloadUrl !== undefined && (
-          <>
-            Conversão concluída!{" "}
+          <div className="mt-4 text-center">
+            <p className="text-sm font-semibold text-green-600">
+              Conversão concluída com sucesso!
+            </p>
             <a
-              ref={mobileDownloadAnchorRef}
               href={state.downloadUrl}
               download={state.filename}
-              className="mt-2 inline-block rounded-lg bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700"
+              className="mt-2 inline-block text-xs text-indigo-600 underline hover:text-indigo-800"
             >
-              Clique aqui para baixar seu arquivo
+              Clique aqui caso o download não tenha iniciado ({state.filename})
             </a>
-          </>
+          </div>
         )}
         {state.status === "error" && `Erro: ${state.message}`}
       </div>

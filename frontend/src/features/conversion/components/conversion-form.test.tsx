@@ -12,10 +12,6 @@ import type { Converter } from "../config/converters";
 import { listConverters } from "../config/converters";
 import { ConversionForm } from "./conversion-form";
 
-const DESKTOP_USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
-const MOBILE_USER_AGENT =
-  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36";
 const OBJECT_URL = "blob:https://fileflow.test/resultado-controlado";
 
 type Deferred<Value> = Readonly<{
@@ -57,9 +53,7 @@ function createBinaryResponse(): Response {
   });
 }
 
-function installBrowserMocks(
-  userAgent = DESKTOP_USER_AGENT,
-): BrowserMocks {
+function installBrowserMocks(): BrowserMocks {
   const NativeUrl = globalThis.URL;
   const createObjectUrl = vi.fn(() => OBJECT_URL);
   const revokeObjectUrl = vi.fn();
@@ -72,8 +66,6 @@ function installBrowserMocks(
 
   vi.stubGlobal("URL", ControlledUrl);
   vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.fileflow.test");
-  vi.spyOn(window.navigator, "userAgent", "get").mockReturnValue(userAgent);
-
   const fetchMock = vi.fn<typeof fetch>();
   vi.stubGlobal("fetch", fetchMock);
 
@@ -177,7 +169,7 @@ describe("ConversionForm", () => {
 
     response.resolve(createBinaryResponse());
     expect(
-      await screen.findByText("Sucesso! Seu download deve começar em breve."),
+      await screen.findByText("Conversão concluída com sucesso!"),
     ).toBeVisible();
     expect(button).toBeEnabled();
     expect(input).toBeEnabled();
@@ -185,7 +177,7 @@ describe("ConversionForm", () => {
     expect(button.querySelector("svg")).toHaveClass("hidden");
   });
 
-  it("faz download desktop com naming e revogação após dez segundos", async () => {
+  it("faz download uniforme com naming e revogação após sessenta segundos", async () => {
     const mocks = installBrowserMocks();
     const response = createDeferred<Response>();
     mocks.fetch.mockReturnValue(response.promise);
@@ -204,7 +196,7 @@ describe("ConversionForm", () => {
     });
 
     expect(
-      screen.getByText("Sucesso! Seu download deve começar em breve."),
+      screen.getByText("Conversão concluída com sucesso!"),
     ).toBeVisible();
     expect(mocks.createObjectUrl).toHaveBeenCalledOnce();
 
@@ -223,9 +215,14 @@ describe("ConversionForm", () => {
     expect(mocks.anchorClick).toHaveBeenCalledOnce();
     expect(appendedAnchor).not.toBeInTheDocument();
     expect(mocks.revokeObjectUrl).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("link", {
+        name: "Clique aqui caso o download não tenha iniciado (relatorio.final_convertido.docx)",
+      }),
+    ).toHaveAttribute("href", OBJECT_URL);
 
     act(() => {
-      vi.advanceTimersByTime(9_999);
+      vi.advanceTimersByTime(59_999);
     });
     expect(mocks.revokeObjectUrl).not.toHaveBeenCalled();
 
@@ -239,8 +236,8 @@ describe("ConversionForm", () => {
     expect(mocks.revokeObjectUrl).toHaveBeenCalledOnce();
   });
 
-  it("mantém o link móvel utilizável e tenta o clique após 100 ms", async () => {
-    const mocks = installBrowserMocks(MOBILE_USER_AGENT);
+  it("mantém o link de fallback utilizável em qualquer dispositivo", async () => {
+    const mocks = installBrowserMocks();
     const response = createDeferred<Response>();
     mocks.fetch.mockReturnValue(response.promise);
     const { form, input, unmount, user } = setupForm();
@@ -257,28 +254,17 @@ describe("ConversionForm", () => {
     });
 
     const link = screen.getByRole("link", {
-      name: "Clique aqui para baixar seu arquivo",
+      name: "Clique aqui caso o download não tenha iniciado (relatorio_convertido.docx)",
     });
     expect(link).toBeVisible();
     expect(link).toHaveAttribute("href", OBJECT_URL);
     expect(link).toHaveAttribute("download", "relatorio_convertido.docx");
-    expect(screen.getByText(/Conversão concluída!/)).toHaveClass(
+    expect(screen.getByText("Conversão concluída com sucesso!")).toHaveClass(
       "text-green-600",
     );
-    expect(mocks.anchorClick).not.toHaveBeenCalled();
-    expect(mocks.revokeObjectUrl).not.toHaveBeenCalled();
-
-    act(() => {
-      vi.advanceTimersByTime(99);
-    });
-    expect(mocks.anchorClick).not.toHaveBeenCalled();
-
-    act(() => {
-      vi.advanceTimersByTime(1);
-    });
     expect(mocks.anchorClick).toHaveBeenCalledOnce();
-    expect(link).toBeInTheDocument();
     expect(mocks.revokeObjectUrl).not.toHaveBeenCalled();
+    expect(link).toBeInTheDocument();
 
     unmount();
     expect(mocks.revokeObjectUrl).toHaveBeenCalledOnce();
